@@ -51,10 +51,10 @@ def settings_categories_keyboard() -> InlineKeyboardMarkup:
 def settings_prices_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("price_per_kg_tjs", "settings:edit:price_per_kg_tjs"),),
-            (("price_per_cube_tjs", "settings:edit:price_per_cube_tjs"),),
-            (("delivery_days_tj", "settings:edit:delivery_days_tj"),),
-            (("delivery_days_ru", "settings:edit:delivery_days_ru"),),
+            (("📦 Нархи 1 кг", "settings:edit:price_per_kg_tjs"),),
+            (("📐 Нархи 1 куб", "settings:edit:price_per_cube_tjs"),),
+            (("🚚 Муддати расидан TJ", "settings:edit:delivery_days_tj"),),
+            (("🚚 Муддати расидан RU", "settings:edit:delivery_days_ru"),),
             (("Бозгашт", "settings:main"),),
         ),
     )
@@ -63,8 +63,8 @@ def settings_prices_keyboard() -> InlineKeyboardMarkup:
 def settings_calculation_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("price_per_kg_tjs", "settings:edit:price_per_kg_tjs"),),
-            (("price_per_cube_tjs", "settings:edit:price_per_cube_tjs"),),
+            (("📦 Нархи 1 кг", "settings:edit:price_per_kg_tjs"),),
+            (("📐 Нархи 1 куб", "settings:edit:price_per_cube_tjs"),),
             (("Бозгашт", "settings:main"),),
         ),
     )
@@ -73,11 +73,11 @@ def settings_calculation_keyboard() -> InlineKeyboardMarkup:
 def settings_delivery_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("delivery_enabled ON/OFF", "settings:toggle:delivery_enabled"),),
-            (("delivery_inside_city_tj", "settings:edit:delivery_inside_city_tj"),),
-            (("delivery_outside_city_tj", "settings:edit:delivery_outside_city_tj"),),
-            (("delivery_inside_city_ru", "settings:edit:delivery_inside_city_ru"),),
-            (("delivery_outside_city_ru", "settings:edit:delivery_outside_city_ru"),),
+            (("🚚 Доставка ON/OFF", "settings:toggle:delivery_enabled"),),
+            (("🏙 Дохили шаҳр TJ", "settings:edit:delivery_inside_city_tj"),),
+            (("🚕 Берун аз шаҳр TJ", "settings:edit:delivery_outside_city_tj"),),
+            (("🏙 Дохили шаҳр RU", "settings:edit:delivery_inside_city_ru"),),
+            (("🚕 Берун аз шаҳр RU", "settings:edit:delivery_outside_city_ru"),),
             (("Бозгашт", "settings:main"),),
         ),
     )
@@ -86,8 +86,8 @@ def settings_delivery_keyboard() -> InlineKeyboardMarkup:
 def settings_channel_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("require_channel_join ON/OFF", "settings:toggle:require_channel_join"),),
-            (("channel_username", "settings:edit:channel_username"),),
+            (("📢 Обуна ба канал ON/OFF", "settings:toggle:require_channel_join"),),
+            (("🔗 Username-и канал", "settings:edit:channel_username"),),
             (("Бозгашт", "settings:main"),),
         ),
     )
@@ -96,9 +96,9 @@ def settings_channel_keyboard() -> InlineKeyboardMarkup:
 def settings_operator_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("operator_username", "settings:edit:operator_username"),),
-            (("operator_phone", "settings:edit:operator_phone"),),
-            (("operator_whatsapp", "settings:edit:operator_whatsapp"),),
+            (("☎️ Telegram-и оператор", "settings:edit:operator_username"),),
+            (("📞 Телефони оператор", "settings:edit:operator_phone"),),
+            (("💬 WhatsApp-и оператор", "settings:edit:operator_whatsapp"),),
             (("Бозгашт", "settings:main"),),
         ),
     )
@@ -107,12 +107,12 @@ def settings_operator_keyboard() -> InlineKeyboardMarkup:
 def settings_texts_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("delivery_days_tj", "settings:edit_text:delivery_days_tj"),),
-            (("delivery_days_ru", "settings:edit_text:delivery_days_ru"),),
-            (("delivery_inside_city_tj", "settings:edit_text:delivery_inside_city_tj"),),
-            (("delivery_outside_city_tj", "settings:edit_text:delivery_outside_city_tj"),),
-            (("delivery_inside_city_ru", "settings:edit_text:delivery_inside_city_ru"),),
-            (("delivery_outside_city_ru", "settings:edit_text:delivery_outside_city_ru"),),
+            (("🚚 Муддати расидан TJ", "settings:edit_text:delivery_days_tj"),),
+            (("🚚 Муддати расидан RU", "settings:edit_text:delivery_days_ru"),),
+            (("🏙 Дохили шаҳр TJ", "settings:edit_text:delivery_inside_city_tj"),),
+            (("🚕 Берун аз шаҳр TJ", "settings:edit_text:delivery_outside_city_tj"),),
+            (("🏙 Дохили шаҳр RU", "settings:edit_text:delivery_inside_city_ru"),),
+            (("🚕 Берун аз шаҳр RU", "settings:edit_text:delivery_outside_city_ru"),),
             (("Бозгашт", "settings:main"),),
         ),
     )
