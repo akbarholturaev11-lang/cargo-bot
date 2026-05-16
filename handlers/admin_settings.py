@@ -3,6 +3,39 @@ from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
+
+SETTING_LABELS_TJ = {
+    "price_per_kg_tjs": "Нархи 1 кг",
+    "price_per_cube_tjs": "Нархи 1 куб",
+    "delivery_days_tj": "Муддати расидан — тоҷикӣ",
+    "delivery_days_ru": "Муддати расидан — русӣ",
+
+    "delivery_enabled": "Доставка ON/OFF",
+    "delivery_inside_city_tj": "Доставка дохили шаҳр — тоҷикӣ",
+    "delivery_outside_city_tj": "Доставка берун аз шаҳр — тоҷикӣ",
+    "delivery_inside_city_ru": "Доставка дохили шаҳр — русӣ",
+    "delivery_outside_city_ru": "Доставка берун аз шаҳр — русӣ",
+
+    "require_channel_join": "Обуна ба канал ON/OFF",
+    "channel_username": "Username-и канал",
+
+    "operator_username": "Telegram-и оператор",
+    "operator_phone": "Телефони оператор",
+    "operator_whatsapp": "WhatsApp-и оператор",
+
+    "welcome_image_file_id": "Расми старт",
+    "calculator_image_file_id": "Расми ҳисобкунак",
+    "prices_image_file_id": "Расми нархҳо",
+    "status_image_file_id": "Расми статус",
+
+    "prices_text_tj": "Матни нархҳо — тоҷикӣ",
+    "prices_text_ru": "Матни нархҳо — русӣ",
+}
+
+def setting_label(key: str) -> str:
+    return SETTING_LABELS_TJ.get(key, key)
+
+
 from keyboards.inline_admin import (
     settings_calculation_keyboard,
     settings_categories_keyboard,
