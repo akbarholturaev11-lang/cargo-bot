@@ -42,6 +42,7 @@ def settings_categories_keyboard() -> InlineKeyboardMarkup:
             (("Складҳо", "settings:warehouses"),),
             (("Канал", "settings:channel"),),
             (("Оператор", "settings:operator"),),
+            (("Медиа", "settings:media"),),
             (("Матнҳо", "settings:texts"),),
             (("Бозгашт", "settings:back"),),
         ),
@@ -117,6 +118,18 @@ def settings_texts_keyboard() -> InlineKeyboardMarkup:
         ),
     )
 
+
+
+def settings_media_keyboard() -> InlineKeyboardMarkup:
+    return build_inline_keyboard(
+        (
+            (("🖼 Расми старт", "settings:media:welcome_image_file_id"),),
+            (("🧮 Расми ҳисобкунак", "settings:media:calculator_image_file_id"),),
+            (("💰 Расми нархҳо", "settings:media:prices_image_file_id"),),
+            (("📦 Расми статус", "settings:media:status_image_file_id"),),
+            (("Бозгашт", "settings:main"),),
+        ),
+    )
 
 def warehouse_management_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(

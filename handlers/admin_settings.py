@@ -41,6 +41,7 @@ from keyboards.inline_admin import (
     settings_categories_keyboard,
     settings_channel_keyboard,
     settings_delivery_keyboard,
+    settings_media_keyboard,
     settings_operator_keyboard,
     settings_prices_keyboard,
     settings_texts_keyboard,
@@ -78,6 +79,13 @@ EDITABLE_SETTINGS = {
 TOGGLE_SETTINGS = {
     "delivery_enabled": False,
     "require_channel_join": False,
+}
+
+MEDIA_SETTINGS = {
+    "welcome_image_file_id",
+    "calculator_image_file_id",
+    "prices_image_file_id",
+    "status_image_file_id",
 }
 
 
@@ -222,6 +230,8 @@ async def _screen(category: str):
         return await _channel_text(), settings_channel_keyboard()
     if category == "operator":
         return await _operator_text(), settings_operator_keyboard()
+    if category == "media":
+        return "🖼 <b>Медиа</b>\n\n<blockquote>Расмеро интихоб кунед ва баъд фото фиристед.</blockquote>", settings_media_keyboard()
     if category == "texts":
         return await _texts_text(), settings_texts_keyboard()
     return "Танзимот", settings_categories_keyboard()
@@ -422,3 +432,49 @@ def _category_for_key(key: str) -> str:
     if key.startswith("operator_"):
         return "operator"
     return "main"
+
+@router.callback_query(F.data.startswith("settings:media:"))
+async def ask_media_photo(callback: CallbackQuery, state: FSMContext) -> None:
+    if callback.from_user is None or not is_admin(callback.from_user.id):
+        await callback.answer()
+        return
+
+    key = callback.data.split(":")[-1]
+    if key not in MEDIA_SETTINGS:
+        await callback.answer("Нодуруст", show_alert=True)
+        return
+
+    await state.set_state(AdminSettingsStates.waiting_value)
+    await state.update_data(setting_key=key, setting_mode="media")
+
+    await callback.message.edit_text(
+        f"🖼 <b>{setting_label(key)}</b>\n\n"
+        "<blockquote>Лутфан фото фиристед. Фото ҳамчун расми ин бахш сабт мешавад.</blockquote>"
+    )
+    await callback.answer()
+
+
+@router.message(AdminSettingsStates.waiting_value, F.photo)
+async def save_media_photo(message: Message, state: FSMContext) -> None:
+    if message.from_user is None or not is_admin(message.from_user.id):
+        return
+
+    data = await state.get_data()
+    if data.get("setting_mode") != "media":
+        return
+
+    key = data.get("setting_key")
+    if key not in MEDIA_SETTINGS:
+        await message.answer("❌ Танзимоти нодуруст.")
+        await state.clear()
+        return
+
+    file_id = message.photo[-1].file_id
+    await set_setting(key, file_id)
+    await state.clear()
+
+    await message.answer(
+        f"✅ <b>{setting_label(key)} сабт шуд.</b>",
+        reply_markup=admin_main_menu(),
+    )
+
