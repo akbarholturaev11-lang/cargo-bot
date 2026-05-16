@@ -71,13 +71,13 @@ def _status_keyboard(parcel) -> object:
         (
             (
                 (
-                    "Дар склади Чин қабул шуд",
+                    "🇨🇳 Дар склади Чин",
                     f"admin_status:set:{parcel.id}:{STATUS_CHINA_RECEIVED}",
                 ),
             ),
             (
                 (
-                    "Дар роҳ аст",
+                    "🚚 Дар роҳ",
                     f"admin_status:set:{parcel.id}:{STATUS_ON_THE_WAY}",
                 ),
             ),

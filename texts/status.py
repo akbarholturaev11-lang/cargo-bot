@@ -9,14 +9,14 @@ from utils.constants import (
 
 STATUS_TEXTS = {
     LANG_TJ: {
-        STATUS_CHINA_RECEIVED: "Дар склади Чин қабул шуд",
-        STATUS_ON_THE_WAY: "Дар роҳ аст",
-        STATUS_ARRIVED_DESTINATION: "Ба склади {city} расид — омода барои гирифтан",
+        STATUS_CHINA_RECEIVED: "🇨🇳 Дар склади Чин",
+        STATUS_ON_THE_WAY: "🚚 Дар роҳ",
+        STATUS_ARRIVED_DESTINATION: "🏬 Ба склад расид",
     },
     LANG_RU: {
-        STATUS_CHINA_RECEIVED: "Принят на складе в Китае",
-        STATUS_ON_THE_WAY: "В пути",
-        STATUS_ARRIVED_DESTINATION: "Прибыл на склад {city} — готов к получению",
+        STATUS_CHINA_RECEIVED: "🇨🇳 На складе в Китае",
+        STATUS_ON_THE_WAY: "🚚 В пути",
+        STATUS_ARRIVED_DESTINATION: "🏬 Прибыл на склад",
     },
 }
 

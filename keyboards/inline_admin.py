@@ -26,9 +26,9 @@ def admin_confirm_keyboard() -> InlineKeyboardMarkup:
 def parcel_statuses_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("Дар склади Чин", f"parcel_status:{STATUS_CHINA_RECEIVED}"),),
-            (("Дар роҳ", f"parcel_status:{STATUS_ON_THE_WAY}"),),
-            (("Ба склад расид", f"parcel_status:{STATUS_ARRIVED_DESTINATION}"),),
+            (("🇨🇳 Дар склади Чин", f"parcel_status:{STATUS_CHINA_RECEIVED}"),),
+            (("🚚 Дар роҳ", f"parcel_status:{STATUS_ON_THE_WAY}"),),
+            (("🏬 Ба склад расид", f"parcel_status:{STATUS_ARRIVED_DESTINATION}"),),
         ),
     )
 
