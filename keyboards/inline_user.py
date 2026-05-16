@@ -56,18 +56,14 @@ def cities_keyboard(lang: str, include_back: bool = False) -> InlineKeyboardMark
 def profile_edit_keyboard(lang: str) -> InlineKeyboardMarkup:
     if lang == LANG_RU:
         rows = (
-            (("Изменить имя", "profile:edit_name"),),
-            (("Изменить телефон", "profile:edit_phone"),),
-            (("Изменить город", "profile:edit_city"),),
-            (("Изменить язык", "profile:edit_language"),),
+            (("Изменить имя", "profile:edit_name"), ("Изменить телефон", "profile:edit_phone")),
+            (("Изменить город", "profile:edit_city"), ("Изменить язык", "profile:edit_language")),
             (("Назад", "profile:back"),),
         )
     else:
         rows = (
-            (("Иваз кардани ном", "profile:edit_name"),),
-            (("Иваз кардани телефон", "profile:edit_phone"),),
-            (("Иваз кардани шаҳр", "profile:edit_city"),),
-            (("Иваз кардани забон", "profile:edit_language"),),
+            (("Иваз кардани ном", "profile:edit_name"), ("Иваз кардани телефон", "profile:edit_phone")),
+            (("Иваз кардани шаҳр", "profile:edit_city"), ("Иваз кардани забон", "profile:edit_language")),
             (("Бозгашт", "profile:back"),),
         )
     return build_inline_keyboard(rows)

@@ -57,7 +57,7 @@ MY_PARCELS_ITEM = (
 )
 
 PROFILE = (
-    "Мой профиль\n\n"
+    "👤 Мой профиль\n\n"
     "Имя: {full_name}\n"
     "Телефон: {phone}\n"
     "Город: {city}\n"

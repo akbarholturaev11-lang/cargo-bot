@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 
 from handlers.user_menu import PROFILE_MENU_LABELS, get_current_user
 from keyboards.inline_user import (
@@ -14,6 +14,8 @@ from keyboards.reply import phone_contact_keyboard, user_main_menu
 from services.users import (
     city_display_name,
     get_user_by_telegram_id,
+    normalize_contact_phone,
+    normalize_manual_phone,
     update_user_city,
     update_user_full_name,
     update_user_language,
@@ -62,6 +64,18 @@ def _is_own_contact(message: Message) -> bool:
     if message.contact is None or message.from_user is None:
         return False
     return message.contact.user_id == message.from_user.id
+
+
+def _contact_phone(message: Message) -> str | None:
+    if message.contact is None:
+        return None
+    return normalize_contact_phone(message.contact.phone_number)
+
+
+def _manual_phone(message: Message) -> str | None:
+    if message.text is None:
+        return None
+    return normalize_manual_phone(message.text)
 
 
 async def _edit_profile_message(
@@ -181,7 +195,7 @@ async def edit_phone_start(callback: CallbackQuery, state: FSMContext) -> None:
 
 
 @router.message(ProfileStates.edit_phone, F.contact)
-async def edit_phone_finish(message: Message, state: FSMContext) -> None:
+async def edit_phone_contact_finish(message: Message, state: FSMContext) -> None:
     user = await get_current_user(message)
     if user is None:
         await state.clear()
@@ -191,16 +205,51 @@ async def edit_phone_finish(message: Message, state: FSMContext) -> None:
     texts = _texts(user.language)
     if not _is_own_contact(message):
         await message.answer(
-            texts.ASK_PHONE,
+            texts.INVALID_PHONE,
             reply_markup=phone_contact_keyboard(user.language),
         )
         return
 
-    updated_user = await update_user_phone(user.id, message.contact.phone_number)
+    phone = _contact_phone(message)
+    if phone is None:
+        await message.answer(
+            texts.INVALID_PHONE,
+            reply_markup=phone_contact_keyboard(user.language),
+        )
+        return
+
+    updated_user = await update_user_phone(user.id, phone)
     if updated_user is None:
         await message.answer(texts.PHONE_ALREADY_USED)
         return
 
+    await message.answer(texts.PROFILE_UPDATED, reply_markup=ReplyKeyboardRemove())
+    await _edit_profile_message(message, state, updated_user)
+
+
+@router.message(ProfileStates.edit_phone, F.text)
+async def edit_phone_manual_finish(message: Message, state: FSMContext) -> None:
+    user = await get_current_user(message)
+    if user is None:
+        await state.clear()
+        await message.answer(tj.CHOOSE_LANGUAGE)
+        return
+
+    texts = _texts(user.language)
+    phone = _manual_phone(message)
+    if phone is None:
+        await message.answer(
+            texts.INVALID_PHONE,
+            reply_markup=phone_contact_keyboard(user.language),
+        )
+        return
+
+    updated_user = await update_user_phone(user.id, phone)
+    if updated_user is None:
+        await message.answer(texts.PHONE_ALREADY_USED)
+        return
+
+    await message.answer(texts.PROFILE_UPDATED, reply_markup=ReplyKeyboardRemove())
     await _edit_profile_message(message, state, updated_user)
 
 
@@ -209,7 +258,7 @@ async def edit_phone_invalid(message: Message, state: FSMContext) -> None:
     user = await get_current_user(message)
     lang = user.language if user is not None else LANG_TJ
     await message.answer(
-        _texts(lang).ASK_PHONE,
+        _texts(lang).INVALID_PHONE,
         reply_markup=phone_contact_keyboard(lang),
     )
 
