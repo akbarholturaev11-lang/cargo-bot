@@ -64,11 +64,13 @@ MENU_OPERATOR = "Оператор"
 
 PARCEL_FOUND = (
     "📦 <b>Бори шумо ёфт шуд</b>\n\n"
+    "<blockquote>"
     "🔢 Трек-код: <code>{track_code}</code>\n"
     "📍 Статус: <b>{dynamic_status}</b>\n"
     "🏬 Склад: <b>{destination_city}</b>\n"
     "🗓 Санаи қабул дар Чин: <b>{received_china_at}</b>\n"
-    "🚚 Муддати тахминӣ: <b>{delivery_days}</b>\n\n"
+    "🚚 Муддати тахминӣ: <b>{delivery_days}</b>"
+    "</blockquote>\n\n"
     "<blockquote>⚠️ Вазн ва маблағ баъди расидан маълум мешавад.</blockquote>"
 )
 
@@ -103,12 +105,14 @@ MY_PARCELS_ITEM = (
 
 PROFILE = (
     "👤 <b>Профили ман</b>\n\n"
+    "<blockquote>"
     "🧑 Ном: <b>{full_name}</b>\n"
     "📞 Телефон: <code>{phone}</code>\n"
     "🏙 Шаҳр: <b>{city}</b>\n"
     "🔐 Коди мизоҷӣ: <code>{client_code}</code>\n"
-    "🌐 Забон: <b>{language}</b>\n\n"
-    "<blockquote>Аз ин ҷо шумо метавонед маълумоти худро тағйир диҳед.</blockquote>"
+    "🌐 Забон: <b>{language}</b>"
+    "</blockquote>\n\n"
+    "<blockquote>⚙️ Аз ин ҷо шумо метавонед маълумоти худро тағйир диҳед.</blockquote>"
 )
 
 PROFILE_BACK = "🏠 Менюи асосӣ"
@@ -148,17 +152,21 @@ CALCULATOR_INVALID_NUMBER = (
 
 CALCULATOR_KG_RESULT = (
     "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "<blockquote>"
     "⚖️ Вазн: <b>{amount} кг</b>\n"
     "💰 Нарх барои 1 кг: <b>{price} сомонӣ</b>\n"
-    "📦 Ҳамагӣ: <b>{total} сомонӣ</b>\n\n"
+    "📦 Ҳамагӣ: <b>{total} сомонӣ</b>"
+    "</blockquote>\n\n"
     "<blockquote>⚠️ Ин ҳисоб тахминӣ аст. Вазн ва маблағи аниқ баъди расидани бор маълум мешавад.</blockquote>"
 )
 
 CALCULATOR_CUBE_RESULT = (
     "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "<blockquote>"
     "📐 Ҳаҷм: <b>{amount} куб</b>\n"
     "💰 Нарх барои 1 куб: <b>{price} сомонӣ</b>\n"
-    "📦 Ҳамагӣ: <b>{total} сомонӣ</b>\n\n"
+    "📦 Ҳамагӣ: <b>{total} сомонӣ</b>"
+    "</blockquote>\n\n"
     "<blockquote>⚠️ Ин ҳисоб тахминӣ аст. Ҳаҷм ва маблағи аниқ баъди расидани бор маълум мешавад.</blockquote>"
 )
 
@@ -245,9 +253,11 @@ OPERATOR_NOT_SET = (
 
 PRICES = (
     "💰 <b>Нархҳо</b>\n\n"
+    "<blockquote>"
     "🇨🇳 Чин → Тоҷикистон\n\n"
     "📦 1 кг: <b>{price_per_kg_tjs} сомонӣ</b>\n"
     "📐 1 куб: <b>{price_per_cube_tjs} сомонӣ</b>\n"
-    "🚚 Муддати тахминӣ: <b>{delivery_days}</b>\n\n"
+    "🚚 Муддати тахминӣ: <b>{delivery_days}</b>"
+    "</blockquote>\n\n"
     "<blockquote>⚠️ Вазн ва маблағи аниқ баъди расидани бор маълум мешавад.</blockquote>"
 )

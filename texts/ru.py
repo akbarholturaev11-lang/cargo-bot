@@ -64,11 +64,13 @@ MENU_OPERATOR = "Оператор"
 
 PARCEL_FOUND = (
     "📦 <b>Ваш груз найден</b>\n\n"
+    "<blockquote>"
     "🔢 Трек-код: <code>{track_code}</code>\n"
     "📍 Статус: <b>{dynamic_status}</b>\n"
     "🏬 Склад: <b>{destination_city}</b>\n"
     "🗓 Дата приёма в Китае: <b>{received_china_at}</b>\n"
-    "🚚 Примерный срок: <b>{delivery_days}</b>\n\n"
+    "🚚 Примерный срок: <b>{delivery_days}</b>"
+    "</blockquote>\n\n"
     "<blockquote>⚠️ Вес и сумма будут известны после прибытия.</blockquote>"
 )
 
@@ -103,12 +105,14 @@ MY_PARCELS_ITEM = (
 
 PROFILE = (
     "👤 <b>Мой профиль</b>\n\n"
+    "<blockquote>"
     "🧑 Имя: <b>{full_name}</b>\n"
     "📞 Телефон: <code>{phone}</code>\n"
     "🏙 Город: <b>{city}</b>\n"
     "🔐 Код клиента: <code>{client_code}</code>\n"
-    "🌐 Язык: <b>{language}</b>\n\n"
-    "<blockquote>Здесь вы можете изменить свои данные.</blockquote>"
+    "🌐 Язык: <b>{language}</b>"
+    "</blockquote>\n\n"
+    "<blockquote>⚙️ Здесь вы можете изменить свои данные.</blockquote>"
 )
 
 PROFILE_BACK = "🏠 Главное меню"
@@ -148,17 +152,21 @@ CALCULATOR_INVALID_NUMBER = (
 
 CALCULATOR_KG_RESULT = (
     "🧮 <b>Примерный расчёт</b>\n\n"
+    "<blockquote>"
     "⚖️ Вес: <b>{amount} кг</b>\n"
     "💰 Цена за 1 кг: <b>{price} сомонӣ</b>\n"
-    "📦 Итого: <b>{total} сомонӣ</b>\n\n"
+    "📦 Итого: <b>{total} сомонӣ</b>"
+    "</blockquote>\n\n"
     "<blockquote>⚠️ Это примерный расчёт. Точный вес и сумма будут известны после прибытия груза.</blockquote>"
 )
 
 CALCULATOR_CUBE_RESULT = (
     "🧮 <b>Примерный расчёт</b>\n\n"
+    "<blockquote>"
     "📐 Объём: <b>{amount} куб</b>\n"
     "💰 Цена за 1 куб: <b>{price} сомонӣ</b>\n"
-    "📦 Итого: <b>{total} сомонӣ</b>\n\n"
+    "📦 Итого: <b>{total} сомонӣ</b>"
+    "</blockquote>\n\n"
     "<blockquote>⚠️ Это примерный расчёт. Точный объём и сумма будут известны после прибытия груза.</blockquote>"
 )
 
@@ -245,9 +253,11 @@ OPERATOR_NOT_SET = (
 
 PRICES = (
     "💰 <b>Цены</b>\n\n"
+    "<blockquote>"
     "🇨🇳 Китай → Таджикистан\n\n"
     "📦 1 кг: <b>{price_per_kg_tjs} сомонӣ</b>\n"
     "📐 1 куб: <b>{price_per_cube_tjs} сомонӣ</b>\n"
-    "🚚 Примерный срок: <b>{delivery_days}</b>\n\n"
+    "🚚 Примерный срок: <b>{delivery_days}</b>"
+    "</blockquote>\n\n"
     "<blockquote>⚠️ Точный вес и сумма будут известны после прибытия.</blockquote>"
 )
