@@ -3,8 +3,9 @@ from aiogram.types import CallbackQuery, Message
 
 from handlers.user_menu import get_current_user
 from keyboards.inline_user import warehouse_city_keyboard
+from services.delivery import get_arrived_parcel_for_user_by_id
 from services.users import get_user_by_telegram_id
-from services.warehouses import get_active_warehouse
+from services.warehouses import get_active_warehouse, get_warehouse_for_parcel_destination
 from texts import ru, tj
 from utils.constants import CITY_NAMES, LANG_RU, LANG_TJ
 
@@ -40,6 +41,35 @@ def _warehouse_media(warehouse) -> tuple[str, str | None]:
     return media_type, media_file_id
 
 
+async def _send_warehouse_block(
+    callback: CallbackQuery,
+    warehouse,
+    *,
+    city: str,
+    lang: str,
+) -> None:
+    if callback.message is None:
+        return
+
+    caption = _texts(lang).WAREHOUSE_ACTIVE.format(
+        city=city,
+        caption=warehouse.address_caption,
+    )
+    media_type, media_file_id = _warehouse_media(warehouse)
+    if media_type == "photo" and media_file_id:
+        await callback.message.answer_photo(
+            photo=media_file_id,
+            caption=caption,
+        )
+    elif media_type == "video" and media_file_id:
+        await callback.message.answer_video(
+            video=media_file_id,
+            caption=caption,
+        )
+    else:
+        await callback.message.answer(caption)
+
+
 @router.message(F.text.in_(WAREHOUSE_MENU_LABELS))
 async def show_warehouse_cities(message: Message) -> None:
     user = await get_current_user(message)
@@ -55,6 +85,46 @@ async def show_warehouse_cities(message: Message) -> None:
 
 @router.callback_query(F.data == "warehouse:choose")
 async def show_warehouse_cities_from_callback(callback: CallbackQuery) -> None:
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("warehouse:arrival:"))
+async def show_arrival_warehouse(callback: CallbackQuery) -> None:
+    user = await get_user_by_telegram_id(callback.from_user.id)
+    lang = user.language if user is not None else LANG_TJ
+
+    try:
+        parcel_id = int(callback.data.rsplit(":", 1)[1])
+    except (ValueError, AttributeError):
+        await callback.answer()
+        return
+
+    parcel = None
+    if user is not None:
+        parcel = await get_arrived_parcel_for_user_by_id(
+            user_id=user.id,
+            parcel_id=parcel_id,
+        )
+
+    warehouse = None
+    if parcel is not None:
+        warehouse = await get_warehouse_for_parcel_destination(
+            destination_warehouse_id=parcel.destination_warehouse_id,
+            destination_city=parcel.destination_city,
+        )
+
+    if parcel is None or warehouse is None:
+        if callback.message is not None:
+            await callback.message.answer(_texts(lang).WAREHOUSE_ADDRESS_MISSING)
+        await callback.answer()
+        return
+
+    await _send_warehouse_block(
+        callback,
+        warehouse,
+        city=parcel.destination_city,
+        lang=lang,
+    )
     await callback.answer()
 
 
@@ -78,22 +148,10 @@ async def show_warehouse(callback: CallbackQuery) -> None:
         await callback.answer()
         return
 
-    caption = texts.WAREHOUSE_ACTIVE.format(
+    await _send_warehouse_block(
+        callback,
+        warehouse,
         city=_city_name(city_key, lang),
-        caption=warehouse.address_caption,
+        lang=lang,
     )
-    if callback.message is not None:
-        media_type, media_file_id = _warehouse_media(warehouse)
-        if media_type == "photo" and media_file_id:
-            await callback.message.answer_photo(
-                photo=media_file_id,
-                caption=caption,
-            )
-        elif media_type == "video" and media_file_id:
-            await callback.message.answer_video(
-                video=media_file_id,
-                caption=caption,
-            )
-        else:
-            await callback.message.answer(caption)
     await callback.answer()

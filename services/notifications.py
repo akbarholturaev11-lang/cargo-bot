@@ -65,7 +65,7 @@ async def notify_arrival_destination(bot: Bot, user: User, parcel: Parcel) -> bo
         await bot.send_message(
             chat_id=user.telegram_id,
             text=format_arrival_notification(parcel, user.language),
-            reply_markup=delivery_keyboard(user.language),
+            reply_markup=delivery_keyboard(user.language, parcel.id),
         )
     except TelegramAPIError:
         return False

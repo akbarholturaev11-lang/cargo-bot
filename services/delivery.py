@@ -32,6 +32,24 @@ async def get_arrived_parcel_for_user_by_track_code(
         return result.scalar_one_or_none()
 
 
+async def get_arrived_parcel_for_user_by_id(
+    *,
+    user_id: int,
+    parcel_id: int,
+) -> Parcel | None:
+    async with async_session() as session:
+        result = await session.execute(
+            select(Parcel)
+            .options(selectinload(Parcel.user))
+            .where(
+                Parcel.id == parcel_id,
+                Parcel.user_id == user_id,
+                Parcel.status_code == STATUS_ARRIVED_DESTINATION,
+            ),
+        )
+        return result.scalar_one_or_none()
+
+
 async def get_latest_arrived_parcel_for_user(user_id: int) -> Parcel | None:
     async with async_session() as session:
         result = await session.execute(

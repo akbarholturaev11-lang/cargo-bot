@@ -129,15 +129,25 @@ def warehouse_city_keyboard(lang: str) -> InlineKeyboardMarkup:
     )
 
 
-def delivery_keyboard(lang: str) -> InlineKeyboardMarkup:
+def delivery_keyboard(lang: str, parcel_id: int | None = None) -> InlineKeyboardMarkup:
+    delivery_callback = (
+        f"delivery:request:{parcel_id}"
+        if parcel_id is not None
+        else "delivery:request"
+    )
+    warehouse_callback = (
+        f"warehouse:arrival:{parcel_id}"
+        if parcel_id is not None
+        else "warehouse:choose"
+    )
     if lang == LANG_RU:
         rows = (
-            (("Доставка", "delivery:request"),),
-            (("Адрес склада 🇹🇯", "warehouse:choose"),),
+            (("Доставка", delivery_callback),),
+            (("Адрес склада 🇹🇯", warehouse_callback),),
         )
     else:
         rows = (
-            (("Доставка", "delivery:request"),),
-            (("Адреси склад 🇹🇯", "warehouse:choose"),),
+            (("Доставка", delivery_callback),),
+            (("Адреси склад 🇹🇯", warehouse_callback),),
         )
     return build_inline_keyboard(rows)

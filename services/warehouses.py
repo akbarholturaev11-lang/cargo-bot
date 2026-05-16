@@ -19,6 +19,41 @@ async def get_active_warehouse(city_key: str) -> Warehouse | None:
         return result.scalar_one_or_none()
 
 
+def city_key_from_name(city_name: str) -> str | None:
+    normalized_city = city_name.strip().casefold()
+    for city_key, names in CITY_NAMES.items():
+        if normalized_city == city_key.casefold():
+            return city_key
+        if any(normalized_city == name.casefold() for name in names.values()):
+            return city_key
+    return None
+
+
+async def get_warehouse_by_id(warehouse_id: int) -> Warehouse | None:
+    async with async_session() as session:
+        return await session.get(Warehouse, warehouse_id)
+
+
+async def get_active_warehouse_by_city_name(city_name: str) -> Warehouse | None:
+    city_key = city_key_from_name(city_name)
+    if city_key is None:
+        return None
+    return await get_active_warehouse(city_key)
+
+
+async def get_warehouse_for_parcel_destination(
+    *,
+    destination_warehouse_id: int | None,
+    destination_city: str,
+) -> Warehouse | None:
+    if destination_warehouse_id is not None:
+        warehouse = await get_warehouse_by_id(destination_warehouse_id)
+        if warehouse is not None:
+            return warehouse
+
+    return await get_active_warehouse_by_city_name(destination_city)
+
+
 async def get_warehouse_by_city_key(city_key: str) -> Warehouse | None:
     async with async_session() as session:
         result = await session.execute(

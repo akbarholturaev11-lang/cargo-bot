@@ -7,6 +7,7 @@ from aiogram.types import CallbackQuery, Message
 from keyboards.builders import build_inline_keyboard
 from services.delivery import (
     create_delivery_request,
+    get_arrived_parcel_for_user_by_id,
     get_arrived_parcel_for_user_by_track_code,
     get_latest_arrived_parcel_for_user,
     notify_admins_about_delivery_request,
@@ -74,7 +75,20 @@ def _format_confirmation(data: dict, lang: str) -> str:
     )
 
 
+def _parcel_id_from_delivery_callback(data: str | None) -> int | None:
+    if not data:
+        return None
+    parts = data.split(":")
+    if len(parts) != 3:
+        return None
+    try:
+        return int(parts[2])
+    except ValueError:
+        return None
+
+
 @router.callback_query(F.data == "delivery:request")
+@router.callback_query(F.data.startswith("delivery:request:"))
 async def start_delivery_request(callback: CallbackQuery, state: FSMContext) -> None:
     user = await get_user_by_telegram_id(callback.from_user.id)
     if user is None:
@@ -96,9 +110,16 @@ async def start_delivery_request(callback: CallbackQuery, state: FSMContext) -> 
         await callback.answer()
         return
 
-    track_code = _extract_track_code(callback.message.text if callback.message else None)
     parcel = None
-    if track_code is not None:
+    parcel_id = _parcel_id_from_delivery_callback(callback.data)
+    if parcel_id is not None:
+        parcel = await get_arrived_parcel_for_user_by_id(
+            user_id=user.id,
+            parcel_id=parcel_id,
+        )
+
+    track_code = _extract_track_code(callback.message.text if callback.message else None)
+    if parcel is None and track_code is not None:
         parcel = await get_arrived_parcel_for_user_by_track_code(
             user_id=user.id,
             track_code=track_code,
