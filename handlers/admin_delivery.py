@@ -4,16 +4,13 @@ from aiogram.types import CallbackQuery, Message
 from keyboards.builders import build_inline_keyboard
 from keyboards.reply import ADMIN_MENU
 from services.delivery import (
+    delivery_status_keyboard,
     format_delivery_request_for_admin,
     get_delivery_request,
     get_delivery_requests,
     update_delivery_status,
 )
 from utils.constants import (
-    DELIVERY_STATUS_ACCEPTED,
-    DELIVERY_STATUS_CANCELLED,
-    DELIVERY_STATUS_DELIVERED,
-    DELIVERY_STATUS_ON_DELIVERY,
     DELIVERY_STATUSES,
 )
 from utils.validators import is_admin
@@ -44,17 +41,6 @@ def _requests_keyboard(requests):
         for request in requests
     )
     return build_inline_keyboard(rows)
-
-
-def _status_keyboard(request_id: int):
-    return build_inline_keyboard(
-        (
-            (("Қабул шуд", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_ACCEPTED}"),),
-            (("Дар доставка", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_ON_DELIVERY}"),),
-            (("Расонида шуд", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_DELIVERED}"),),
-            (("Бекор шуд", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_CANCELLED}"),),
-        ),
-    )
 
 
 @router.message(F.text == ADMIN_DELIVERY_LABEL)
@@ -95,7 +81,7 @@ async def view_delivery_request(callback: CallbackQuery) -> None:
     if callback.message is not None:
         await callback.message.edit_text(
             format_delivery_request_for_admin(request, request.user),
-            reply_markup=_status_keyboard(request.id),
+            reply_markup=delivery_status_keyboard(request.id),
         )
     await callback.answer()
 
@@ -137,6 +123,6 @@ async def set_delivery_status(callback: CallbackQuery) -> None:
     if callback.message is not None and request is not None:
         await callback.message.edit_text(
             format_delivery_request_for_admin(request, request.user),
-            reply_markup=_status_keyboard(request.id),
+            reply_markup=delivery_status_keyboard(request.id),
         )
     await callback.answer("Статус нав шуд.")

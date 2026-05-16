@@ -102,25 +102,29 @@ WAREHOUSE_ADDRESS_MISSING = (
     "Пожалуйста, напишите оператору."
 )
 
-DELIVERY_UNAVAILABLE = "Сейчас услуга доставки недоступна."
+DELIVERY_UNAVAILABLE = (
+    "❌ Сейчас доставка недоступна.\n\n"
+    "Пожалуйста, заберите груз со склада."
+)
 DELIVERY_REQUEST = "Отправьте адрес доставки."
 DELIVERY_REQUEST_ACCEPTED = "Заявка на доставку принята."
 DELIVERY_NOT_FOUND = "Прибывший груз для доставки не найден."
 DELIVERY_CONFIRM = (
-    "Подтвердите заявку на доставку\n\n"
+    "🚚 Заявка на доставку\n\n"
     "Трек-код: {track_code}\n"
-    "Имя: {full_name}\n"
+    "Клиент: {full_name}\n"
     "Телефон: {phone}\n"
     "Склад: {destination_city}\n"
-    "Адрес: {delivery_address}"
+    "Адрес: {delivery_address}\n\n"
+    "Данные верны?"
 )
 DELIVERY_TERMS = (
-    "Услуга доставки\n\n"
-    "{inside_city}\n\n"
-    "{outside_city}\n\n"
-    "Пожалуйста, отправьте ваш адрес:"
+    "🚚 Услуга доставки\n\n"
+    "🏙 {inside_city}\n\n"
+    "🚕 {outside_city}\n\n"
+    "📍 Пожалуйста, отправьте ваш адрес:"
 )
-DELIVERY_SEND_ADDRESS = "Пожалуйста, отправьте ваш адрес:"
+DELIVERY_SEND_ADDRESS = "📍 Пожалуйста, отправьте ваш адрес:"
 DELIVERY_CANCELLED = "Заявка на доставку отменена."
 
 NOTIFICATION_CHINA_RECEIVED = (

@@ -102,25 +102,29 @@ WAREHOUSE_ADDRESS_MISSING = (
     "Лутфан ба оператор нависед."
 )
 
-DELIVERY_UNAVAILABLE = "Ҳозирча хизматрасонии доставка фаъол нест."
+DELIVERY_UNAVAILABLE = (
+    "❌ Ҳозирча хизматрасонии доставка фаъол нест.\n\n"
+    "Лутфан борро аз склад гирифта баред."
+)
 DELIVERY_REQUEST = "Адреси доставкаро фиристед."
 DELIVERY_REQUEST_ACCEPTED = "Дархости доставка қабул шуд."
 DELIVERY_NOT_FOUND = "Бори расида барои доставка ёфт нашуд."
 DELIVERY_CONFIRM = (
-    "Дархости доставкаро тасдиқ кунед\n\n"
+    "🚚 Дархости доставка\n\n"
     "Трек-код: {track_code}\n"
-    "Ном: {full_name}\n"
+    "Мизоҷ: {full_name}\n"
     "Телефон: {phone}\n"
     "Склад: {destination_city}\n"
-    "Адрес: {delivery_address}"
+    "Адрес: {delivery_address}\n\n"
+    "Маълумот дуруст аст?"
 )
 DELIVERY_TERMS = (
-    "Хизматрасонии доставка\n\n"
-    "{inside_city}\n\n"
-    "{outside_city}\n\n"
-    "Лутфан адреси худро равон кунед:"
+    "🚚 Хизматрасонии доставка\n\n"
+    "🏙 {inside_city}\n\n"
+    "🚕 {outside_city}\n\n"
+    "📍 Лутфан адреси худро равон кунед:"
 )
-DELIVERY_SEND_ADDRESS = "Лутфан адреси худро равон кунед:"
+DELIVERY_SEND_ADDRESS = "📍 Лутфан адреси худро равон кунед:"
 DELIVERY_CANCELLED = "Дархости доставка бекор карда шуд."
 
 NOTIFICATION_CHINA_RECEIVED = (

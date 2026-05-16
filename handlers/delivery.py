@@ -35,12 +35,14 @@ def _texts(lang: str):
 def _confirm_keyboard(lang: str):
     if lang == LANG_RU:
         rows = (
-            (("Подтвердить", "delivery:confirm"),),
+            (("Отправить", "delivery:confirm"),),
+            (("Заново", "delivery:restart"),),
             (("Отменить", "delivery:cancel"),),
         )
     else:
         rows = (
-            (("Тасдиқ", "delivery:confirm"),),
+            (("Фиристодан", "delivery:confirm"),),
+            (("Аз нав", "delivery:restart"),),
             (("Бекор кардан", "delivery:cancel"),),
         )
     return build_inline_keyboard(
@@ -99,14 +101,7 @@ async def start_delivery_request(callback: CallbackQuery, state: FSMContext) -> 
     delivery_enabled = await get_bool_setting("delivery_enabled", False)
     if not delivery_enabled:
         if callback.message is not None:
-            pickup_text = (
-                "Пожалуйста, заберите груз со склада."
-                if user.language == LANG_RU
-                else "Лутфан борро аз склад гирифта баред."
-            )
-            await callback.message.answer(
-                f"{texts.DELIVERY_UNAVAILABLE}\n{pickup_text}",
-            )
+            await callback.message.answer(texts.DELIVERY_UNAVAILABLE)
         await callback.answer()
         return
 
@@ -197,6 +192,17 @@ async def cancel_delivery(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.answer()
 
 
+@router.callback_query(DeliveryStates.confirming, F.data == "delivery:restart")
+async def restart_delivery_address(callback: CallbackQuery, state: FSMContext) -> None:
+    user = await get_user_by_telegram_id(callback.from_user.id)
+    lang = user.language if user is not None else LANG_TJ
+    await state.set_state(DeliveryStates.waiting_for_address)
+    await state.update_data(delivery_address=None)
+    if callback.message is not None:
+        await callback.message.edit_text(_texts(lang).DELIVERY_SEND_ADDRESS)
+    await callback.answer()
+
+
 @router.callback_query(DeliveryStates.confirming, F.data == "delivery:confirm")
 async def confirm_delivery(callback: CallbackQuery, state: FSMContext) -> None:
     user = await get_user_by_telegram_id(callback.from_user.id)
@@ -206,10 +212,15 @@ async def confirm_delivery(callback: CallbackQuery, state: FSMContext) -> None:
         return
 
     data = await state.get_data()
-    parcel = await get_arrived_parcel_for_user_by_track_code(
+    parcel = await get_arrived_parcel_for_user_by_id(
         user_id=user.id,
-        track_code=data["track_code"],
+        parcel_id=data["parcel_id"],
     )
+    if parcel is None:
+        parcel = await get_arrived_parcel_for_user_by_track_code(
+            user_id=user.id,
+            track_code=data["track_code"],
+        )
     if parcel is None:
         await state.clear()
         if callback.message is not None:

@@ -6,12 +6,26 @@ from sqlalchemy.orm import selectinload
 from config import ADMIN_IDS
 from database.db import async_session
 from database.models import DeliveryRequest, Parcel, User
+from keyboards.builders import build_inline_keyboard
 from services.normalizer import normalize_track_code
 from utils.constants import (
+    DELIVERY_STATUS_ACCEPTED,
+    DELIVERY_STATUS_CANCELLED,
+    DELIVERY_STATUS_DELIVERED,
     DELIVERY_STATUS_NEW,
+    DELIVERY_STATUS_ON_DELIVERY,
     DELIVERY_STATUSES,
     STATUS_ARRIVED_DESTINATION,
 )
+
+
+DELIVERY_STATUS_LABELS_TJ = {
+    DELIVERY_STATUS_NEW: "Дархости нав",
+    DELIVERY_STATUS_ACCEPTED: "Қабул шуд",
+    DELIVERY_STATUS_ON_DELIVERY: "Дар роҳ",
+    DELIVERY_STATUS_DELIVERED: "Расонида шуд",
+    DELIVERY_STATUS_CANCELLED: "Бекор шуд",
+}
 
 
 async def get_arrived_parcel_for_user_by_track_code(
@@ -137,14 +151,24 @@ async def update_delivery_status(
 
 def format_delivery_request_for_admin(request: DeliveryRequest, user: User) -> str:
     return (
-        "Дархости доставка\n\n"
-        f"ID: {request.id}\n"
+        "🚚 Дархости доставка\n\n"
         f"Трек-код: {request.track_code}\n"
-        f"Ном: {user.full_name}\n"
+        f"Мизоҷ: {user.full_name}\n"
         f"Телефон: {request.delivery_phone}\n"
         f"Склад: {request.destination_city}\n"
-        f"Адрес: {request.delivery_address}\n"
-        f"Статус: {request.status}"
+        f"Адреси доставка: {request.delivery_address}\n"
+        f"Ҳолат: {DELIVERY_STATUS_LABELS_TJ.get(request.status, request.status)}"
+    )
+
+
+def delivery_status_keyboard(request_id: int):
+    return build_inline_keyboard(
+        (
+            (("Қабул шуд", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_ACCEPTED}"),),
+            (("Дар роҳ", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_ON_DELIVERY}"),),
+            (("Расонида шуд", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_DELIVERED}"),),
+            (("Бекор шуд", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_CANCELLED}"),),
+        ),
     )
 
 
@@ -159,7 +183,11 @@ async def notify_admins_about_delivery_request(
 
     for admin_id in ADMIN_IDS:
         try:
-            await bot.send_message(chat_id=admin_id, text=text)
+            await bot.send_message(
+                chat_id=admin_id,
+                text=text,
+                reply_markup=delivery_status_keyboard(request.id),
+            )
             sent += 1
         except TelegramAPIError:
             failed += 1
