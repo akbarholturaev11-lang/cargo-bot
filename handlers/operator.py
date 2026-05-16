@@ -39,6 +39,8 @@ async def show_operator(message: Message) -> None:
         await message.answer(tj.CHOOSE_LANGUAGE)
         return
 
+    texts = _texts(user.language)
+
     values = await get_many_settings(
         {
             "operator_username": DEFAULT_SETTINGS["operator_username"],
