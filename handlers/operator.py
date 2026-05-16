@@ -22,11 +22,14 @@ def _texts(lang: str):
     return TEXTS.get(lang, tj)
 
 
-async def _delivery_days(lang: str) -> str:
-    key = "delivery_days_ru" if lang == LANG_RU else "delivery_days_tj"
-    default = DEFAULT_SETTINGS[key]
-    values = await get_many_settings({key: default})
-    return values[key]
+def _format_prices_text(template: str, values: dict[str, str], lang: str) -> str:
+    return template.format(
+        price_per_kg_tjs=values["price_per_kg_tjs"],
+        price_per_cube_tjs=values["price_per_cube_tjs"],
+        delivery_days_tj=values["delivery_days_tj"],
+        delivery_days_ru=values["delivery_days_ru"],
+        delivery_days=values["delivery_days_ru"] if lang == LANG_RU else values["delivery_days_tj"],
+    )
 
 
 @router.message(F.text.in_(OPERATOR_MENU_LABELS))
@@ -36,7 +39,6 @@ async def show_operator(message: Message) -> None:
         await message.answer(tj.CHOOSE_LANGUAGE)
         return
 
-    texts = _texts(user.language)
     values = await get_many_settings(
         {
             "operator_username": DEFAULT_SETTINGS["operator_username"],
@@ -72,12 +74,22 @@ async def show_prices(message: Message) -> None:
         {
             "price_per_kg_tjs": DEFAULT_SETTINGS["price_per_kg_tjs"],
             "price_per_cube_tjs": DEFAULT_SETTINGS["price_per_cube_tjs"],
+            "delivery_days_tj": DEFAULT_SETTINGS["delivery_days_tj"],
+            "delivery_days_ru": DEFAULT_SETTINGS["delivery_days_ru"],
+            "prices_image_file_id": DEFAULT_SETTINGS["prices_image_file_id"],
+            "prices_text_tj": DEFAULT_SETTINGS["prices_text_tj"],
+            "prices_text_ru": DEFAULT_SETTINGS["prices_text_ru"],
         },
     )
-    await message.answer(
-        texts.PRICES.format(
-            price_per_kg_tjs=values["price_per_kg_tjs"],
-            price_per_cube_tjs=values["price_per_cube_tjs"],
-            delivery_days=await _delivery_days(user.language),
-        ),
+    template_key = "prices_text_ru" if user.language == LANG_RU else "prices_text_tj"
+    prices_text = _format_prices_text(
+        values[template_key],
+        values,
+        user.language,
     )
+    image_file_id = values["prices_image_file_id"].strip()
+    if image_file_id:
+        await message.answer_photo(photo=image_file_id, caption=prices_text)
+        return
+
+    await message.answer(prices_text)

@@ -68,6 +68,15 @@ async def _format_parcel_found(parcel, lang: str) -> str:
     )
 
 
+async def _send_status_message(message: Message, text: str) -> None:
+    image_file_id = await get_setting("status_image_file_id", "")
+    if image_file_id:
+        await message.answer_photo(photo=image_file_id, caption=text)
+        return
+
+    await message.answer(text)
+
+
 @router.message(_is_user_search_button)
 async def start_parcel_search(message: Message, state: FSMContext) -> None:
     user = await get_current_user(message)
@@ -96,7 +105,10 @@ async def search_parcel(message: Message, state: FSMContext) -> None:
         await message.answer(texts.PARCEL_NOT_FOUND)
         return
 
-    await message.answer(await _format_parcel_found(parcel, user.language))
+    await _send_status_message(
+        message,
+        await _format_parcel_found(parcel, user.language),
+    )
 
 
 @router.message(ParcelSearchStates.waiting_for_track_code)

@@ -13,6 +13,7 @@ from services.calculator import (
     get_price_per_kg,
     parse_positive_decimal,
 )
+from services.settings import get_setting
 from services.users import get_user_by_telegram_id
 from states.calculator_states import CalculatorStates
 from texts import ru, tj
@@ -61,6 +62,23 @@ def _format_result(
     )
 
 
+def _calculator_intro(lang: str) -> str:
+    if lang == LANG_RU:
+        return "🧮 Примерный расчёт\n\nКаким способом рассчитать?"
+    return "🧮 Ҳисоби тахминӣ\n\nБо кадом усул ҳисоб мекунед?"
+
+
+async def _edit_calculator_message(callback: CallbackQuery, text: str) -> None:
+    if callback.message is None:
+        return
+
+    if callback.message.photo:
+        await callback.message.edit_caption(caption=text, reply_markup=None)
+        return
+
+    await callback.message.edit_text(text)
+
+
 @router.message(F.text.in_(CALCULATOR_MENU_LABELS))
 async def show_calculator(message: Message, state: FSMContext) -> None:
     user = await get_current_user(message)
@@ -69,10 +87,17 @@ async def show_calculator(message: Message, state: FSMContext) -> None:
         return
 
     await state.clear()
-    await message.answer(
-        _texts(user.language).CALCULATOR_CHOOSE,
-        reply_markup=calculator_keyboard(user.language),
-    )
+    intro_text = _calculator_intro(user.language)
+    image_file_id = await get_setting("calculator_image_file_id", "")
+    if image_file_id:
+        await message.answer_photo(
+            photo=image_file_id,
+            caption=intro_text,
+            reply_markup=calculator_keyboard(user.language),
+        )
+        return
+
+    await message.answer(intro_text, reply_markup=calculator_keyboard(user.language))
 
 
 @router.callback_query(F.data == "calc:kg")
@@ -85,7 +110,7 @@ async def choose_kg(callback: CallbackQuery, state: FSMContext) -> None:
     lang = user.language if user is not None else LANG_TJ
 
     await state.set_state(CalculatorStates.waiting_for_kg)
-    await callback.message.edit_text(_texts(lang).CALCULATOR_ASK_KG)
+    await _edit_calculator_message(callback, _texts(lang).CALCULATOR_ASK_KG)
     await callback.answer()
 
 
@@ -99,7 +124,7 @@ async def choose_cube(callback: CallbackQuery, state: FSMContext) -> None:
     lang = user.language if user is not None else LANG_TJ
 
     await state.set_state(CalculatorStates.waiting_for_cube)
-    await callback.message.edit_text(_texts(lang).CALCULATOR_ASK_CUBE)
+    await _edit_calculator_message(callback, _texts(lang).CALCULATOR_ASK_CUBE)
     await callback.answer()
 
 

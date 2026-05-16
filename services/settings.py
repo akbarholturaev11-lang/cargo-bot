@@ -41,6 +41,25 @@ DEFAULT_SETTINGS = {
         "Отслеживайте свои грузы из Китая в Таджикистан.\n"
         "Пожалуйста, выберите язык:"
     ),
+    "calculator_image_file_id": "",
+    "prices_image_file_id": "",
+    "status_image_file_id": "",
+    "prices_text_tj": (
+        "💰 Нархҳо\n\n"
+        "🇨🇳 Чин → Тоҷикистон\n\n"
+        "📦 1 кг: {price_per_kg_tjs} сомонӣ\n"
+        "📐 1 куб: {price_per_cube_tjs} сомонӣ\n"
+        "🚚 Муддати тахминӣ: {delivery_days_tj}\n\n"
+        "⚠️ Вазн ва маблағи аниқ баъди расидани бор маълум мешавад."
+    ),
+    "prices_text_ru": (
+        "💰 Цены\n\n"
+        "🇨🇳 Китай → Таджикистан\n\n"
+        "📦 1 кг: {price_per_kg_tjs} сомонӣ\n"
+        "📐 1 куб: {price_per_cube_tjs} сомонӣ\n"
+        "🚚 Примерный срок: {delivery_days_ru}\n\n"
+        "⚠️ Точный вес и сумма будут известны после прибытия груза."
+    ),
 }
 
 
