@@ -1,157 +1,253 @@
-CHOOSE_LANGUAGE = "Забонро интихоб кунед:"
+CHOOSE_LANGUAGE = (
+    "🚚 <b>Хуш омадед ба Wasit Cargo!</b>\n\n"
+    "Борҳои худро аз Чин то Тоҷикистон осон пайгирӣ кунед.\n\n"
+    "<blockquote>Лутфан забонро интихоб кунед:</blockquote>"
+)
 
-REGISTER = "Бақайдгирӣ"
-LOGIN = "Ворид шудан"
+REGISTER = "📝 Сабти ном"
+LOGIN = "🔐 Ворид шудан"
 
-ASK_FULL_NAME = "Ному насаби худро пурра ворид кунед."
-ASK_PHONE = "Рақами телефонро бо тугмаи поён фиристед."
-ASK_CITY = "Шаҳри худро интихоб кунед."
+ASK_FULL_NAME = (
+    "🧑 <b>Ном ва насаб</b>\n\n"
+    "Лутфан ному насаби худро пурра ворид кунед."
+)
+
+ASK_PHONE = (
+    "📞 <b>Рақами телефон</b>\n\n"
+    "Лутфан рақами телефони худро ворид кунед.\n\n"
+    "<blockquote>Рақам бояд танҳо аз 9 рақам иборат бошад.\n"
+    "Мисол: <code>929999999</code></blockquote>"
+)
+
+ASK_CITY = (
+    "🏙 <b>Шаҳрро интихоб кунед</b>\n\n"
+    "Склади асосии шумо аз рӯи ҳамин шаҳр муайян мешавад."
+)
 
 REGISTRATION_COMPLETED = (
-    "Бақайдгирӣ анҷом ёфт.\n"
-    "Рамзи муштарии шумо: {client_code}"
+    "✅ <b>Сабти ном анҷом шуд!</b>\n\n"
+    "🎉 Шумо ба Wasit Cargo пайваст шудед.\n"
+    "🔐 Коди мизоҷии шумо: <code>{client_code}</code>\n\n"
+    "<blockquote>Ин код барои пайгирии бор ва шинохтани мизоҷ истифода мешавад.</blockquote>"
 )
-LOGIN_SUCCESS = "Шумо ба ҳисоб ворид шудед."
-PHONE_NOT_FOUND = (
-    "❌ Ин рақам дар база ёфт нашуд.\n"
-    "Лутфан рақамро дуруст ворид кунед ё аввал сабти ном кунед."
-)
-NAME_MISMATCH = (
-    "❌ Ному насаб мувофиқат накард.\n"
-    "Лутфан аз нав нависед."
-)
-INVALID_PHONE = (
-    "❌ Рақами телефон нодуруст аст.\n\n"
-    "Лутфан рақамро танҳо аз 9 рақам ворид кунед.\n"
-    "Мисол: 929999999"
-)
-BACK = "Бозгашт"
 
-MENU_SEARCH_PARCEL = "Ҷустуҷӯи бор"
-MENU_MY_PARCELS = "Борҳои ман"
-MENU_CALCULATOR = "Ҳисоби тахминӣ"
-MENU_PROFILE = "Профили ман"
-MENU_WAREHOUSES = "Суроғаҳои склад"
-MENU_PRICES = "Нархҳо"
-MENU_OPERATOR = "Оператор"
+LOGIN_SUCCESS = (
+    "✅ <b>Шумо ворид шудед!</b>\n\n"
+    "🔐 Коди мизоҷии шумо: <code>{client_code}</code>"
+)
+
+PHONE_NOT_FOUND = (
+    "❌ <b>Ин рақам дар база ёфт нашуд.</b>\n\n"
+    "<blockquote>Лутфан рақамро дуруст ворид кунед ё аввал сабти ном кунед.</blockquote>"
+)
+
+NAME_MISMATCH = (
+    "❌ <b>Ному насаб мувофиқат накард.</b>\n\n"
+    "<blockquote>Лутфан аз нав нависед.</blockquote>"
+)
+
+INVALID_PHONE = (
+    "❌ <b>Рақами телефон нодуруст аст.</b>\n\n"
+    "Лутфан рақамро танҳо аз 9 рақам ворид кунед.\n"
+    "Мисол: <code>929999999</code>"
+)
+
+BACK = "⬅️ Бозгашт"
+
+MENU_SEARCH_PARCEL = "🔍 Ҷустуҷӯи бор"
+MENU_MY_PARCELS = "📦 Борҳои ман"
+MENU_CALCULATOR = "🧮 Ҳисоби тахминӣ"
+MENU_PROFILE = "👤 Профили ман"
+MENU_WAREHOUSES = "🇨🇳 Суроғаҳои склад"
+MENU_PRICES = "💰 Нархҳо"
+MENU_OPERATOR = "☎️ Оператор"
 
 PARCEL_FOUND = (
-    "Бори шумо ёфт шуд\n\n"
-    "Трек-код: {track_code}\n"
-    "Статус: {dynamic_status}\n"
-    "Склад: {destination_city}\n"
-    "Санаи қабул дар склади Чин: {received_china_at}\n"
-    "Муддати тахминии расидан: {delivery_days}\n\n"
-    "Вазн ва маблағ баъди расидан маълум мешавад."
+    "📦 <b>Бори шумо ёфт шуд</b>\n\n"
+    "🔢 Трек-код: <code>{track_code}</code>\n"
+    "📍 Статус: <b>{dynamic_status}</b>\n"
+    "🏬 Склад: <b>{destination_city}</b>\n"
+    "🗓 Санаи қабул дар Чин: <b>{received_china_at}</b>\n"
+    "🚚 Муддати тахминӣ: <b>{delivery_days}</b>\n\n"
+    "<blockquote>⚠️ Вазн ва маблағ баъди расидан маълум мешавад.</blockquote>"
 )
-ASK_TRACK_CODE = "Трек-коди борро фиристед."
-PARCEL_NOT_FOUND = "Ин трек-код ёфт нашуд."
 
-MY_PARCELS_EMPTY = "Ҳоло барои шумо бор сабт нашудааст."
-MY_PARCELS_TITLE = "Борҳои шумо:"
+ASK_TRACK_CODE = (
+    "🔍 <b>Ҷустуҷӯи бор</b>\n\n"
+    "Трек-коди борро фиристед.\n\n"
+    "<blockquote>Мисол: <code>SF123456789CN</code></blockquote>"
+)
+
+PARCEL_NOT_FOUND = (
+    "❌ <b>Ин трек-код ҳоло дар база ёфт нашуд.</b>\n\n"
+    "<blockquote>Эҳтимол:\n"
+    "— бор ҳоло ба склади Чин нарасидааст;\n"
+    "— трек-код хато ворид шудааст;\n"
+    "— корманди карго ҳоло онро ба база илова накардааст.</blockquote>"
+)
+
+MY_PARCELS_EMPTY = (
+    "📭 <b>Ҳоло барои шумо бор сабт нашудааст.</b>\n\n"
+    "<blockquote>Вақте бори шумо ба склади Чин қабул мешавад, бот ба шумо хабар медиҳад.</blockquote>"
+)
+
+MY_PARCELS_TITLE = "📦 <b>Борҳои ман</b>"
+
 MY_PARCELS_ITEM = (
-    "Трек-код: {track_code}\n"
-    "Статус: {dynamic_status}\n"
-    "Склад: {destination_city}\n"
-    "Санаи қабул: {received_china_at}"
+    "📦 <b>{index}. Бор</b>\n"
+    "🔢 Трек-код: <code>{track_code}</code>\n"
+    "📍 Статус: <b>{dynamic_status}</b>\n"
+    "🏬 Склад: <b>{destination_city}</b>\n"
+    "🗓 Санаи қабул: <b>{received_china_at}</b>"
 )
 
 PROFILE = (
-    "👤 Профили ман\n\n"
-    "Ном: {full_name}\n"
-    "Телефон: {phone}\n"
-    "Шаҳр: {city}\n"
-    "Коди мизоҷӣ: {client_code}\n"
-    "Забон: {language}\n\n"
-    "Аз ин ҷо шумо метавонед маълумоти худро тағйир диҳед."
+    "👤 <b>Профили ман</b>\n\n"
+    "🧑 Ном: <b>{full_name}</b>\n"
+    "📞 Телефон: <code>{phone}</code>\n"
+    "🏙 Шаҳр: <b>{city}</b>\n"
+    "🔐 Коди мизоҷӣ: <code>{client_code}</code>\n"
+    "🌐 Забон: <b>{language}</b>\n\n"
+    "<blockquote>Аз ин ҷо шумо метавонед маълумоти худро тағйир диҳед.</blockquote>"
 )
-PROFILE_BACK = "Менюи асосӣ"
-PROFILE_UPDATED = "Маълумот нав шуд."
-PHONE_ALREADY_USED = "Ин рақами телефон аллакай истифода мешавад."
 
-CALCULATOR = "Ҳисобкунак"
-CALCULATOR_BY_KG = "Бо килограмм"
-CALCULATOR_BY_CUBE = "Бо куб"
-CALCULATOR_RESULT = "Нархи тахминӣ: {amount} сомонӣ"
-CALCULATOR_CHOOSE = "Навъи ҳисобро интихоб кунед."
-CALCULATOR_ASK_KG = "Вазнро бо кг ворид кунед."
-CALCULATOR_ASK_CUBE = "Ҳаҷмро бо куб ворид кунед."
-CALCULATOR_INVALID_NUMBER = "Лутфан рақами мусбат ворид кунед."
+PROFILE_BACK = "🏠 Менюи асосӣ"
+PROFILE_UPDATED = "✅ <b>Маълумот нав шуд.</b>"
+PHONE_ALREADY_USED = "❌ <b>Ин рақами телефон аллакай истифода мешавад.</b>"
+
+CALCULATOR = (
+    "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "Бо кадом усул ҳисоб мекунед?"
+)
+
+CALCULATOR_BY_KG = "⚖️ Бо кг ҳисоб кардан"
+CALCULATOR_BY_CUBE = "📐 Бо куб ҳисоб кардан"
+CALCULATOR_RESULT = "💰 Нархи тахминӣ: <b>{amount} сомонӣ</b>"
+
+CALCULATOR_CHOOSE = (
+    "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "Бо кадом усул ҳисоб мекунед?"
+)
+
+CALCULATOR_ASK_KG = (
+    "⚖️ <b>Ҳисоб бо кг</b>\n\n"
+    "Вазни тахминии борро бо кг ворид кунед.\n\n"
+    "<blockquote>Мисол: <code>2.5</code></blockquote>"
+)
+
+CALCULATOR_ASK_CUBE = (
+    "📐 <b>Ҳисоб бо куб</b>\n\n"
+    "Ҳаҷми тахминии борро бо куб ворид кунед.\n\n"
+    "<blockquote>Мисол: <code>0.35</code></blockquote>"
+)
+
+CALCULATOR_INVALID_NUMBER = (
+    "❌ <b>Рақам нодуруст аст.</b>\n\n"
+    "Лутфан рақами мусбат ворид кунед."
+)
+
 CALCULATOR_KG_RESULT = (
-    "Ҳисоби тахминӣ\n\n"
-    "Вазн: {amount} кг\n"
-    "Нарх барои 1 кг: {price} сомонӣ\n"
-    "Ҳамагӣ: {total} сомонӣ\n\n"
-    "Ин ҳисоб тахминӣ аст. Вазн ва маблағи аниқ баъди расидани бор маълум мешавад."
-)
-CALCULATOR_CUBE_RESULT = (
-    "Ҳисоби тахминӣ\n\n"
-    "Ҳаҷм: {amount} куб\n"
-    "Нарх барои 1 куб: {price} сомонӣ\n"
-    "Ҳамагӣ: {total} сомонӣ\n\n"
-    "Ин ҳисоб тахминӣ аст. Вазн ва маблағи аниқ баъди расидани бор маълум мешавад."
+    "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "⚖️ Вазн: <b>{amount} кг</b>\n"
+    "💰 Нарх барои 1 кг: <b>{price} сомонӣ</b>\n"
+    "📦 Ҳамагӣ: <b>{total} сомонӣ</b>\n\n"
+    "<blockquote>⚠️ Ин ҳисоб тахминӣ аст. Вазн ва маблағи аниқ баъди расидани бор маълум мешавад.</blockquote>"
 )
 
-WAREHOUSE_ACTIVE = "{city}\n\n{caption}"
-WAREHOUSE_INACTIVE = (
-    "❌ Ҳозирча барои ин минтақа склад фаъол нест.\n\n"
-    "Лутфан варианти “Истаравшан”-ро интихоб кунед."
+CALCULATOR_CUBE_RESULT = (
+    "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "📐 Ҳаҷм: <b>{amount} куб</b>\n"
+    "💰 Нарх барои 1 куб: <b>{price} сомонӣ</b>\n"
+    "📦 Ҳамагӣ: <b>{total} сомонӣ</b>\n\n"
+    "<blockquote>⚠️ Ин ҳисоб тахминӣ аст. Ҳаҷм ва маблағи аниқ баъди расидани бор маълум мешавад.</blockquote>"
 )
+
+WAREHOUSE_ACTIVE = (
+    "🏬 <b>Суроғаи склад — {city}</b>\n\n"
+    "{caption}"
+)
+
+WAREHOUSE_INACTIVE = (
+    "❌ <b>Ҳозирча барои ин минтақа склад фаъол нест.</b>\n\n"
+    "<blockquote>Лутфан варианти <b>Истаравшан</b>-ро интихоб кунед.</blockquote>"
+)
+
 WAREHOUSE_ADDRESS_MISSING = (
-    "❌ Адреси ин склад ҳоло дар база илова нашудааст.\n"
-    "Лутфан ба оператор нависед."
+    "❌ <b>Адреси ин склад ҳоло дар база илова нашудааст.</b>\n\n"
+    "<blockquote>Лутфан ба оператор нависед.</blockquote>"
 )
 
 DELIVERY_UNAVAILABLE = (
-    "❌ Ҳозирча хизматрасонии доставка фаъол нест.\n\n"
-    "Лутфан борро аз склад гирифта баред."
+    "❌ <b>Ҳозирча хизматрасонии доставка фаъол нест.</b>\n\n"
+    "<blockquote>Лутфан борро аз склад гирифта баред.</blockquote>"
 )
-DELIVERY_REQUEST = "Адреси доставкаро фиристед."
-DELIVERY_REQUEST_ACCEPTED = "Дархости доставка қабул шуд."
-DELIVERY_NOT_FOUND = "Бори расида барои доставка ёфт нашуд."
+
+DELIVERY_REQUEST = (
+    "📍 <b>Адреси доставка</b>\n\n"
+    "Лутфан адреси худро равон кунед."
+)
+
+DELIVERY_REQUEST_ACCEPTED = (
+    "✅ <b>Дархости доставка қабул шуд.</b>\n\n"
+    "<blockquote>Оператор баъд аз санҷиш бо шумо тамос мегирад.</blockquote>"
+)
+
+DELIVERY_NOT_FOUND = (
+    "❌ <b>Бори расида барои доставка ёфт нашуд.</b>"
+)
+
 DELIVERY_CONFIRM = (
-    "🚚 Дархости доставка\n\n"
-    "Трек-код: {track_code}\n"
-    "Мизоҷ: {full_name}\n"
-    "Телефон: {phone}\n"
-    "Склад: {destination_city}\n"
-    "Адрес: {delivery_address}\n\n"
-    "Маълумот дуруст аст?"
+    "🚚 <b>Дархости доставка</b>\n\n"
+    "🔢 Трек-код: <code>{track_code}</code>\n"
+    "👤 Мизоҷ: <b>{full_name}</b>\n"
+    "📞 Телефон: <code>{phone}</code>\n"
+    "🏬 Склад: <b>{destination_city}</b>\n"
+    "📍 Адрес: <b>{delivery_address}</b>\n\n"
+    "<blockquote>Маълумот дуруст аст?</blockquote>"
 )
+
 DELIVERY_TERMS = (
-    "🚚 Хизматрасонии доставка\n\n"
+    "🚚 <b>Хизматрасонии доставка</b>\n\n"
     "🏙 {inside_city}\n\n"
     "🚕 {outside_city}\n\n"
-    "📍 Лутфан адреси худро равон кунед:"
+    "📍 <b>Лутфан адреси худро равон кунед:</b>"
 )
-DELIVERY_SEND_ADDRESS = "📍 Лутфан адреси худро равон кунед:"
-DELIVERY_CANCELLED = "Дархости доставка бекор карда шуд."
+
+DELIVERY_SEND_ADDRESS = "📍 <b>Лутфан адреси худро равон кунед:</b>"
+DELIVERY_CANCELLED = "❌ <b>Дархости доставка бекор карда шуд.</b>"
 
 NOTIFICATION_CHINA_RECEIVED = (
-    "Бори шумо қабул шуд\n\n"
-    "Трек-код: {track_code}\n"
-    "Статус: {status}\n"
-    "Склад: {destination_city}\n"
-    "Санаи қабул дар склади Чин: {received_china_at}\n"
-    "Муддати тахминии расидан: {delivery_days}\n\n"
-    "Вазн ва маблағ баъди расидан маълум мешавад."
+    "📦 <b>Бори шумо қабул шуд</b>\n\n"
+    "🔢 Трек-код: <code>{track_code}</code>\n"
+    "📍 Статус: <b>{status}</b>\n"
+    "🏬 Склад: <b>{destination_city}</b>\n"
+    "🗓 Санаи қабул дар Чин: <b>{received_china_at}</b>\n"
+    "🚚 Муддати тахминӣ: <b>{delivery_days}</b>\n\n"
+    "<blockquote>⚠️ Вазн ва маблағ баъди расидан маълум мешавад.</blockquote>"
 )
+
 NOTIFICATION_ARRIVED = (
-    "🎉 Бори шумо ба склади {city} расид!\n\n"
-    "Трек-код: {track_code}\n"
-    "Статус: Омода барои гирифтан\n\n"
-    "Шумо метавонед борро аз склад гирифта баред ё хизматрасонии доставка интихоб кунед."
+    "🎉 <b>Бори шумо ба склади {city} расид!</b>\n\n"
+    "🔢 Трек-код: <code>{track_code}</code>\n"
+    "📍 Статус: <b>Омода барои гирифтан</b>\n\n"
+    "<blockquote>Шумо метавонед борро аз склад гирифта баред ё хизматрасонии доставка интихоб кунед.</blockquote>"
 )
 
 OPERATOR = (
-    "Барои тамос бо оператор:\n"
-    "{contacts}"
+    "☎️ <b>Оператор</b>\n\n"
+    "{contacts}\n\n"
+    "<blockquote>Шумо метавонед саволи худро ҳамин ҷо нависед. Паёми шумо ба админ фиристода мешавад.</blockquote>"
 )
-OPERATOR_NOT_SET = "Тамоси оператор ҳоло сабт нашудааст."
+
+OPERATOR_NOT_SET = (
+    "❌ <b>Тамоси оператор ҳоло сабт нашудааст.</b>"
+)
 
 PRICES = (
-    "Нархҳо\n"
-    "1 кг: {price_per_kg_tjs} сомонӣ\n"
-    "1 куб: {price_per_cube_tjs} сомонӣ\n"
-    "Муҳлати расидан: {delivery_days}"
+    "💰 <b>Нархҳо</b>\n\n"
+    "🇨🇳 Чин → Тоҷикистон\n\n"
+    "📦 1 кг: <b>{price_per_kg_tjs} сомонӣ</b>\n"
+    "📐 1 куб: <b>{price_per_cube_tjs} сомонӣ</b>\n"
+    "🚚 Муддати тахминӣ: <b>{delivery_days}</b>\n\n"
+    "<blockquote>⚠️ Вазн ва маблағи аниқ баъди расидани бор маълум мешавад.</blockquote>"
 )
