@@ -54,13 +54,13 @@ INVALID_PHONE = (
 
 BACK = "⬅️ Назад"
 
-MENU_SEARCH_PARCEL = "🔍 Найти груз"
-MENU_MY_PARCELS = "📦 Мои грузы"
-MENU_CALCULATOR = "🧮 Примерный расчёт"
-MENU_PROFILE = "👤 Мой профиль"
-MENU_WAREHOUSES = "🇨🇳 Адреса складов"
-MENU_PRICES = "💰 Цены"
-MENU_OPERATOR = "☎️ Оператор"
+MENU_SEARCH_PARCEL = "Найти груз"
+MENU_MY_PARCELS = "Мои грузы"
+MENU_CALCULATOR = "Примерный расчёт"
+MENU_PROFILE = "Мой профиль"
+MENU_WAREHOUSES = "Адреса складов"
+MENU_PRICES = "Цены"
+MENU_OPERATOR = "Оператор"
 
 PARCEL_FOUND = (
     "📦 <b>Ваш груз найден</b>\n\n"

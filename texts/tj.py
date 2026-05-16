@@ -54,13 +54,13 @@ INVALID_PHONE = (
 
 BACK = "⬅️ Бозгашт"
 
-MENU_SEARCH_PARCEL = "🔍 Ҷустуҷӯи бор"
-MENU_MY_PARCELS = "📦 Борҳои ман"
-MENU_CALCULATOR = "🧮 Ҳисоби тахминӣ"
-MENU_PROFILE = "👤 Профили ман"
-MENU_WAREHOUSES = "🇨🇳 Суроғаҳои склад"
-MENU_PRICES = "💰 Нархҳо"
-MENU_OPERATOR = "☎️ Оператор"
+MENU_SEARCH_PARCEL = "Ҷустуҷӯи бор"
+MENU_MY_PARCELS = "Борҳои ман"
+MENU_CALCULATOR = "Ҳисоби тахминӣ"
+MENU_PROFILE = "Профили ман"
+MENU_WAREHOUSES = "Суроғаҳои склад"
+MENU_PRICES = "Нархҳо"
+MENU_OPERATOR = "Оператор"
 
 PARCEL_FOUND = (
     "📦 <b>Бори шумо ёфт шуд</b>\n\n"
