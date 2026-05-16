@@ -93,7 +93,7 @@ def _display_value(value: str | None) -> str:
     return value if value else "-"
 
 
-async def _prices_text(title: str = "Нархҳо") -> str:
+async def _prices_text(title: str = "💰 Нархҳо") -> str:
     values = await get_many_settings(
         {
             "price_per_kg_tjs": DEFAULT_SETTINGS["price_per_kg_tjs"],
@@ -102,14 +102,16 @@ async def _prices_text(title: str = "Нархҳо") -> str:
             "delivery_days_ru": DEFAULT_SETTINGS["delivery_days_ru"],
         },
     )
+    br = chr(10)
     return (
-        f"{title}\n\n"
-        f"price_per_kg_tjs: {values['price_per_kg_tjs']}\n"
-        f"price_per_cube_tjs: {values['price_per_cube_tjs']}\n"
-        f"delivery_days_tj: {values['delivery_days_tj']}\n"
-        f"delivery_days_ru: {values['delivery_days_ru']}"
+        f"<b>{title}</b>{br}{br}"
+        "<blockquote>"
+        f"📦 Нархи 1 кг: <b>{values['price_per_kg_tjs']} сомонӣ</b>{br}"
+        f"📐 Нархи 1 куб: <b>{values['price_per_cube_tjs']} сомонӣ</b>{br}"
+        f"🚚 Муддати расидан: <b>{values['delivery_days_tj']}</b>{br}"
+        f"🌐 Русӣ: <b>{values['delivery_days_ru']}</b>"
+        "</blockquote>"
     )
-
 
 async def _calculation_text() -> str:
     values = await get_many_settings(
@@ -118,12 +120,14 @@ async def _calculation_text() -> str:
             "price_per_cube_tjs": DEFAULT_SETTINGS["price_per_cube_tjs"],
         },
     )
+    br = chr(10)
     return (
-        "Ҳисобкунӣ\n\n"
-        f"price_per_kg_tjs: {values['price_per_kg_tjs']}\n"
-        f"price_per_cube_tjs: {values['price_per_cube_tjs']}"
+        f"🧮 <b>Ҳисобкунӣ</b>{br}{br}"
+        "<blockquote>"
+        f"📦 Нархи 1 кг: <b>{values['price_per_kg_tjs']} сомонӣ</b>{br}"
+        f"📐 Нархи 1 куб: <b>{values['price_per_cube_tjs']} сомонӣ</b>"
+        "</blockquote>"
     )
-
 
 async def _delivery_text() -> str:
     values = await get_many_settings(
@@ -135,15 +139,18 @@ async def _delivery_text() -> str:
             "delivery_outside_city_ru": DEFAULT_SETTINGS["delivery_outside_city_ru"],
         },
     )
+    br = chr(10)
+    status = "🟢 Фаъол" if str(values["delivery_enabled"]).lower() == "true" else "🔴 Хомӯш"
     return (
-        "Доставка\n\n"
-        f"delivery_enabled: {values['delivery_enabled']}\n"
-        f"delivery_inside_city_tj: {values['delivery_inside_city_tj']}\n"
-        f"delivery_outside_city_tj: {values['delivery_outside_city_tj']}\n"
-        f"delivery_inside_city_ru: {values['delivery_inside_city_ru']}\n"
-        f"delivery_outside_city_ru: {values['delivery_outside_city_ru']}"
+        f"🚚 <b>Доставка</b>{br}{br}"
+        "<blockquote>"
+        f"Ҳолат: <b>{status}</b>{br}{br}"
+        f"🏙 Дохили шаҳр: <b>{values['delivery_inside_city_tj']}</b>{br}{br}"
+        f"🚕 Берун аз шаҳр: <b>{values['delivery_outside_city_tj']}</b>{br}{br}"
+        f"🌐 Дохили шаҳр RU: <b>{values['delivery_inside_city_ru']}</b>{br}"
+        f"🌐 Берун аз шаҳр RU: <b>{values['delivery_outside_city_ru']}</b>"
+        "</blockquote>"
     )
-
 
 async def _channel_text() -> str:
     values = await get_many_settings(
@@ -152,12 +159,15 @@ async def _channel_text() -> str:
             "channel_username": DEFAULT_SETTINGS["channel_username"],
         },
     )
+    br = chr(10)
+    status = "🟢 Фаъол" if str(values["require_channel_join"]).lower() == "true" else "🔴 Хомӯш"
     return (
-        "Канал\n\n"
-        f"require_channel_join: {values['require_channel_join']}\n"
-        f"channel_username: {_display_value(values['channel_username'])}"
+        f"📢 <b>Канал</b>{br}{br}"
+        "<blockquote>"
+        f"Обунаи маҷбурӣ: <b>{status}</b>{br}"
+        f"Username-и канал: <code>{_display_value(values['channel_username'])}</code>"
+        "</blockquote>"
     )
-
 
 async def _operator_text() -> str:
     values = await get_many_settings(
@@ -167,13 +177,15 @@ async def _operator_text() -> str:
             "operator_whatsapp": DEFAULT_SETTINGS["operator_whatsapp"],
         },
     )
+    br = chr(10)
     return (
-        "Оператор\n\n"
-        f"operator_username: {_display_value(values['operator_username'])}\n"
-        f"operator_phone: {_display_value(values['operator_phone'])}\n"
-        f"operator_whatsapp: {_display_value(values['operator_whatsapp'])}"
+        f"☎️ <b>Оператор</b>{br}{br}"
+        "<blockquote>"
+        f"Telegram: <code>{_display_value(values['operator_username'])}</code>{br}"
+        f"Телефон: <code>{_display_value(values['operator_phone'])}</code>{br}"
+        f"WhatsApp: <code>{_display_value(values['operator_whatsapp'])}</code>"
+        "</blockquote>"
     )
-
 
 async def _texts_text() -> str:
     values = await get_many_settings(
@@ -186,16 +198,18 @@ async def _texts_text() -> str:
             "delivery_outside_city_ru": DEFAULT_SETTINGS["delivery_outside_city_ru"],
         },
     )
+    br = chr(10)
     return (
-        "Матнҳо\n\n"
-        f"delivery_days_tj: {values['delivery_days_tj']}\n"
-        f"delivery_days_ru: {values['delivery_days_ru']}\n"
-        f"delivery_inside_city_tj: {values['delivery_inside_city_tj']}\n"
-        f"delivery_outside_city_tj: {values['delivery_outside_city_tj']}\n"
-        f"delivery_inside_city_ru: {values['delivery_inside_city_ru']}\n"
-        f"delivery_outside_city_ru: {values['delivery_outside_city_ru']}"
+        f"📝 <b>Матнҳо</b>{br}{br}"
+        "<blockquote>"
+        f"🚚 Муддати расидан TJ: <b>{values['delivery_days_tj']}</b>{br}"
+        f"🚚 Муддати расидан RU: <b>{values['delivery_days_ru']}</b>{br}{br}"
+        f"🏙 Дохили шаҳр TJ: <b>{values['delivery_inside_city_tj']}</b>{br}"
+        f"🚕 Берун аз шаҳр TJ: <b>{values['delivery_outside_city_tj']}</b>{br}{br}"
+        f"🌐 Дохили шаҳр RU: <b>{values['delivery_inside_city_ru']}</b>{br}"
+        f"🌐 Берун аз шаҳр RU: <b>{values['delivery_outside_city_ru']}</b>"
+        "</blockquote>"
     )
-
 
 async def _screen(category: str):
     if category == "prices":
