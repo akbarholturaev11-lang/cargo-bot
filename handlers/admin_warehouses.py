@@ -20,13 +20,7 @@ from utils.validators import is_admin
 router = Router(name="admin_warehouses")
 
 
-PHOTO_CAPTION_PROMPT = (
-    "Сурати суроғаро бо матн дар як паём фиристед.\n"
-    "Мисол:\n"
-    "收货人：Sandy\n"
-    "联系电话：15699156115\n"
-    "地址：浙江省义乌市青口后湖小区5栋5单元"
-)
+WAREHOUSE_BLOCK_PROMPT = "Сурати адрес, видео ё матни тайёрро равон кунед."
 
 
 def _is_admin_message(message: Message) -> bool:
@@ -44,11 +38,39 @@ def _city_name(city_key: str) -> str:
 async def _show_preview(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     await state.set_state(AdminWarehouseStates.confirming)
-    await message.answer_photo(
-        photo=data["image_file_id"],
-        caption=data["address_caption"],
-        reply_markup=warehouse_preview_keyboard(),
-    )
+    media_type = data["media_type"]
+    media_file_id = data.get("media_file_id")
+    caption = data["address_caption"]
+    keyboard = warehouse_preview_keyboard()
+
+    if media_type == "photo" and media_file_id:
+        await message.answer_photo(
+            photo=media_file_id,
+            caption=caption,
+            reply_markup=keyboard,
+        )
+        return
+
+    if media_type == "video" and media_file_id:
+        await message.answer_video(
+            video=media_file_id,
+            caption=caption,
+            reply_markup=keyboard,
+        )
+        return
+
+    await message.answer(caption, reply_markup=keyboard)
+
+
+async def _finish_preview(callback: CallbackQuery, text: str) -> None:
+    if callback.message is None:
+        return
+
+    if callback.message.photo or callback.message.video:
+        await callback.message.edit_caption(caption=text, reply_markup=None)
+        return
+
+    await callback.message.edit_text(text, reply_markup=None)
 
 
 @router.callback_query(F.data == "settings:warehouses")
@@ -154,7 +176,7 @@ async def choose_warehouse_city(callback: CallbackQuery, state: FSMContext) -> N
     await state.update_data(city_key=city_key, city_name=_city_name(city_key))
     await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
     if callback.message is not None:
-        await callback.message.edit_text(PHOTO_CAPTION_PROMPT)
+        await callback.message.edit_text(WAREHOUSE_BLOCK_PROMPT)
     await callback.answer()
 
 
@@ -192,8 +214,44 @@ async def receive_warehouse_photo_caption(message: Message, state: FSMContext) -
         return
 
     await state.update_data(
-        image_file_id=message.photo[-1].file_id,
+        media_type="photo",
+        media_file_id=message.photo[-1].file_id,
         address_caption=message.caption,
+    )
+    await _show_preview(message, state)
+
+
+@router.message(AdminWarehouseStates.waiting_for_photo_caption, F.video)
+async def receive_warehouse_video_caption(message: Message, state: FSMContext) -> None:
+    if not _is_admin_message(message):
+        return
+
+    if not message.caption:
+        await message.answer("Матн лозим аст. Видеоро бо матн фиристед.")
+        return
+
+    await state.update_data(
+        media_type="video",
+        media_file_id=message.video.file_id,
+        address_caption=message.caption,
+    )
+    await _show_preview(message, state)
+
+
+@router.message(AdminWarehouseStates.waiting_for_photo_caption, F.text)
+async def receive_warehouse_text(message: Message, state: FSMContext) -> None:
+    if not _is_admin_message(message):
+        return
+
+    text = message.text.strip()
+    if not text:
+        await message.answer(WAREHOUSE_BLOCK_PROMPT)
+        return
+
+    await state.update_data(
+        media_type="text",
+        media_file_id=None,
+        address_caption=text,
     )
     await _show_preview(message, state)
 
@@ -203,7 +261,7 @@ async def receive_warehouse_photo_caption_invalid(message: Message) -> None:
     if not _is_admin_message(message):
         return
 
-    await message.answer(PHOTO_CAPTION_PROMPT)
+    await message.answer(WAREHOUSE_BLOCK_PROMPT)
 
 
 @router.callback_query(AdminWarehouseStates.confirming, F.data == "admin_wh:save")
@@ -215,19 +273,19 @@ async def save_warehouse(callback: CallbackQuery, state: FSMContext) -> None:
     data = await state.get_data()
     warehouse = await save_active_warehouse(
         city_key=data["city_key"],
-        image_file_id=data["image_file_id"],
+        media_type=data["media_type"],
+        media_file_id=data.get("media_file_id"),
         address_caption=data["address_caption"],
     )
     await state.clear()
-    if callback.message is not None:
-        await callback.message.edit_caption(
-            caption=(
-                "Склад сабт шуд.\n"
-                f"Шаҳр: {warehouse.city_name_tj}\n"
-                f"Статус: фаъол"
-            ),
-            reply_markup=None,
-        )
+    await _finish_preview(
+        callback,
+        (
+            "Склад сабт шуд.\n"
+            f"Шаҳр: {warehouse.city_name_tj}\n"
+            f"Статус: фаъол"
+        ),
+    )
     await callback.answer()
 
 
@@ -257,16 +315,16 @@ async def receive_new_caption(message: Message, state: FSMContext) -> None:
 
 @router.callback_query(
     AdminWarehouseStates.confirming,
-    F.data == "admin_wh:change_photo",
+    F.data == "admin_wh:change_media",
 )
-async def change_warehouse_photo(callback: CallbackQuery, state: FSMContext) -> None:
+async def change_warehouse_media(callback: CallbackQuery, state: FSMContext) -> None:
     if not _is_admin_callback(callback):
         await callback.answer()
         return
 
     await state.set_state(AdminWarehouseStates.waiting_for_photo)
     if callback.message is not None:
-        await callback.message.answer("Сурати навро фиристед.")
+        await callback.message.answer("Медиаи навро фиристед.")
     await callback.answer()
 
 
@@ -278,10 +336,52 @@ async def receive_new_photo(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     caption = message.caption or data["address_caption"]
     await state.update_data(
-        image_file_id=message.photo[-1].file_id,
+        media_type="photo",
+        media_file_id=message.photo[-1].file_id,
         address_caption=caption,
     )
     await _show_preview(message, state)
+
+
+@router.message(AdminWarehouseStates.waiting_for_photo, F.video)
+async def receive_new_video(message: Message, state: FSMContext) -> None:
+    if not _is_admin_message(message):
+        return
+
+    data = await state.get_data()
+    caption = message.caption or data["address_caption"]
+    await state.update_data(
+        media_type="video",
+        media_file_id=message.video.file_id,
+        address_caption=caption,
+    )
+    await _show_preview(message, state)
+
+
+@router.message(AdminWarehouseStates.waiting_for_photo, F.text)
+async def receive_new_text_block(message: Message, state: FSMContext) -> None:
+    if not _is_admin_message(message):
+        return
+
+    text = message.text.strip()
+    if not text:
+        await message.answer(WAREHOUSE_BLOCK_PROMPT)
+        return
+
+    await state.update_data(
+        media_type="text",
+        media_file_id=None,
+        address_caption=text,
+    )
+    await _show_preview(message, state)
+
+
+@router.message(AdminWarehouseStates.waiting_for_photo)
+async def receive_new_media_invalid(message: Message) -> None:
+    if not _is_admin_message(message):
+        return
+
+    await message.answer(WAREHOUSE_BLOCK_PROMPT)
 
 
 @router.callback_query(AdminWarehouseStates.confirming, F.data == "admin_wh:resend")
@@ -292,7 +392,7 @@ async def resend_warehouse_block(callback: CallbackQuery, state: FSMContext) -> 
 
     await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
     if callback.message is not None:
-        await callback.message.answer(PHOTO_CAPTION_PROMPT)
+        await callback.message.answer(WAREHOUSE_BLOCK_PROMPT)
     await callback.answer()
 
 
@@ -304,7 +404,7 @@ async def cancel_warehouse_flow(callback: CallbackQuery, state: FSMContext) -> N
 
     await state.clear()
     if callback.message is not None:
-        if callback.message.photo:
+        if callback.message.photo or callback.message.video:
             await callback.message.edit_caption("Амалиёт бекор карда шуд.")
         else:
             await callback.message.edit_text("Амалиёт бекор карда шуд.")

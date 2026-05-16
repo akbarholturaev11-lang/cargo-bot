@@ -41,9 +41,14 @@ async def list_warehouses() -> list[Warehouse]:
 async def save_active_warehouse(
     *,
     city_key: str,
-    image_file_id: str,
+    media_type: str,
+    media_file_id: str | None,
     address_caption: str,
 ) -> Warehouse:
+    if media_type not in {"photo", "video", "text"}:
+        media_type = "text"
+        media_file_id = None
+
     city_names = CITY_NAMES[city_key]
     async with async_session() as session:
         result = await session.execute(
@@ -60,7 +65,9 @@ async def save_active_warehouse(
                 city_name_tj=city_names[LANG_TJ],
                 city_name_ru=city_names[LANG_RU],
                 address_caption=address_caption,
-                image_file_id=image_file_id,
+                image_file_id=media_file_id if media_type == "photo" else None,
+                media_type=media_type,
+                media_file_id=media_file_id,
                 is_active=True,
             )
             session.add(warehouse)
@@ -68,7 +75,9 @@ async def save_active_warehouse(
             warehouse.city_name_tj = city_names[LANG_TJ]
             warehouse.city_name_ru = city_names[LANG_RU]
             warehouse.address_caption = address_caption
-            warehouse.image_file_id = image_file_id
+            warehouse.image_file_id = media_file_id if media_type == "photo" else None
+            warehouse.media_type = media_type
+            warehouse.media_file_id = media_file_id
             warehouse.is_active = True
 
         for old_warehouse in warehouses[1:]:

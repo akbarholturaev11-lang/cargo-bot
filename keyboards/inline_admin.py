@@ -121,9 +121,9 @@ def settings_texts_keyboard() -> InlineKeyboardMarkup:
 def warehouse_management_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("Иловаи склад", "admin_wh:add"),),
-            (("Иваз кардани склад", "admin_wh:edit"),),
-            (("Ғайрифаъол кардани склад", "admin_wh:inactive"),),
+            (("Склад илова кардан", "admin_wh:add"),),
+            (("Складро иваз кардан", "admin_wh:edit"),),
+            (("Складро ғайрифаъол кардан", "admin_wh:inactive"),),
             (("Рӯйхати складҳо", "admin_wh:list"),),
         ),
     )
@@ -154,7 +154,7 @@ def warehouse_preview_keyboard() -> InlineKeyboardMarkup:
         (
             (("Сабт кардан", "admin_wh:save"),),
             (("Матнро иваз кардан", "admin_wh:change_caption"),),
-            (("Суратро иваз кардан", "admin_wh:change_photo"),),
+            (("Медиа иваз кардан", "admin_wh:change_media"),),
             (("Аз нав фиристодан", "admin_wh:resend"),),
             (("Бекор кардан", "admin_wh:cancel"),),
         ),

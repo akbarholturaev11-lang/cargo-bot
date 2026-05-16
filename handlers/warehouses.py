@@ -30,6 +30,16 @@ def _city_name(city_key: str, lang: str) -> str:
     return names.get(lang, names[LANG_TJ])
 
 
+def _warehouse_media(warehouse) -> tuple[str, str | None]:
+    media_type = getattr(warehouse, "media_type", None) or "photo"
+    media_file_id = getattr(warehouse, "media_file_id", None) or warehouse.image_file_id
+    if media_type not in {"photo", "video", "text"}:
+        media_type = "photo" if media_file_id else "text"
+    if media_type in {"photo", "video"} and not media_file_id:
+        media_type = "text"
+    return media_type, media_file_id
+
+
 @router.message(F.text.in_(WAREHOUSE_MENU_LABELS))
 async def show_warehouse_cities(message: Message) -> None:
     user = await get_current_user(message)
@@ -73,8 +83,17 @@ async def show_warehouse(callback: CallbackQuery) -> None:
         caption=warehouse.address_caption,
     )
     if callback.message is not None:
-        await callback.message.answer_photo(
-            photo=warehouse.image_file_id,
-            caption=caption,
-        )
+        media_type, media_file_id = _warehouse_media(warehouse)
+        if media_type == "photo" and media_file_id:
+            await callback.message.answer_photo(
+                photo=media_file_id,
+                caption=caption,
+            )
+        elif media_type == "video" and media_file_id:
+            await callback.message.answer_video(
+                video=media_file_id,
+                caption=caption,
+            )
+        else:
+            await callback.message.answer(caption)
     await callback.answer()
