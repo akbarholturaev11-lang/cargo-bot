@@ -151,3 +151,20 @@ def delivery_keyboard(lang: str, parcel_id: int | None = None) -> InlineKeyboard
             (("Адреси склад 🇹🇯", warehouse_callback),),
         )
     return build_inline_keyboard(rows)
+
+
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+def channel_join_keyboard(channel_username: str) -> InlineKeyboardMarkup:
+    url = f"https://t.me/{channel_username.replace('@', '')}"
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="📢 Ба канал обуна шудан",
+                    url=url,
+                )
+            ],
+        ]
+    )

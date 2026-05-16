@@ -2,6 +2,7 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from middlewares.channel_required import ChannelRequiredMiddleware
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 
@@ -75,6 +76,10 @@ async def main() -> None:
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
     dp = Dispatcher()
+
+    dp.message.middleware(ChannelRequiredMiddleware())
+    dp.callback_query.middleware(ChannelRequiredMiddleware())
+
     dp.include_routers(*ROUTERS)
 
     logger.info("Starting Wasit Cargo Bot")
