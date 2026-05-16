@@ -135,3 +135,38 @@ async def set_warehouse_inactive(city_key: str) -> int:
 
         await session.commit()
         return len(warehouses)
+
+
+async def get_active_warehouses() -> list[Warehouse]:
+    async with async_session() as session:
+        result = await session.execute(
+            select(Warehouse)
+            .where(Warehouse.is_active.is_(True))
+            .order_by(Warehouse.city_key, Warehouse.updated_at.desc(), Warehouse.id.desc())
+        )
+        return list(result.scalars().all())
+
+
+async def get_user_warehouse(user_city: str | None) -> tuple[Warehouse | None, str]:
+    active_warehouses = await get_active_warehouses()
+
+    if not active_warehouses:
+        return None, "no_warehouses"
+
+    if len(active_warehouses) == 1:
+        return active_warehouses[0], "single"
+
+    if user_city:
+        normalized_city = str(user_city).strip().lower()
+
+        for warehouse in active_warehouses:
+            values = {
+                str(warehouse.city_key).strip().lower(),
+                str(warehouse.city_name_tj).strip().lower(),
+                str(warehouse.city_name_ru).strip().lower(),
+            }
+
+            if normalized_city in values:
+                return warehouse, "user_city"
+
+    return None, "need_choose"

@@ -5,7 +5,7 @@ from handlers.user_menu import get_current_user
 from keyboards.inline_user import warehouse_city_keyboard
 from services.delivery import get_arrived_parcel_for_user_by_id
 from services.users import get_user_by_telegram_id
-from services.warehouses import get_active_warehouse, get_warehouse_for_parcel_destination
+from services.warehouses import get_active_warehouse, get_user_warehouse, get_warehouse_for_parcel_destination
 from texts import ru, tj
 from utils.constants import CITY_NAMES, LANG_RU, LANG_TJ
 
@@ -42,13 +42,14 @@ def _warehouse_media(warehouse) -> tuple[str, str | None]:
 
 
 async def _send_warehouse_block(
-    callback: CallbackQuery,
+    target,
     warehouse,
     *,
     city: str,
     lang: str,
 ) -> None:
-    if callback.message is None:
+    message = target.message if isinstance(target, CallbackQuery) else target
+    if message is None:
         return
 
     caption = _texts(lang).WAREHOUSE_ACTIVE.format(
@@ -57,17 +58,17 @@ async def _send_warehouse_block(
     )
     media_type, media_file_id = _warehouse_media(warehouse)
     if media_type == "photo" and media_file_id:
-        await callback.message.answer_photo(
+        await message.answer_photo(
             photo=media_file_id,
             caption=caption,
         )
     elif media_type == "video" and media_file_id:
-        await callback.message.answer_video(
+        await message.answer_video(
             video=media_file_id,
             caption=caption,
         )
     else:
-        await callback.message.answer(caption)
+        await message.answer(caption)
 
 
 @router.message(F.text.in_(WAREHOUSE_MENU_LABELS))
@@ -77,9 +78,32 @@ async def show_warehouse_cities(message: Message) -> None:
         await message.answer(tj.CHOOSE_LANGUAGE)
         return
 
+    lang = user.language
+    texts = _texts(lang)
+
+    warehouse, mode = await get_user_warehouse(user.city)
+
+    if mode == "no_warehouses" or warehouse is None and mode != "need_choose":
+        await message.answer(
+            "❌ <b>Айнихол ягон склад фаъол нест.</b>"
+            if lang == LANG_TJ
+            else "❌ <b>Сейчас нет активного склада.</b>"
+        )
+        return
+
+    if warehouse is not None and mode in {"single", "user_city"}:
+        city = warehouse.city_name_tj if lang == LANG_TJ else warehouse.city_name_ru
+        await _send_warehouse_block(
+            message,
+            warehouse,
+            city=city,
+            lang=lang,
+        )
+        return
+
     await message.answer(
-        _texts(user.language).ASK_CITY,
-        reply_markup=warehouse_city_keyboard(user.language),
+        texts.ASK_CITY,
+        reply_markup=warehouse_city_keyboard(lang),
     )
 
 
