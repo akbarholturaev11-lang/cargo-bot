@@ -100,8 +100,8 @@ def _status_keyboard(prefix: str, city: str):
 def _confirm_keyboard():
     return build_inline_keyboard(
         (
-            (("Confirm", "admin_bulk:confirm"),),
-            (("Cancel", "admin_bulk:cancel"),),
+            (("Тасдиқ", "admin_bulk:confirm"),),
+            (("Бекор кардан", "admin_bulk:cancel"),),
         ),
     )
 
@@ -115,9 +115,9 @@ def _parse_batch_date(value: str):
 
 def _format_confirmation(data: dict, count: int) -> str:
     return (
-        f"You are updating {count} parcels for city {data['destination_city']} "
-        f"and date {data['batch_date_text']} from "
-        f"{_status_label(data['old_status'], data['destination_city'])} to "
+        f"Шумо {count} борро барои шаҳри {data['destination_city']} "
+        f"ва санаи {data['batch_date_text']} аз статуси "
+        f"{_status_label(data['old_status'], data['destination_city'])} ба "
         f"{_status_label(data['new_status'], data['destination_city'])}."
     )
 
@@ -286,7 +286,7 @@ async def confirm_bulk_status(callback: CallbackQuery, state: FSMContext) -> Non
 
     await state.clear()
     result = (
-        "Натиҷаи bulk update\n\n"
+        "Натиҷаи ивази гурӯҳӣ\n\n"
         f"Ҳамагӣ нав шуд: {len(parcels)}\n"
         f"Хабар фиристода шуд: {notifications_sent}\n"
         f"Хабар фиристода нашуд: {notifications_failed}"

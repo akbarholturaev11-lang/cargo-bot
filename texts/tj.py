@@ -89,6 +89,39 @@ WAREHOUSE_INACTIVE = (
 DELIVERY_UNAVAILABLE = "Ҳозирча хизматрасонии доставка фаъол нест."
 DELIVERY_REQUEST = "Адреси доставкаро фиристед."
 DELIVERY_REQUEST_ACCEPTED = "Дархости доставка қабул шуд."
+DELIVERY_NOT_FOUND = "Бори расида барои доставка ёфт нашуд."
+DELIVERY_CONFIRM = (
+    "Дархости доставкаро тасдиқ кунед\n\n"
+    "Трек-код: {track_code}\n"
+    "Ном: {full_name}\n"
+    "Телефон: {phone}\n"
+    "Склад: {destination_city}\n"
+    "Адрес: {delivery_address}"
+)
+DELIVERY_TERMS = (
+    "Хизматрасонии доставка\n\n"
+    "{inside_city}\n\n"
+    "{outside_city}\n\n"
+    "Лутфан адреси худро равон кунед:"
+)
+DELIVERY_SEND_ADDRESS = "Лутфан адреси худро равон кунед:"
+DELIVERY_CANCELLED = "Дархости доставка бекор карда шуд."
+
+NOTIFICATION_CHINA_RECEIVED = (
+    "Бори шумо қабул шуд\n\n"
+    "Трек-код: {track_code}\n"
+    "Статус: {status}\n"
+    "Склад: {destination_city}\n"
+    "Санаи қабул дар склади Чин: {received_china_at}\n"
+    "Муддати тахминии расидан: {delivery_days}\n\n"
+    "Вазн ва маблағ баъди расидан маълум мешавад."
+)
+NOTIFICATION_ARRIVED = (
+    "Бори шумо ба склади {city} расид\n\n"
+    "Трек-код: {track_code}\n"
+    "Статус: Омода барои гирифтан\n\n"
+    "Шумо метавонед борро аз склад гирифта баред ё хизматрасонии доставка интихоб кунед."
+)
 
 OPERATOR = (
     "Барои тамос бо оператор:\n"

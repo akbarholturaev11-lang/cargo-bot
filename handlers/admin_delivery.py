@@ -49,10 +49,10 @@ def _requests_keyboard(requests):
 def _status_keyboard(request_id: int):
     return build_inline_keyboard(
         (
-            (("accepted", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_ACCEPTED}"),),
-            (("on_delivery", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_ON_DELIVERY}"),),
-            (("delivered", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_DELIVERED}"),),
-            (("cancelled", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_CANCELLED}"),),
+            (("Қабул шуд", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_ACCEPTED}"),),
+            (("Дар доставка", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_ON_DELIVERY}"),),
+            (("Расонида шуд", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_DELIVERED}"),),
+            (("Бекор шуд", f"admin_delivery:set:{request_id}:{DELIVERY_STATUS_CANCELLED}"),),
         ),
     )
 

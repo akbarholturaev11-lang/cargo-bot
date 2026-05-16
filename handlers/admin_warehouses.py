@@ -21,8 +21,8 @@ router = Router(name="admin_warehouses")
 
 
 PHOTO_CAPTION_PROMPT = (
-    "Send address photo with caption.\n"
-    "Example:\n"
+    "Сурати суроғаро бо матн дар як паём фиристед.\n"
+    "Мисол:\n"
     "收货人：Sandy\n"
     "联系电话：15699156115\n"
     "地址：浙江省义乌市青口后湖小区5栋5单元"
@@ -59,7 +59,7 @@ async def show_warehouse_settings(callback: CallbackQuery) -> None:
 
     if callback.message is not None:
         await callback.message.edit_text(
-            "Складлар",
+            "Складҳо",
             reply_markup=warehouse_management_keyboard(),
         )
     await callback.answer()
@@ -100,7 +100,7 @@ async def start_inactive_warehouse(
     await state.set_state(AdminWarehouseStates.choosing_inactive_city)
     if callback.message is not None:
         await callback.message.edit_text(
-            "Inactive кардан: шаҳрро интихоб кунед.",
+            "Ғайрифаъол кардан: шаҳрро интихоб кунед.",
             reply_markup=admin_warehouse_city_keyboard("inactive"),
         )
     await callback.answer()
@@ -116,9 +116,9 @@ async def list_admin_warehouses(callback: CallbackQuery) -> None:
     if not warehouses:
         text = "Склад сабт нашудааст."
     else:
-        lines = ["Складлар рўйхати:"]
+        lines = ["Рӯйхати складҳо:"]
         for warehouse in warehouses:
-            status = "active" if warehouse.is_active else "inactive"
+            status = "фаъол" if warehouse.is_active else "ғайрифаъол"
             lines.append(
                 f"{warehouse.city_name_tj}: {status} · ID {warehouse.id}",
             )
@@ -176,7 +176,7 @@ async def inactive_warehouse_city(callback: CallbackQuery, state: FSMContext) ->
     await state.clear()
     if callback.message is not None:
         await callback.message.edit_text(
-            f"{_city_name(city_key)} inactive шуд. Сабтҳо: {count}",
+            f"{_city_name(city_key)} ғайрифаъол шуд. Сабтҳо: {count}",
             reply_markup=warehouse_management_keyboard(),
         )
     await callback.answer()
@@ -188,7 +188,7 @@ async def receive_warehouse_photo_caption(message: Message, state: FSMContext) -
         return
 
     if not message.caption:
-        await message.answer("Caption лозим аст. Суратро бо caption фиристед.")
+        await message.answer("Матн лозим аст. Суратро бо матн фиристед.")
         return
 
     await state.update_data(
@@ -224,7 +224,7 @@ async def save_warehouse(callback: CallbackQuery, state: FSMContext) -> None:
             caption=(
                 "Склад сабт шуд.\n"
                 f"Шаҳр: {warehouse.city_name_tj}\n"
-                f"Статус: active"
+                f"Статус: фаъол"
             ),
             reply_markup=None,
         )

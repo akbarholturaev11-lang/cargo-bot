@@ -6,8 +6,9 @@ from aiogram.exceptions import TelegramAPIError
 from database.models import Parcel, User
 from keyboards.inline_user import delivery_keyboard
 from services.settings import get_setting
+from texts import ru, tj
 from texts.status import format_status
-from utils.constants import LANG_TJ, STATUS_CHINA_RECEIVED
+from utils.constants import LANG_RU, LANG_TJ, STATUS_CHINA_RECEIVED
 
 
 def _format_date(value: datetime | date | None) -> str:
@@ -16,16 +17,21 @@ def _format_date(value: datetime | date | None) -> str:
     return value.strftime("%d.%m.%Y")
 
 
-async def format_china_received_notification(parcel: Parcel) -> str:
-    delivery_days = await get_setting("delivery_days_tj", "18–25 рӯз")
-    return (
-        "Бори шумо қабул шуд\n\n"
-        f"Трек-код: {parcel.track_code}\n"
-        f"Статус: {format_status(STATUS_CHINA_RECEIVED, parcel.destination_city, LANG_TJ)}\n"
-        f"Склад: {parcel.destination_city}\n"
-        f"Санаи қабул дар склади Чин: {_format_date(parcel.received_china_at)}\n"
-        f"Муддати тахминии расидан: {delivery_days}\n\n"
-        "Вазн ва маблағ баъди расидан маълум мешавад."
+def _texts(lang: str):
+    return ru if lang == LANG_RU else tj
+
+
+async def format_china_received_notification(parcel: Parcel, lang: str = LANG_TJ) -> str:
+    texts = _texts(lang)
+    delivery_days_key = "delivery_days_ru" if lang == LANG_RU else "delivery_days_tj"
+    delivery_days_default = "18–25 дней" if lang == LANG_RU else "18–25 рӯз"
+    delivery_days = await get_setting(delivery_days_key, delivery_days_default)
+    return texts.NOTIFICATION_CHINA_RECEIVED.format(
+        track_code=parcel.track_code,
+        status=format_status(STATUS_CHINA_RECEIVED, parcel.destination_city, lang),
+        destination_city=parcel.destination_city,
+        received_china_at=_format_date(parcel.received_china_at),
+        delivery_days=delivery_days,
     )
 
 
@@ -36,7 +42,7 @@ async def notify_china_received(bot: Bot, user: User, parcel: Parcel) -> bool:
     try:
         await bot.send_message(
             chat_id=user.telegram_id,
-            text=await format_china_received_notification(parcel),
+            text=await format_china_received_notification(parcel, user.language),
         )
     except TelegramAPIError:
         return False
@@ -44,12 +50,10 @@ async def notify_china_received(bot: Bot, user: User, parcel: Parcel) -> bool:
     return True
 
 
-def format_arrival_notification(parcel: Parcel) -> str:
-    return (
-        f"Бори шумо ба склади {parcel.destination_city} расид\n\n"
-        f"Трек-код: {parcel.track_code}\n"
-        "Статус: Омода барои гирифтан\n\n"
-        "Шумо метавонед борро аз склад гирифта баред ё хизматрасонии доставка интихоб кунед."
+def format_arrival_notification(parcel: Parcel, lang: str = LANG_TJ) -> str:
+    return _texts(lang).NOTIFICATION_ARRIVED.format(
+        city=parcel.destination_city,
+        track_code=parcel.track_code,
     )
 
 
@@ -60,8 +64,8 @@ async def notify_arrival_destination(bot: Bot, user: User, parcel: Parcel) -> bo
     try:
         await bot.send_message(
             chat_id=user.telegram_id,
-            text=format_arrival_notification(parcel),
-            reply_markup=delivery_keyboard(LANG_TJ),
+            text=format_arrival_notification(parcel, user.language),
+            reply_markup=delivery_keyboard(user.language),
         )
     except TelegramAPIError:
         return False

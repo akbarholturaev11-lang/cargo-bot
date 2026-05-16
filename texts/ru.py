@@ -89,6 +89,39 @@ WAREHOUSE_INACTIVE = (
 DELIVERY_UNAVAILABLE = "Сейчас услуга доставки недоступна."
 DELIVERY_REQUEST = "Отправьте адрес доставки."
 DELIVERY_REQUEST_ACCEPTED = "Заявка на доставку принята."
+DELIVERY_NOT_FOUND = "Прибывший груз для доставки не найден."
+DELIVERY_CONFIRM = (
+    "Подтвердите заявку на доставку\n\n"
+    "Трек-код: {track_code}\n"
+    "Имя: {full_name}\n"
+    "Телефон: {phone}\n"
+    "Склад: {destination_city}\n"
+    "Адрес: {delivery_address}"
+)
+DELIVERY_TERMS = (
+    "Услуга доставки\n\n"
+    "{inside_city}\n\n"
+    "{outside_city}\n\n"
+    "Пожалуйста, отправьте ваш адрес:"
+)
+DELIVERY_SEND_ADDRESS = "Пожалуйста, отправьте ваш адрес:"
+DELIVERY_CANCELLED = "Заявка на доставку отменена."
+
+NOTIFICATION_CHINA_RECEIVED = (
+    "Ваш груз принят\n\n"
+    "Трек-код: {track_code}\n"
+    "Статус: {status}\n"
+    "Склад: {destination_city}\n"
+    "Дата приёма на складе в Китае: {received_china_at}\n"
+    "Примерный срок доставки: {delivery_days}\n\n"
+    "Вес и сумма будут известны после прибытия."
+)
+NOTIFICATION_ARRIVED = (
+    "Ваш груз прибыл на склад {city}\n\n"
+    "Трек-код: {track_code}\n"
+    "Статус: Готов к получению\n\n"
+    "Вы можете забрать груз со склада или выбрать услугу доставки."
+)
 
 OPERATOR = (
     "Для связи с оператором:\n"

@@ -36,13 +36,13 @@ def parcel_statuses_keyboard() -> InlineKeyboardMarkup:
 def settings_categories_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("Нархлар", "settings:prices"),),
-            (("Ҳисоблаш", "settings:calculation"),),
+            (("Нархҳо", "settings:prices"),),
+            (("Ҳисобкунӣ", "settings:calculation"),),
             (("Доставка", "settings:delivery"),),
-            (("Складлар", "settings:warehouses"),),
+            (("Складҳо", "settings:warehouses"),),
             (("Канал", "settings:channel"),),
             (("Оператор", "settings:operator"),),
-            (("Матнлар", "settings:texts"),),
+            (("Матнҳо", "settings:texts"),),
             (("Бозгашт", "settings:back"),),
         ),
     )
@@ -121,10 +121,10 @@ def settings_texts_keyboard() -> InlineKeyboardMarkup:
 def warehouse_management_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("Склад қўшиш", "admin_wh:add"),),
-            (("Складни ўзгартириш", "admin_wh:edit"),),
-            (("Складни inactive қилиш", "admin_wh:inactive"),),
-            (("Складлар рўйхати", "admin_wh:list"),),
+            (("Иловаи склад", "admin_wh:add"),),
+            (("Иваз кардани склад", "admin_wh:edit"),),
+            (("Ғайрифаъол кардани склад", "admin_wh:inactive"),),
+            (("Рӯйхати складҳо", "admin_wh:list"),),
         ),
     )
 

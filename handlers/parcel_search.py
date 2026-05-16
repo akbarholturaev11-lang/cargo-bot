@@ -12,6 +12,7 @@ from services.settings import get_setting
 from texts import ru, tj
 from texts.status import format_status
 from utils.constants import LANG_RU, LANG_TJ
+from utils.validators import is_admin
 
 
 router = Router(name="parcel_search")
@@ -38,6 +39,14 @@ def _format_date(value: datetime | date | None) -> str:
     return value.strftime("%d.%m.%Y")
 
 
+def _is_user_search_button(message: Message) -> bool:
+    if message.text not in SEARCH_MENU_LABELS:
+        return False
+    if message.text == tj.MENU_SEARCH_PARCEL and message.from_user is not None:
+        return not is_admin(message.from_user.id)
+    return True
+
+
 async def _delivery_days(lang: str) -> str:
     key = "delivery_days_ru" if lang == LANG_RU else "delivery_days_tj"
     default = "18–25 дней" if lang == LANG_RU else "18–25 рӯз"
@@ -59,7 +68,7 @@ async def _format_parcel_found(parcel, lang: str) -> str:
     )
 
 
-@router.message(F.text.in_(SEARCH_MENU_LABELS))
+@router.message(_is_user_search_button)
 async def start_parcel_search(message: Message, state: FSMContext) -> None:
     user = await get_current_user(message)
     if user is None:

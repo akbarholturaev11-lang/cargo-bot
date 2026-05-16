@@ -14,18 +14,36 @@ from services.delivery import (
 from services.settings import get_bool_setting, get_setting
 from services.users import get_user_by_telegram_id
 from states.delivery_states import DeliveryStates
-from texts import tj
+from texts import ru, tj
+from utils.constants import LANG_RU, LANG_TJ
 
 
 router = Router(name="delivery")
 
 
-def _confirm_keyboard():
-    return build_inline_keyboard(
-        (
+TEXTS = {
+    LANG_TJ: tj,
+    LANG_RU: ru,
+}
+
+
+def _texts(lang: str):
+    return TEXTS.get(lang, tj)
+
+
+def _confirm_keyboard(lang: str):
+    if lang == LANG_RU:
+        rows = (
+            (("Подтвердить", "delivery:confirm"),),
+            (("Отменить", "delivery:cancel"),),
+        )
+    else:
+        rows = (
             (("Тасдиқ", "delivery:confirm"),),
             (("Бекор кардан", "delivery:cancel"),),
-        ),
+        )
+    return build_inline_keyboard(
+        rows,
     )
 
 
@@ -39,23 +57,20 @@ def _extract_track_code(text: str | None) -> str | None:
     return match.group(1).strip()
 
 
-def _format_terms(inside_city: str, outside_city: str) -> str:
-    return (
-        "Хизматрасонии доставка\n\n"
-        f"{inside_city}\n\n"
-        f"{outside_city}\n\n"
-        "Лутфан адреси худро равон кунед:"
+def _format_terms(lang: str, inside_city: str, outside_city: str) -> str:
+    return _texts(lang).DELIVERY_TERMS.format(
+        inside_city=inside_city,
+        outside_city=outside_city,
     )
 
 
-def _format_confirmation(data: dict) -> str:
-    return (
-        "Дархости доставкаро тасдиқ кунед\n\n"
-        f"Трек-код: {data['track_code']}\n"
-        f"Ном: {data['full_name']}\n"
-        f"Телефон: {data['phone']}\n"
-        f"Склад: {data['destination_city']}\n"
-        f"Адрес: {data['delivery_address']}"
+def _format_confirmation(data: dict, lang: str) -> str:
+    return _texts(lang).DELIVERY_CONFIRM.format(
+        track_code=data["track_code"],
+        full_name=data["full_name"],
+        phone=data["phone"],
+        destination_city=data["destination_city"],
+        delivery_address=data["delivery_address"],
     )
 
 
@@ -66,12 +81,17 @@ async def start_delivery_request(callback: CallbackQuery, state: FSMContext) -> 
         await callback.answer()
         return
 
+    texts = _texts(user.language)
     delivery_enabled = await get_bool_setting("delivery_enabled", False)
     if not delivery_enabled:
         if callback.message is not None:
+            pickup_text = (
+                "Пожалуйста, заберите груз со склада."
+                if user.language == LANG_RU
+                else "Лутфан борро аз склад гирифта баред."
+            )
             await callback.message.answer(
-                "Ҳозирча хизматрасонии доставка фаъол нест.\n"
-                "Лутфан борро аз склад гирифта баред.",
+                f"{texts.DELIVERY_UNAVAILABLE}\n{pickup_text}",
             )
         await callback.answer()
         return
@@ -88,17 +108,22 @@ async def start_delivery_request(callback: CallbackQuery, state: FSMContext) -> 
 
     if parcel is None:
         if callback.message is not None:
-            await callback.message.answer("Бори расида барои доставка ёфт нашуд.")
+            await callback.message.answer(texts.DELIVERY_NOT_FOUND)
         await callback.answer()
         return
 
+    lang_suffix = "ru" if user.language == LANG_RU else "tj"
     inside_city = await get_setting(
-        "delivery_inside_city_tj",
-        "Дохили шаҳр: 15 сомонӣ",
+        f"delivery_inside_city_{lang_suffix}",
+        "По городу: 15 сомонӣ" if user.language == LANG_RU else "Дохили шаҳр: 15 сомонӣ",
     )
     outside_city = await get_setting(
-        "delivery_outside_city_tj",
-        "Берун аз шаҳр: ба таксӣ равон мекунем, ҳаққи таксӣ алоҳида ҳисоб мешавад.",
+        f"delivery_outside_city_{lang_suffix}",
+        (
+            "За город: отправляем на такси, стоимость такси оплачивается отдельно."
+            if user.language == LANG_RU
+            else "Берун аз шаҳр: ба таксӣ равон мекунем, ҳаққи таксӣ алоҳида ҳисоб мешавад."
+        ),
     )
 
     await state.set_state(DeliveryStates.waiting_for_address)
@@ -110,33 +135,44 @@ async def start_delivery_request(callback: CallbackQuery, state: FSMContext) -> 
         destination_city=parcel.destination_city,
     )
     if callback.message is not None:
-        await callback.message.answer(_format_terms(inside_city or "", outside_city or ""))
+        await callback.message.answer(
+            _format_terms(user.language, inside_city or "", outside_city or ""),
+        )
     await callback.answer()
 
 
 @router.message(DeliveryStates.waiting_for_address, F.text)
 async def delivery_address_received(message: Message, state: FSMContext) -> None:
+    user = await get_user_by_telegram_id(message.from_user.id) if message.from_user else None
+    lang = user.language if user is not None else LANG_TJ
     address = message.text.strip()
     if not address:
-        await message.answer("Лутфан адреси худро равон кунед:")
+        await message.answer(_texts(lang).DELIVERY_SEND_ADDRESS)
         return
 
     await state.update_data(delivery_address=address)
     await state.set_state(DeliveryStates.confirming)
     data = await state.get_data()
-    await message.answer(_format_confirmation(data), reply_markup=_confirm_keyboard())
+    await message.answer(
+        _format_confirmation(data, lang),
+        reply_markup=_confirm_keyboard(lang),
+    )
 
 
 @router.message(DeliveryStates.waiting_for_address)
 async def delivery_address_invalid(message: Message) -> None:
-    await message.answer("Лутфан адреси худро равон кунед:")
+    user = await get_user_by_telegram_id(message.from_user.id) if message.from_user else None
+    lang = user.language if user is not None else LANG_TJ
+    await message.answer(_texts(lang).DELIVERY_SEND_ADDRESS)
 
 
 @router.callback_query(DeliveryStates.confirming, F.data == "delivery:cancel")
 async def cancel_delivery(callback: CallbackQuery, state: FSMContext) -> None:
+    user = await get_user_by_telegram_id(callback.from_user.id)
+    lang = user.language if user is not None else LANG_TJ
     await state.clear()
     if callback.message is not None:
-        await callback.message.edit_text("Дархости доставка бекор карда шуд.")
+        await callback.message.edit_text(_texts(lang).DELIVERY_CANCELLED)
     await callback.answer()
 
 
@@ -156,7 +192,7 @@ async def confirm_delivery(callback: CallbackQuery, state: FSMContext) -> None:
     if parcel is None:
         await state.clear()
         if callback.message is not None:
-            await callback.message.edit_text("Бори расида барои доставка ёфт нашуд.")
+            await callback.message.edit_text(_texts(user.language).DELIVERY_NOT_FOUND)
         await callback.answer()
         return
 
@@ -169,5 +205,5 @@ async def confirm_delivery(callback: CallbackQuery, state: FSMContext) -> None:
     await notify_admins_about_delivery_request(bot, request, user)
     await state.clear()
     if callback.message is not None:
-        await callback.message.edit_text(tj.DELIVERY_REQUEST_ACCEPTED)
+        await callback.message.edit_text(_texts(user.language).DELIVERY_REQUEST_ACCEPTED)
     await callback.answer()

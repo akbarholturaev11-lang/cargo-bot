@@ -60,7 +60,7 @@ def _display_value(value: str | None) -> str:
     return value if value else "-"
 
 
-async def _prices_text(title: str = "Нархлар") -> str:
+async def _prices_text(title: str = "Нархҳо") -> str:
     values = await get_many_settings(
         {
             "price_per_kg_tjs": DEFAULT_SETTINGS["price_per_kg_tjs"],
@@ -86,7 +86,7 @@ async def _calculation_text() -> str:
         },
     )
     return (
-        "Ҳисоблаш\n\n"
+        "Ҳисобкунӣ\n\n"
         f"price_per_kg_tjs: {values['price_per_kg_tjs']}\n"
         f"price_per_cube_tjs: {values['price_per_cube_tjs']}"
     )
@@ -154,7 +154,7 @@ async def _texts_text() -> str:
         },
     )
     return (
-        "Матнлар\n\n"
+        "Матнҳо\n\n"
         f"delivery_days_tj: {values['delivery_days_tj']}\n"
         f"delivery_days_ru: {values['delivery_days_ru']}\n"
         f"delivery_inside_city_tj: {values['delivery_inside_city_tj']}\n"
