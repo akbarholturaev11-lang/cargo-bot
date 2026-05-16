@@ -2,7 +2,7 @@ from aiogram import Bot
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 
 from services.settings import get_setting
-from utils.constants import DEFAULT_SETTINGS
+from services.settings import DEFAULT_SETTINGS
 
 
 def normalize_channel_username(username: str | None) -> str | None:
