@@ -444,7 +444,7 @@ async def ask_media_photo(callback: CallbackQuery, state: FSMContext) -> None:
         await callback.answer("Нодуруст", show_alert=True)
         return
 
-    await state.set_state(AdminSettingsStates.waiting_value)
+    await state.set_state(AdminSettingsStates.waiting_for_value)
     await state.update_data(setting_key=key, setting_mode="media")
 
     await callback.message.edit_text(
@@ -454,7 +454,7 @@ async def ask_media_photo(callback: CallbackQuery, state: FSMContext) -> None:
     await callback.answer()
 
 
-@router.message(AdminSettingsStates.waiting_value, F.photo)
+@router.message(AdminSettingsStates.waiting_for_value, F.photo)
 async def save_media_photo(message: Message, state: FSMContext) -> None:
     if message.from_user is None or not is_admin(message.from_user.id):
         return
