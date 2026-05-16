@@ -5,12 +5,39 @@ from aiogram.types import Message
 
 from keyboards.inline_user import language_keyboard
 from keyboards.reply import user_main_menu
+from services.settings import DEFAULT_SETTINGS, get_many_settings
 from services.users import get_user_by_telegram_id
 from states.auth_states import AuthStates
-from texts import tj
+
+
+WELCOME_SETTING_KEYS = {
+    "welcome_image_file_id": DEFAULT_SETTINGS["welcome_image_file_id"],
+    "welcome_text_tj": DEFAULT_SETTINGS["welcome_text_tj"],
+    "welcome_text_ru": DEFAULT_SETTINGS["welcome_text_ru"],
+}
 
 
 router = Router(name="start")
+
+
+async def _send_welcome_screen(message: Message) -> None:
+    values = await get_many_settings(WELCOME_SETTING_KEYS)
+    image_file_id = values["welcome_image_file_id"].strip()
+    welcome_text = (
+        f"{values['welcome_text_tj']}\n\n"
+        f"{values['welcome_text_ru']}"
+    )
+    keyboard = language_keyboard()
+
+    if image_file_id:
+        await message.answer_photo(
+            photo=image_file_id,
+            caption=welcome_text,
+            reply_markup=keyboard,
+        )
+        return
+
+    await message.answer(welcome_text, reply_markup=keyboard)
 
 
 @router.message(CommandStart())
@@ -29,4 +56,4 @@ async def start_command(message: Message, state: FSMContext) -> None:
 
     await state.clear()
     await state.set_state(AuthStates.choosing_language)
-    await message.answer(tj.CHOOSE_LANGUAGE, reply_markup=language_keyboard())
+    await _send_welcome_screen(message)

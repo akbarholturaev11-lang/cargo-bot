@@ -30,6 +30,17 @@ DEFAULT_SETTINGS = {
     "operator_username": "",
     "operator_phone": "",
     "operator_whatsapp": "",
+    "welcome_image_file_id": "",
+    "welcome_text_tj": (
+        "🚚 Хуш омадед ба Wasit Cargo!\n\n"
+        "Борҳои худро аз Чин то Тоҷикистон осон пайгирӣ кунед.\n"
+        "Лутфан забонро интихоб кунед:"
+    ),
+    "welcome_text_ru": (
+        "🚚 Добро пожаловать в Wasit Cargo!\n\n"
+        "Отслеживайте свои грузы из Китая в Таджикистан.\n"
+        "Пожалуйста, выберите язык:"
+    ),
 }
 
 
