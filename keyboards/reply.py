@@ -1,0 +1,41 @@
+from aiogram.types import ReplyKeyboardMarkup
+
+from keyboards.builders import build_contact_keyboard, build_reply_keyboard
+
+
+USER_MENU_TJ = (
+    ("Ҷустуҷӯи бор", "Борҳои ман"),
+    ("Ҳисоби тахминӣ", "Профили ман"),
+    ("Суроғаҳои склад", "Нархҳо"),
+    ("Оператор",),
+)
+
+USER_MENU_RU = (
+    ("Найти груз", "Мои грузы"),
+    ("Примерный расчёт", "Мой профиль"),
+    ("Адреса складов", "Цены"),
+    ("Оператор",),
+)
+
+ADMIN_MENU = (
+    ("Юк қўшиш", "Юк қидириш"),
+    ("Статус ўзгартириш", "Гурӯҳӣ статус"),
+    ("Имрӯз қабулшудаҳо", "Дар роҳ будаҳо"),
+    ("Ба склад расидаҳо", "Доставка"),
+    ("Танзимот",),
+)
+
+
+def user_main_menu(lang: str) -> ReplyKeyboardMarkup:
+    if lang == "ru":
+        return build_reply_keyboard(USER_MENU_RU)
+    return build_reply_keyboard(USER_MENU_TJ)
+
+
+def admin_main_menu() -> ReplyKeyboardMarkup:
+    return build_reply_keyboard(ADMIN_MENU)
+
+
+def phone_contact_keyboard(lang: str) -> ReplyKeyboardMarkup:
+    label = "Отправить телефон" if lang == "ru" else "Фиристодани телефон"
+    return build_contact_keyboard(label)

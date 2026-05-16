@@ -1,0 +1,97 @@
+from datetime import date, datetime
+
+from aiogram import F, Router
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.types import Message
+
+from handlers.user_menu import get_current_user
+from services.normalizer import normalize_track_code
+from services.parcels import get_parcel_by_normalized_track_code
+from services.settings import get_setting
+from texts import ru, tj
+from texts.status import format_status
+from utils.constants import LANG_RU, LANG_TJ
+
+
+router = Router(name="parcel_search")
+
+
+class ParcelSearchStates(StatesGroup):
+    waiting_for_track_code = State()
+
+
+SEARCH_MENU_LABELS = {tj.MENU_SEARCH_PARCEL, ru.MENU_SEARCH_PARCEL}
+TEXTS = {
+    LANG_TJ: tj,
+    LANG_RU: ru,
+}
+
+
+def _texts(lang: str):
+    return TEXTS.get(lang, tj)
+
+
+def _format_date(value: datetime | date | None) -> str:
+    if value is None:
+        return "-"
+    return value.strftime("%d.%m.%Y")
+
+
+async def _delivery_days(lang: str) -> str:
+    key = "delivery_days_ru" if lang == LANG_RU else "delivery_days_tj"
+    default = "18–25 дней" if lang == LANG_RU else "18–25 рӯз"
+    return await get_setting(key, default) or default
+
+
+async def _format_parcel_found(parcel, lang: str) -> str:
+    texts = _texts(lang)
+    return texts.PARCEL_FOUND.format(
+        track_code=parcel.track_code,
+        dynamic_status=format_status(
+            parcel.status_code,
+            parcel.destination_city,
+            lang,
+        ),
+        destination_city=parcel.destination_city,
+        received_china_at=_format_date(parcel.received_china_at),
+        delivery_days=await _delivery_days(lang),
+    )
+
+
+@router.message(F.text.in_(SEARCH_MENU_LABELS))
+async def start_parcel_search(message: Message, state: FSMContext) -> None:
+    user = await get_current_user(message)
+    if user is None:
+        await message.answer(tj.CHOOSE_LANGUAGE)
+        return
+
+    await state.set_state(ParcelSearchStates.waiting_for_track_code)
+    await message.answer(_texts(user.language).ASK_TRACK_CODE)
+
+
+@router.message(ParcelSearchStates.waiting_for_track_code, F.text)
+async def search_parcel(message: Message, state: FSMContext) -> None:
+    user = await get_current_user(message)
+    if user is None:
+        await state.clear()
+        await message.answer(tj.CHOOSE_LANGUAGE)
+        return
+
+    texts = _texts(user.language)
+    normalized_track_code = normalize_track_code(message.text)
+    parcel = await get_parcel_by_normalized_track_code(normalized_track_code)
+    await state.clear()
+
+    if parcel is None:
+        await message.answer(texts.PARCEL_NOT_FOUND)
+        return
+
+    await message.answer(await _format_parcel_found(parcel, user.language))
+
+
+@router.message(ParcelSearchStates.waiting_for_track_code)
+async def search_parcel_invalid(message: Message, state: FSMContext) -> None:
+    user = await get_current_user(message)
+    lang = user.language if user is not None else LANG_TJ
+    await message.answer(_texts(lang).ASK_TRACK_CODE)
