@@ -207,3 +207,68 @@ async def set_single_status(callback: CallbackQuery) -> None:
     if callback.message is not None:
         await callback.message.edit_text(text, reply_markup=_status_keyboard(parcel))
     await callback.answer()
+
+
+async def _admin_send_parcels_by_status(message, status_code: str, title: str):
+    from sqlalchemy import select
+    from database.db import async_session
+    from database.models import Parcel, User
+
+    async with async_session() as session:
+        result = await session.execute(
+            select(Parcel, User)
+            .join(User, Parcel.user_id == User.id)
+            .where(Parcel.status_code == status_code)
+            .order_by(Parcel.created_at.desc())
+            .limit(30)
+        )
+        rows = result.all()
+
+    if not rows:
+        await message.answer(
+            f"📭 <b>{title}</b>\n\n"
+            "<blockquote>Ҳозирча дар ин рӯйхат бор нест.</blockquote>"
+        )
+        return
+
+    parts = [f"📦 <b>{title}</b>\n"]
+
+    for i, (parcel, user) in enumerate(rows, 1):
+        parts.append(
+            "<blockquote>"
+            f"<b>{i}. {parcel.track_code}</b>\n"
+            f"👤 Мизоҷ: <b>{user.full_name}</b>\n"
+            f"📞 Телефон: <code>{user.phone}</code>\n"
+            f"🔐 Код: <code>{user.client_code}</code>\n"
+            f"🏬 Склад: <b>{parcel.destination_city}</b>"
+            "</blockquote>"
+        )
+
+    await message.answer("\n\n".join(parts))
+
+
+@router.message(F.text == "Қабулшудаҳо")
+async def admin_china_received_list(message):
+    await _admin_send_parcels_by_status(
+        message=message,
+        status_code="china_received",
+        title="Қабулшудаҳо",
+    )
+
+
+@router.message(F.text == "Дар роҳ")
+async def admin_on_the_way_list(message):
+    await _admin_send_parcels_by_status(
+        message=message,
+        status_code="on_the_way",
+        title="Дар роҳ",
+    )
+
+
+@router.message(F.text == "Расидаҳо")
+async def admin_arrived_list(message):
+    await _admin_send_parcels_by_status(
+        message=message,
+        status_code="arrived_destination",
+        title="Расидаҳо",
+    )
