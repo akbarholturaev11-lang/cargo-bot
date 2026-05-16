@@ -282,6 +282,7 @@ async def show_settings_main(callback: CallbackQuery, state: FSMContext) -> None
             "settings:delivery",
             "settings:channel",
             "settings:operator",
+            "settings:media",
             "settings:texts",
         },
     ),
