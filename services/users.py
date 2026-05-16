@@ -12,7 +12,24 @@ from utils.constants import CITY_NAMES, LANG_TJ
 
 
 def normalize_phone(phone: str) -> str:
-    return re.sub(r"[\s\-()]", "", phone.strip())
+    digits = re.sub(r"\D", "", phone.strip())
+    if len(digits) >= 9:
+        return digits[-9:]
+    return digits
+
+
+def normalize_contact_phone(phone: str) -> str | None:
+    digits = re.sub(r"\D", "", phone.strip())
+    if len(digits) < 9:
+        return None
+    return digits[-9:]
+
+
+def normalize_manual_phone(phone: str) -> str | None:
+    value = phone.strip()
+    if re.fullmatch(r"\d{9}", value) is None:
+        return None
+    return value
 
 
 async def get_user_by_telegram_id(telegram_id: int) -> User | None:

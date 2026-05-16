@@ -36,19 +36,21 @@ def auth_keyboard(lang: str) -> InlineKeyboardMarkup:
     return build_inline_keyboard(rows)
 
 
-def cities_keyboard(lang: str) -> InlineKeyboardMarkup:
-    return build_inline_keyboard(
+def cities_keyboard(lang: str, include_back: bool = False) -> InlineKeyboardMarkup:
+    rows = tuple(
         tuple(
-            tuple(
-                (
-                    CITY_NAMES[city_key].get(lang, CITY_NAMES[city_key][LANG_TJ]),
-                    f"city:{city_key}",
-                )
-                for city_key in row
+            (
+                CITY_NAMES[city_key].get(lang, CITY_NAMES[city_key][LANG_TJ]),
+                f"city:{city_key}",
             )
-            for row in CITY_ROWS
-        ),
+            for city_key in row
+        )
+        for row in CITY_ROWS
     )
+    if include_back:
+        back_label = "Назад" if lang == LANG_RU else "Бозгашт"
+        rows = rows + (((back_label, "auth:back"),),)
+    return build_inline_keyboard(rows)
 
 
 def profile_edit_keyboard(lang: str) -> InlineKeyboardMarkup:

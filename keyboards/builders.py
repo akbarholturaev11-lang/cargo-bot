@@ -25,9 +25,12 @@ def build_reply_keyboard(
     )
 
 
-def build_contact_keyboard(label: str) -> ReplyKeyboardMarkup:
+def build_contact_keyboard(label: str, back_label: str | None = None) -> ReplyKeyboardMarkup:
+    keyboard = [[KeyboardButton(text=label, request_contact=True)]]
+    if back_label is not None:
+        keyboard.append([KeyboardButton(text=back_label)])
     return ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text=label, request_contact=True)]],
+        keyboard=keyboard,
         resize_keyboard=True,
         one_time_keyboard=True,
     )
