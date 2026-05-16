@@ -45,14 +45,6 @@ async def show_warehouse_cities(message: Message) -> None:
 
 @router.callback_query(F.data == "warehouse:choose")
 async def show_warehouse_cities_from_callback(callback: CallbackQuery) -> None:
-    user = await get_user_by_telegram_id(callback.from_user.id)
-    lang = user.language if user is not None else LANG_TJ
-
-    if callback.message is not None:
-        await callback.message.edit_text(
-            _texts(lang).ASK_CITY,
-            reply_markup=warehouse_city_keyboard(lang),
-        )
     await callback.answer()
 
 
@@ -62,6 +54,9 @@ async def show_warehouse(callback: CallbackQuery) -> None:
     lang = user.language if user is not None else LANG_TJ
     texts = _texts(lang)
     city_key = callback.data.rsplit(":", 1)[1]
+    if city_key not in CITY_NAMES:
+        await callback.answer()
+        return
 
     warehouse = await get_active_warehouse(city_key)
     if warehouse is None:
