@@ -30,6 +30,9 @@ DEFAULT_SETTINGS = {
     "operator_username": "",
     "operator_phone": "",
     "operator_whatsapp": "",
+    "operator_work_time": "09:00–18:00",
+    "operator_phone": "",
+    "operator_whatsapp": "",
     "welcome_image_file_id": "",
     "welcome_text_tj": (
         "🚚 Хуш омадед ба Wasit Cargo!\n\n"

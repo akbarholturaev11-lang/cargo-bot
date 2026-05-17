@@ -22,6 +22,9 @@ SETTING_LABELS_TJ = {
     "operator_username": "Telegram-и оператор",
     "operator_phone": "Телефони оператор",
     "operator_whatsapp": "WhatsApp-и оператор",
+    "operator_work_time": "Вақти кори оператор",
+    "operator_phone": "Телефони оператор",
+    "operator_whatsapp": "WhatsApp-и оператор",
 
     "welcome_image_file_id": "Расми старт",
     "calculator_image_file_id": "Расми ҳисобкунак",
@@ -190,6 +193,9 @@ async def _operator_text() -> str:
     values = await get_many_settings(
         {
             "operator_username": DEFAULT_SETTINGS["operator_username"],
+            "operator_phone": DEFAULT_SETTINGS["operator_phone"],
+            "operator_whatsapp": DEFAULT_SETTINGS["operator_whatsapp"],
+            "operator_work_time": DEFAULT_SETTINGS["operator_work_time"],
             "operator_phone": DEFAULT_SETTINGS["operator_phone"],
             "operator_whatsapp": DEFAULT_SETTINGS["operator_whatsapp"],
         },

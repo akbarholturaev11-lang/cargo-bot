@@ -102,6 +102,7 @@ def settings_operator_keyboard() -> InlineKeyboardMarkup:
             (("☎️ Telegram-и оператор", "settings:edit:operator_username"),),
             (("📞 Телефони оператор", "settings:edit:operator_phone"),),
             (("💬 WhatsApp-и оператор", "settings:edit:operator_whatsapp"),),
+            (("🕘 Вақти кори оператор", "settings:edit:operator_work_time"),),
             (("Бозгашт", "settings:main"),),
         ),
     )
