@@ -318,6 +318,60 @@ async def save_warehouse(callback: CallbackQuery, state: FSMContext) -> None:
         await callback.answer()
         return
 
+    has_tj_pickup = bool(
+        (getattr(warehouse, "tj_pickup_caption", None) or "").strip()
+        or (getattr(warehouse, "tj_pickup_media_file_id", None) or "").strip()
+    )
+
+    if not has_tj_pickup:
+        await state.update_data(
+            address_kind="tj_pickup",
+            city_key=warehouse.city_key,
+            media_type="text",
+            media_file_id=None,
+            address_caption="",
+        )
+        await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
+
+        await _finish_preview(
+            callback,
+            (
+                "✅ Хитой склад адреси сабт шуд.\n"
+                f"Филиал: {warehouse.city_name_tj}\n\n"
+                "🇹🇯 Энди Тоҷикистонда товар қабул қилинадиган адресни қўшинг.\n"
+                "Фото + caption, видео + caption ёки оддий text юборинг."
+            ),
+        )
+        await callback.answer()
+        return
+
+    has_tj_pickup = bool(
+        (getattr(warehouse, "tj_pickup_caption", None) or "").strip()
+        or (getattr(warehouse, "tj_pickup_media_file_id", None) or "").strip()
+    )
+
+    if not has_tj_pickup:
+        await state.update_data(
+            address_kind="tj_pickup",
+            city_key=warehouse.city_key,
+            media_type="text",
+            media_file_id=None,
+            address_caption="",
+        )
+        await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
+
+        await _finish_preview(
+            callback,
+            (
+                "✅ Адреси склади Чин сабт шуд.\n"
+                f"Филиал: {warehouse.city_name_tj}\n\n"
+                "🇹🇯 Акнун адреси гирифтани бор дар Тоҷикистонро илова кунед.\n"
+                "Фото + caption, видео + caption ё матни одӣ фиристед."
+            ),
+        )
+        await callback.answer()
+        return
+
     await state.clear()
     await _finish_preview(
         callback,
@@ -500,8 +554,10 @@ async def save_tj_pickup(callback: CallbackQuery, state: FSMContext) -> None:
 
     await state.clear()
 
-    await callback.message.edit_text(
-        "✅ <b>Адреси гирифтани бор сабт шуд.</b>\n\n"
-        f"<blockquote>Филиал: {warehouse.city_name_tj}</blockquote>",
-        reply_markup=warehouse_management_keyboard(),
+    await _finish_preview(
+        callback,
+        (
+            "✅ Адреси гирифтани бор сабт шуд.\n"
+            f"Филиал: {warehouse.city_name_tj}"
+        ),
     )
