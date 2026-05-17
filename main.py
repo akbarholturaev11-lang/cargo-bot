@@ -85,6 +85,7 @@ async def main() -> None:
     dp.include_routers(*ROUTERS)
 
     logger.info("Starting Wasit Cargo Bot")
+    await bot.delete_webhook(drop_pending_updates=True)
     try:
         await dp.start_polling(bot)
     finally:
