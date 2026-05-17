@@ -286,9 +286,7 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
         if existing_by_phone is not None:
             await state.clear()
             await message.answer(
-                "❌ <b>Ин рақам аллакай сабт шудааст.</b>
-
-"
+                "❌ <b>Ин рақам аллакай сабт шудааст.</b>\n\n"
                 "<blockquote>Лутфан /start нависед ва аз «Ворид шудан» истифода баред.</blockquote>"
             )
             return
@@ -324,15 +322,11 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
             return
 
         text = (
-            "❌ <b>Ҳоло ягон филиали гирифтани бор илова нашудааст.</b>
-
-"
+            "❌ <b>Ҳоло ягон филиали гирифтани бор илова нашудааст.</b>\n\n"
             "<blockquote>Лутфан ба оператор нависед.</blockquote>"
             if lang == LANG_TJ
             else
-            "❌ <b>Пока не добавлен ни один филиал для получения груза.</b>
-
-"
+            "❌ <b>Пока не добавлен ни один филиал для получения груза.</b>\n\n"
             "<blockquote>Пожалуйста, напишите оператору.</blockquote>"
         )
         await message.answer(
@@ -343,9 +337,7 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
     except Exception as error:
         print(f"[AUTH_ERROR] continue_after_phone failed: {type(error).__name__}: {error}")
         await message.answer(
-            "❌ <b>Ҳангоми сабти ном хатогӣ шуд.</b>
-
-"
+            "❌ <b>Ҳангоми сабти ном хатогӣ шуд.</b>\n\n"
             "<blockquote>Лутфан баъдтар такрор кунед ё ба оператор нависед.</blockquote>"
         )
 
