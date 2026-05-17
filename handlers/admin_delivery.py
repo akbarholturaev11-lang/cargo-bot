@@ -182,8 +182,10 @@ async def set_delivery_status(callback: CallbackQuery) -> None:
 
         if text:
             try:
-                from services.settings import get_setting
-                image_id = await get_setting(image_key, "") if image_key else ""
+                if status == "delivered":
+                    image_id = await get_status_image_file_id(STATUS_RECEIVED)
+                else:
+                    image_id = await get_setting(image_key, "") if image_key else ""
 
                 if image_id:
                     await bot.send_photo(
