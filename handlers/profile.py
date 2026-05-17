@@ -7,10 +7,12 @@ from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 from handlers.user_menu import PROFILE_MENU_LABELS, get_current_user
 from keyboards.inline_user import (
     profile_city_keyboard,
+    pickup_cities_keyboard,
     profile_edit_keyboard,
     profile_language_keyboard,
 )
 from keyboards.reply import phone_contact_keyboard, user_main_menu
+from services.warehouses import get_active_tj_pickup_warehouses
 from services.users import (
     city_display_name,
     get_user_by_telegram_id,
@@ -271,9 +273,24 @@ async def edit_city_start(callback: CallbackQuery) -> None:
         return
 
     texts = _texts(user.language)
+    warehouses = await get_active_tj_pickup_warehouses()
+
+    if not warehouses:
+        text = (
+            "❌ <b>Ҳоло ягон филиал дастрас нест.</b>\n\n"
+            "<blockquote>Лутфан ба оператор нависед.</blockquote>"
+            if user.language == LANG_TJ
+            else
+            "❌ <b>Пока нет доступных филиалов.</b>\n\n"
+            "<blockquote>Пожалуйста, напишите оператору.</blockquote>"
+        )
+        await callback.message.answer(text)
+        await callback.answer()
+        return
+
     await callback.message.edit_text(
         texts.ASK_CITY,
-        reply_markup=profile_city_keyboard(user.language),
+        reply_markup=pickup_cities_keyboard(warehouses, user.language, include_back=True),
     )
     await callback.answer()
 
@@ -286,8 +303,17 @@ async def edit_city_finish(callback: CallbackQuery) -> None:
         return
 
     city_key = callback.data.rsplit(":", 1)[1]
-    if city_key not in CITY_NAMES:
-        await callback.answer()
+    warehouses = await get_active_tj_pickup_warehouses()
+    allowed_city_keys = {warehouse.city_key for warehouse in warehouses}
+
+    if city_key not in allowed_city_keys:
+        alert_text = (
+            "Ҳоло дар ин шаҳр филиал мавҷуд нест."
+            if user.language == LANG_TJ
+            else
+            "Пока в этом городе филиал недоступен."
+        )
+        await callback.answer(alert_text, show_alert=True)
         return
 
     city_name = CITY_NAMES[city_key][LANG_TJ]
