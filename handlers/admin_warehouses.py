@@ -84,7 +84,7 @@ async def _finish_preview(callback: CallbackQuery, text: str) -> None:
         await callback.message.edit_caption(caption=text, reply_markup=None)
         return
 
-    await callback.message.edit_text(text, reply_markup=None)
+    await callback.message.answer(text, reply_markup=None)
 
 
 @router.callback_query(F.data == "settings:warehouses")
@@ -94,7 +94,7 @@ async def show_warehouse_settings(callback: CallbackQuery) -> None:
         return
 
     if callback.message is not None:
-        await callback.message.edit_text(
+        await callback.message.answer(
             "Складҳо",
             reply_markup=warehouse_management_keyboard(),
         )
@@ -116,7 +116,7 @@ async def start_add_or_edit_warehouse(
     await state.set_state(AdminWarehouseStates.choosing_city)
 
     if callback.message is not None:
-        await callback.message.edit_text(
+        await callback.message.answer(
             "Шаҳрро интихоб кунед.",
             reply_markup=admin_warehouse_city_keyboard(action),
         )
@@ -135,7 +135,7 @@ async def start_inactive_warehouse(
     await state.clear()
     await state.set_state(AdminWarehouseStates.choosing_inactive_city)
     if callback.message is not None:
-        await callback.message.edit_text(
+        await callback.message.answer(
             "Ғайрифаъол кардан: шаҳрро интихоб кунед.",
             reply_markup=admin_warehouse_city_keyboard("inactive"),
         )
@@ -161,7 +161,7 @@ async def list_admin_warehouses(callback: CallbackQuery) -> None:
         text = "\n".join(lines)
 
     if callback.message is not None:
-        await callback.message.edit_text(
+        await callback.message.answer(
             text,
             reply_markup=warehouse_management_keyboard(),
         )
@@ -190,7 +190,7 @@ async def choose_warehouse_city(callback: CallbackQuery, state: FSMContext) -> N
     await state.update_data(city_key=city_key, city_name=_city_name(city_key))
     await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
     if callback.message is not None:
-        await callback.message.edit_text(WAREHOUSE_BLOCK_PROMPT)
+        await callback.message.answer(WAREHOUSE_BLOCK_PROMPT)
     await callback.answer()
 
 
@@ -211,7 +211,7 @@ async def inactive_warehouse_city(callback: CallbackQuery, state: FSMContext) ->
     count = await set_warehouse_inactive(city_key)
     await state.clear()
     if callback.message is not None:
-        await callback.message.edit_text(
+        await callback.message.answer(
             f"{_city_name(city_key)} ғайрифаъол шуд. Сабтҳо: {count}",
             reply_markup=warehouse_management_keyboard(),
         )
@@ -306,7 +306,7 @@ async def save_warehouse(callback: CallbackQuery, state: FSMContext) -> None:
         )
         await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
 
-        await callback.message.edit_text(
+        await callback.message.answer(
             "✅ <b>Хитой склад адреси сабт шуд.</b>\n\n"
             f"<blockquote>Филиал: {warehouse.city_name_tj}</blockquote>\n\n"
             "🇹🇯 <b>Энди Тоҷикистонда товар қабул қилинадиган адресни қўшинг.</b>\n\n"
@@ -502,7 +502,7 @@ async def cancel_warehouse_flow(callback: CallbackQuery, state: FSMContext) -> N
         if callback.message.photo or callback.message.video:
             await callback.message.edit_caption("Амалиёт бекор карда шуд.")
         else:
-            await callback.message.edit_text("Амалиёт бекор карда шуд.")
+            await callback.message.answer("Амалиёт бекор карда шуд.")
     await callback.answer()
 
 
@@ -512,7 +512,7 @@ async def start_tj_pickup_warehouse(callback: CallbackQuery, state: FSMContext) 
     await state.update_data(address_kind="tj_pickup")
     await state.set_state(AdminWarehouseStates.choosing_city)
 
-    await callback.message.edit_text(
+    await callback.message.answer(
         "🇹🇯 <b>Адреси гирифтани бор</b>\n\n"
         "<blockquote>Филиалро интихоб кунед. Ин адрес вақте ба user нишон дода мешавад, ки бораш ба Тоҷикистон расида бошад.</blockquote>",
         reply_markup=admin_warehouse_city_keyboard("tj_pickup"),
@@ -529,7 +529,7 @@ async def choose_tj_pickup_city(callback: CallbackQuery, state: FSMContext) -> N
     await state.update_data(city_key=city_key, address_kind="tj_pickup")
     await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
 
-    await callback.message.edit_text(
+    await callback.message.answer(
         "🇹🇯 <b>Адреси гирифтани бор</b>\n\n"
         "<blockquote>"
         "Фото + caption, видео + caption ёки оддий text юборинг.\n\n"
