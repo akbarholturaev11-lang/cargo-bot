@@ -42,7 +42,20 @@ async def _show_preview(message: Message, state: FSMContext) -> None:
     media_type = data["media_type"]
     media_file_id = data.get("media_file_id")
     caption = data["address_caption"]
-    keyboard = warehouse_preview_keyboard()
+
+    if data.get("address_kind") == "tj_pickup":
+        from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [InlineKeyboardButton(text="Сабт кардан", callback_data="admin_wh:save_tj_pickup")],
+                [InlineKeyboardButton(text="Матнро иваз кардан", callback_data="admin_wh:change_caption")],
+                [InlineKeyboardButton(text="Медиаро иваз кардан", callback_data="admin_wh:change_media")],
+                [InlineKeyboardButton(text="Бекор кардан", callback_data="admin_wh:cancel")],
+            ]
+        )
+    else:
+        keyboard = warehouse_preview_keyboard()
 
     if media_type == "photo" and media_file_id:
         await message.answer_photo(
