@@ -108,6 +108,8 @@ async def set_delivery_status(callback: CallbackQuery) -> None:
         await callback.answer()
         return
 
+    before_request = await get_delivery_request(request_id)
+
     request = await update_delivery_status(
         request_id=request_id,
         status=status,
@@ -120,6 +122,64 @@ async def set_delivery_status(callback: CallbackQuery) -> None:
         return
 
     request = await get_delivery_request(request_id)
+
+    if (
+        request is not None
+        and request.user is not None
+        and request.user.telegram_id
+        and before_request is not None
+        and before_request.status != status
+    ):
+        bot = callback.message.bot if callback.message is not None else callback.bot
+
+        if status == "on_delivery":
+            text = (
+                "🚚 <b>Доставка ба роҳ баромад</b>\n\n"
+                "<blockquote>"
+                "Доставчик ба роҳ баромад.\n"
+                "Лутфан зангро интизор шавед."
+                "</blockquote>"
+            )
+            image_key = "delivery_on_the_way_image_file_id"
+
+        elif status == "delivered":
+            text = (
+                "✅ <b>Товар қабул шуд</b>\n\n"
+                "<blockquote>"
+                "Шумо товарро тавассути доставка қабул кардед.\n"
+                "🤝 Ташаккур барои боварӣ ба Wasit Cargo!"
+                "</blockquote>"
+            )
+            image_key = "delivery_delivered_image_file_id"
+
+            try:
+                from services.parcels import update_parcel_status
+                from utils.constants import STATUS_RECEIVED
+                await update_parcel_status(request.parcel_id, STATUS_RECEIVED)
+            except Exception:
+                pass
+        else:
+            text = None
+            image_key = None
+
+        if text:
+            try:
+                from services.settings import get_setting
+                image_id = await get_setting(image_key, "") if image_key else ""
+
+                if image_id:
+                    await bot.send_photo(
+                        chat_id=request.user.telegram_id,
+                        photo=image_id,
+                        caption=text,
+                    )
+                else:
+                    await bot.send_message(
+                        chat_id=request.user.telegram_id,
+                        text=text,
+                    )
+            except Exception:
+                pass
     if callback.message is not None and request is not None:
         await callback.message.edit_text(
             format_delivery_request_for_admin(request, request.user),

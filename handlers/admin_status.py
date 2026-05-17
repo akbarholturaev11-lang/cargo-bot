@@ -211,8 +211,43 @@ async def set_single_status(callback: CallbackQuery) -> None:
             await mark_arrival_notified(parcel.id)
             parcel = await get_parcel_with_user(parcel.id) or parcel
 
+    if (
+        status_code == STATUS_RECEIVED
+        and before_update.status_code != STATUS_RECEIVED
+        and parcel.user.telegram_id
+    ):
+        bot = callback.message.bot if callback.message is not None else callback.bot
+        text = (
+            "✅ <b>Бори шумо супорида шуд</b>\n\n"
+            "<blockquote>"
+            "Шумо товарро аз склад қабул кардед.\n"
+            "🤝 Ташаккур барои боварӣ ба Wasit Cargo!"
+            "</blockquote>"
+        )
+
+        try:
+            from services.settings import get_setting
+            image_id = await get_setting("status_image_received_file_id", "")
+            if not image_id:
+                image_id = await get_setting("status_image_file_id", "")
+
+            if image_id:
+                await bot.send_photo(
+                    chat_id=parcel.user.telegram_id,
+                    photo=image_id,
+                    caption=text,
+                )
+            else:
+                await bot.send_message(
+                    chat_id=parcel.user.telegram_id,
+                    text=text,
+                )
+            notified = True
+        except Exception:
+            notified = False
+
     text = _format_parcel(parcel) + "\n\nСтатус нав шуд."
-    if status_code == STATUS_ARRIVED_DESTINATION and notified:
+    if status_code in {STATUS_ARRIVED_DESTINATION, STATUS_RECEIVED} and notified:
         text += "\nБа мизоҷ хабар фиристода шуд."
 
     if callback.message is not None:
