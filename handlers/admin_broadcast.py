@@ -42,6 +42,16 @@ def _kb(rows: list[list[tuple[str, str]]]) -> InlineKeyboardMarkup:
     )
 
 
+def broadcast_language_keyboard() -> InlineKeyboardMarkup:
+    return _kb(
+        [
+            [("🇹🇯 Тоҷикӣ", "broadcast:language:tj")],
+            [("🇷🇺 Русӣ", "broadcast:language:ru")],
+            [("❌ Бекор кардан", "broadcast:cancel")],
+        ]
+    )
+
+
 def broadcast_main_keyboard() -> InlineKeyboardMarkup:
     return _kb(
         [
@@ -116,6 +126,10 @@ def _parse_date(value: str) -> date | None:
 
 async def _target_telegram_ids(data: dict[str, Any]) -> list[int]:
     filter_type = data.get("filter_type")
+    broadcast_language = data.get("broadcast_language")
+
+    if broadcast_language not in {"tj", "ru"}:
+        return []
 
     async with async_session() as session:
         if filter_type == "all":
@@ -123,6 +137,7 @@ async def _target_telegram_ids(data: dict[str, Any]) -> list[int]:
                 select(User.telegram_id)
                 .where(User.telegram_id.is_not(None))
                 .where(User.status == "active")
+                .where(User.language == broadcast_language)
             )
             return [int(x) for x in result.scalars().all() if x]
 
@@ -131,7 +146,9 @@ async def _target_telegram_ids(data: dict[str, Any]) -> list[int]:
             if not telegram_id:
                 return []
             result = await session.execute(
-                select(User.telegram_id).where(User.telegram_id == int(telegram_id))
+                select(User.telegram_id)
+                .where(User.telegram_id == int(telegram_id))
+                .where(User.language == broadcast_language)
             )
             return [int(x) for x in result.scalars().all() if x]
 
@@ -147,6 +164,7 @@ async def _target_telegram_ids(data: dict[str, Any]) -> list[int]:
                 .join(Parcel, Parcel.user_id == User.id)
                 .where(Parcel.normalized_track_code == normalized_track_code)
                 .where(User.telegram_id.is_not(None))
+                .where(User.language == broadcast_language)
             )
             return [int(x) for x in result.scalars().all() if x]
 
@@ -158,6 +176,7 @@ async def _target_telegram_ids(data: dict[str, Any]) -> list[int]:
                 .where(Parcel.status_code == status_code)
                 .where(User.telegram_id.is_not(None))
                 .where(User.status == "active")
+                .where(User.language == broadcast_language)
             )
             return [int(x) for x in result.scalars().all() if x]
 
@@ -189,6 +208,7 @@ async def _target_telegram_ids(data: dict[str, Any]) -> list[int]:
                 .where(condition)
                 .where(User.telegram_id.is_not(None))
                 .where(User.status == "active")
+                .where(User.language == broadcast_language)
             )
             return [int(x) for x in result.scalars().all() if x]
 
@@ -323,13 +343,39 @@ async def open_broadcast_menu(message: Message, state: FSMContext) -> None:
         return
 
     await state.clear()
-    await state.set_state(AdminBroadcastStates.choosing_filter)
+    await state.set_state(AdminBroadcastStates.choosing_language)
 
     await message.answer(
         "📣 <b>Паёми гурӯҳӣ</b>\n\n"
-        "<blockquote>Филтрро интихоб кунед.</blockquote>",
+        "<blockquote>Аввал забони user’ҳоро интихоб кунед.</blockquote>",
+        reply_markup=broadcast_language_keyboard(),
+    )
+
+
+
+@router.callback_query(F.data.startswith("broadcast:language:"))
+async def choose_broadcast_language(callback: CallbackQuery, state: FSMContext) -> None:
+    if callback.from_user is None or not is_admin(callback.from_user.id):
+        await callback.answer()
+        return
+
+    lang = callback.data.split(":")[-1]
+    if lang not in {"tj", "ru"}:
+        await callback.answer("Нодуруст", show_alert=True)
+        return
+
+    await state.update_data(broadcast_language=lang)
+    await state.set_state(AdminBroadcastStates.choosing_filter)
+
+    lang_text = "🇹🇯 Тоҷикӣ" if lang == "tj" else "🇷🇺 Русӣ"
+
+    await callback.message.edit_text(
+        "📣 <b>Паёми гурӯҳӣ</b>\n\n"
+        f"<blockquote>Забон: <b>{lang_text}</b>\n"
+        "Акнун филтрро интихоб кунед.</blockquote>",
         reply_markup=broadcast_main_keyboard(),
     )
+    await callback.answer()
 
 
 @router.callback_query(F.data == "broadcast:back")
@@ -338,11 +384,11 @@ async def broadcast_back(callback: CallbackQuery, state: FSMContext) -> None:
         await callback.answer()
         return
 
-    await state.set_state(AdminBroadcastStates.choosing_filter)
+    await state.set_state(AdminBroadcastStates.choosing_language)
     await callback.message.edit_text(
         "📣 <b>Паёми гурӯҳӣ</b>\n\n"
-        "<blockquote>Филтрро интихоб кунед.</blockquote>",
-        reply_markup=broadcast_main_keyboard(),
+        "<blockquote>Аввал забони user’ҳоро интихоб кунед.</blockquote>",
+        reply_markup=broadcast_language_keyboard(),
     )
     await callback.answer()
 
