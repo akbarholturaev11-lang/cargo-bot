@@ -1,6 +1,6 @@
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, Message, ReplyKeyboardRemove
 
 from keyboards.inline_user import auth_keyboard, cities_keyboard
 from keyboards.reply import (
@@ -9,6 +9,7 @@ from keyboards.reply import (
     user_main_menu,
 )
 from services.normalizer import normalize_full_name
+from services.settings import get_setting
 from services.warehouses import get_active_tj_pickup_warehouses
 from services.users import (
     attach_telegram_account,
@@ -201,6 +202,77 @@ async def register_full_name_invalid(message: Message, state: FSMContext) -> Non
     await message.answer(texts.ASK_FULL_NAME)
 
 
+TJ_PHONE_PREFIXES = {
+    "50", "55", "77", "88",
+    "90", "91", "92", "93", "94", "95", "98", "99",
+}
+
+
+def _normalize_tj_phone(raw_phone: str | None) -> str | None:
+    phone = (raw_phone or "").strip()
+    phone = (
+        phone.replace(" ", "")
+        .replace("-", "")
+        .replace("(", "")
+        .replace(")", "")
+    )
+
+    if phone.startswith("+992"):
+        phone = phone[4:]
+    elif phone.startswith("992"):
+        phone = phone[3:]
+    elif phone.startswith("+"):
+        return None
+
+    if not phone.isdigit():
+        return None
+
+    if len(phone) != 9:
+        return None
+
+    if phone[:2] not in TJ_PHONE_PREFIXES:
+        return None
+
+    return phone
+
+
+def _invalid_phone_text(lang: str) -> str:
+    if lang == LANG_RU:
+        return (
+            "❌ <b>Неверный номер телефона.</b>\n\n"
+            "<blockquote>"
+            "Бот принимает только номера Таджикистана.\n"
+            "Введите номер без +992.\n"
+            "Пример: <code>908804948</code>"
+            "</blockquote>"
+        )
+
+    return (
+        "❌ <b>Рақами телефон нодуруст аст.</b>\n\n"
+        "<blockquote>"
+        "Бот танҳо рақамҳои Тоҷикистонро қабул мекунад.\n"
+        "Рақамро бе +992 ворид кунед.\n"
+        "Мисол: <code>900044009</code>"
+        "</blockquote>"
+    )
+
+
+async def _operator_keyboard(lang: str) -> InlineKeyboardMarkup | None:
+    username = (await get_setting("operator_username", "") or "").strip()
+    username = username.replace("@", "").strip()
+
+    if not username:
+        return None
+
+    text = "👨‍💻 Написать оператору" if lang == LANG_RU else "👨‍💻 Ба оператор нависед"
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text=text, url=f"https://t.me/{username}")]
+        ]
+    )
+
+
 async def _continue_after_phone(message: Message, state: FSMContext, *, lang: str, texts) -> None:
     warehouses = await get_active_tj_pickup_warehouses()
 
@@ -240,7 +312,32 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
         "❌ <b>Пока не добавлен ни один филиал для получения груза.</b>\n\n"
         "<blockquote>Пожалуйста, напишите оператору.</blockquote>"
     )
-    await message.answer(text)
+    await message.answer(
+        text,
+        reply_markup=await _operator_keyboard(lang),
+    )
+
+
+@router.message(AuthStates.register_phone, F.text.startswith("/"))
+async def register_phone_command(message: Message, state: FSMContext) -> None:
+    command = (message.text or "").strip().split()[0].lower()
+
+    if command == "/start":
+        await state.clear()
+        from handlers.start import start_handler
+        await start_handler(message, state)
+        return
+
+    if command == "/admin":
+        await state.clear()
+        from handlers.admin_menu import admin_command
+        await admin_command(message)
+        return
+
+    await message.answer(
+        "⚠️ <b>Ин команда дар вақти регистрация кор намекунад.</b>\n\n"
+        "<blockquote>Лутфан аввал рақами телефонро фиристед ё /start нависед.</blockquote>"
+    )
 
 
 @router.message(AuthStates.register_phone, F.contact)
