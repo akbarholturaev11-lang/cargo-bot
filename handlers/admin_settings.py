@@ -23,8 +23,6 @@ SETTING_LABELS_TJ = {
     "operator_phone": "Телефони оператор",
     "operator_whatsapp": "WhatsApp-и оператор",
     "operator_work_time": "Вақти кори оператор",
-    "operator_phone": "Телефони оператор",
-    "operator_whatsapp": "WhatsApp-и оператор",
 
     "welcome_image_file_id": "Расми старт",
     "calculator_image_file_id": "Расми ҳисобкунак",
@@ -82,6 +80,7 @@ EDITABLE_SETTINGS = {
     "operator_username",
     "operator_phone",
     "operator_whatsapp",
+    "operator_work_time",
 }
 TOGGLE_SETTINGS = {
     "delivery_enabled": False,
@@ -196,8 +195,6 @@ async def _operator_text() -> str:
             "operator_phone": DEFAULT_SETTINGS["operator_phone"],
             "operator_whatsapp": DEFAULT_SETTINGS["operator_whatsapp"],
             "operator_work_time": DEFAULT_SETTINGS["operator_work_time"],
-            "operator_phone": DEFAULT_SETTINGS["operator_phone"],
-            "operator_whatsapp": DEFAULT_SETTINGS["operator_whatsapp"],
         },
     )
     br = chr(10)
@@ -206,7 +203,8 @@ async def _operator_text() -> str:
         "<blockquote>"
         f"Telegram: <code>{_display_value(values['operator_username'])}</code>{br}"
         f"Телефон: <code>{_display_value(values['operator_phone'])}</code>{br}"
-        f"WhatsApp: <code>{_display_value(values['operator_whatsapp'])}</code>"
+        f"WhatsApp: <code>{_display_value(values['operator_whatsapp'])}</code>{br}"
+        f"Вақти кор: <code>{_display_value(values['operator_work_time'])}</code>"
         "</blockquote>"
     )
 
