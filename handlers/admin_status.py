@@ -206,7 +206,7 @@ async def set_single_status(callback: CallbackQuery) -> None:
         and before_update.arrival_notified_at is None
     ):
         bot = callback.message.bot if callback.message is not None else callback.bot
-        notified = await notify_arrival_destination(bot, parcel.user, parcel)
+        notified = await notify_arrival_destination(bot, before_update.user, parcel)
         if notified:
             await mark_arrival_notified(parcel.id)
             parcel = await get_parcel_with_user(parcel.id) or parcel
