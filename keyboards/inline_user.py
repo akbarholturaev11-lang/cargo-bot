@@ -168,3 +168,17 @@ def channel_join_keyboard(channel_username: str) -> InlineKeyboardMarkup:
             ],
         ]
     )
+
+
+def pickup_cities_keyboard(warehouses, lang: str, include_back: bool = False) -> InlineKeyboardMarkup:
+    rows = []
+
+    for warehouse in warehouses:
+        label = warehouse.city_name_ru if lang == LANG_RU else warehouse.city_name_tj
+        rows.append(((label, f"city:{warehouse.city_key}"),))
+
+    if include_back:
+        back_label = "Назад" if lang == LANG_RU else "Бозгашт"
+        rows.append(((back_label, "auth:back"),))
+
+    return build_inline_keyboard(tuple(rows))

@@ -9,6 +9,7 @@ from keyboards.reply import (
     user_main_menu,
 )
 from services.normalizer import normalize_full_name
+from services.warehouses import get_active_tj_pickup_warehouses
 from services.users import (
     attach_telegram_account,
     create_user,
@@ -200,6 +201,48 @@ async def register_full_name_invalid(message: Message, state: FSMContext) -> Non
     await message.answer(texts.ASK_FULL_NAME)
 
 
+async def _continue_after_phone(message: Message, state: FSMContext, *, lang: str, texts) -> None:
+    warehouses = await get_active_tj_pickup_warehouses()
+
+    if len(warehouses) == 1:
+        warehouse = warehouses[0]
+        data = await state.get_data()
+
+        user = await create_user(
+            telegram_id=message.from_user.id,
+            username=message.from_user.username,
+            language=lang,
+            full_name=data["full_name"],
+            phone=data["phone"],
+            city=_city_name(warehouse.city_key, lang),
+        )
+
+        await state.clear()
+        await message.answer(
+            texts.REGISTRATION_COMPLETED.format(client_code=user.client_code),
+            reply_markup=user_main_menu(lang),
+        )
+        return
+
+    if len(warehouses) > 1:
+        await state.set_state(AuthStates.register_city)
+        await message.answer(
+            texts.ASK_CITY,
+            reply_markup=pickup_cities_keyboard(warehouses, lang, include_back=True),
+        )
+        return
+
+    text = (
+        "❌ <b>Ҳоло ягон филиали гирифтани бор илова нашудааст.</b>\n\n"
+        "<blockquote>Лутфан ба оператор нависед.</blockquote>"
+        if lang == LANG_TJ
+        else
+        "❌ <b>Пока не добавлен ни один филиал для получения груза.</b>\n\n"
+        "<blockquote>Пожалуйста, напишите оператору.</blockquote>"
+    )
+    await message.answer(text)
+
+
 @router.message(AuthStates.register_phone, F.contact)
 async def register_phone_contact(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
@@ -216,8 +259,7 @@ async def register_phone_contact(message: Message, state: FSMContext) -> None:
         return
 
     await state.update_data(phone=phone)
-    await state.set_state(AuthStates.register_city)
-    await message.answer(texts.ASK_CITY, reply_markup=cities_keyboard(lang, include_back=True))
+    await _continue_after_phone(message, state, lang=lang, texts=texts)
 
 
 @router.message(AuthStates.register_phone, F.text)
@@ -232,8 +274,7 @@ async def register_phone_manual(message: Message, state: FSMContext) -> None:
         return
 
     await state.update_data(phone=phone)
-    await state.set_state(AuthStates.register_city)
-    await message.answer(texts.ASK_CITY, reply_markup=cities_keyboard(lang, include_back=True))
+    await _continue_after_phone(message, state, lang=lang, texts=texts)
 
 
 @router.message(AuthStates.register_phone)
@@ -253,6 +294,12 @@ async def register_city(callback: CallbackQuery, state: FSMContext) -> None:
     lang = data.get("language", LANG_TJ)
     texts = _texts(lang)
     city_key = callback.data.split(":", 1)[1]
+    warehouses = await get_active_tj_pickup_warehouses()
+    allowed_city_keys = {warehouse.city_key for warehouse in warehouses}
+
+    if city_key not in allowed_city_keys:
+        await callback.answer("Ин филиал дастрас нест.", show_alert=True)
+        return
 
     user = await create_user(
         telegram_id=callback.from_user.id,

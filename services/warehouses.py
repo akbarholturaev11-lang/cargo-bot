@@ -235,3 +235,18 @@ def warehouse_has_tj_pickup_block(warehouse: Warehouse | None) -> bool:
     has_media = bool((warehouse.tj_pickup_media_file_id or "").strip())
 
     return has_caption or has_media
+
+
+async def get_active_tj_pickup_warehouses() -> list[Warehouse]:
+    async with async_session() as session:
+        result = await session.execute(
+            select(Warehouse)
+            .where(Warehouse.is_active.is_(True))
+            .order_by(Warehouse.city_name_tj.asc())
+        )
+        warehouses = list(result.scalars().all())
+
+    return [
+        warehouse for warehouse in warehouses
+        if warehouse_has_tj_pickup_block(warehouse)
+    ]
