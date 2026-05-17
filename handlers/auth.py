@@ -332,6 +332,19 @@ async def back_from_register_phone(callback: CallbackQuery, state: FSMContext) -
     await callback.answer()
 
 
+@router.message(AuthStates.register_phone, F.text.in_(["Назад", "Бозгашт"]))
+async def back_from_phone_text(message: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+    lang = data.get("language", LANG_TJ)
+    texts = _texts(lang)
+
+    await state.set_state(AuthStates.register_full_name)
+    await message.answer(
+        texts.ASK_FULL_NAME,
+        reply_markup=auth_back_keyboard(lang),
+    )
+
+
 @router.message(AuthStates.register_phone, F.text.startswith("/"))
 async def register_phone_command(message: Message, state: FSMContext) -> None:
     command = (message.text or "").strip().split()[0].lower()
