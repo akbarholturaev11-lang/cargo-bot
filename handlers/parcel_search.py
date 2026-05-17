@@ -8,6 +8,7 @@ from aiogram.types import Message
 from handlers.user_menu import get_current_user
 from services.normalizer import normalize_track_code
 from services.parcels import get_parcel_by_normalized_track_code
+from services.status_media import get_status_image_file_id
 from services.settings import get_setting
 from texts import ru, tj
 from texts.status import format_status
@@ -69,7 +70,7 @@ async def _format_parcel_found(parcel, lang: str) -> str:
 
 
 async def _send_status_message(message: Message, text: str) -> None:
-    image_file_id = await get_setting("status_image_file_id", "")
+    image_file_id = await get_status_image_file_id(parcel.status_code)
     if image_file_id:
         await message.answer_photo(photo=image_file_id, caption=text)
         return
