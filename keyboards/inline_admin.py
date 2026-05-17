@@ -138,13 +138,15 @@ def settings_media_keyboard() -> InlineKeyboardMarkup:
     )
 
 def warehouse_management_keyboard() -> InlineKeyboardMarkup:
-    return _kb(
-        (
-            (("🇨🇳 Адреси склади Чин", "admin_wh:add"),),
-            (("🇹🇯 Адреси гирифтани бор", "admin_wh:tj_pickup"),),
-            (("Рӯйхати складҳо", "admin_wh:list"),),
-            (("Бозгашт", "settings:main"),),
-        )
+    from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton(text="🇨🇳 Адреси склади Чин", callback_data="admin_wh:add")],
+            [InlineKeyboardButton(text="🇹🇯 Адреси гирифтани бор", callback_data="admin_wh:tj_pickup")],
+            [InlineKeyboardButton(text="Рӯйхати складҳо", callback_data="admin_wh:list")],
+            [InlineKeyboardButton(text="Бозгашт", callback_data="settings:main")],
+        ]
     )
 
 
