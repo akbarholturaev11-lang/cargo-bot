@@ -217,13 +217,22 @@ async def set_single_status(callback: CallbackQuery) -> None:
         and parcel.user.telegram_id
     ):
         bot = callback.message.bot if callback.message is not None else callback.bot
-        text = (
-            "✅ <b>Бори шумо супорида шуд</b>\n\n"
-            "<blockquote>"
-            "Шумо товарро аз склад қабул кардед.\n"
-            "🤝 Ташаккур барои боварӣ ба Wasit Cargo!"
-            "</blockquote>"
-        )
+        if before_update.user.language == "ru":
+            text = (
+                "✅ <b>Ваш груз получен</b>\n\n"
+                "<blockquote>"
+                "Вы получили товар со склада.\n"
+                "🤝 Спасибо за доверие к Wasit Cargo!"
+                "</blockquote>"
+            )
+        else:
+            text = (
+                "✅ <b>Бори шумо супорида шуд</b>\n\n"
+                "<blockquote>"
+                "Шумо товарро аз склад қабул кардед.\n"
+                "🤝 Ташаккур барои боварӣ ба Wasit Cargo!"
+                "</blockquote>"
+            )
 
         try:
             from services.settings import get_setting

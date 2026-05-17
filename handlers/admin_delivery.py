@@ -133,23 +133,41 @@ async def set_delivery_status(callback: CallbackQuery) -> None:
         bot = callback.message.bot if callback.message is not None else callback.bot
 
         if status == "on_delivery":
-            text = (
-                "🚚 <b>Доставка ба роҳ баромад</b>\n\n"
-                "<blockquote>"
-                "Доставчик ба роҳ баромад.\n"
-                "Лутфан зангро интизор шавед."
-                "</blockquote>"
-            )
+            if request.user.language == "ru":
+                text = (
+                    "🚚 <b>Доставка в пути</b>\n\n"
+                    "<blockquote>"
+                    "Курьер уже выехал.\n"
+                    "Пожалуйста, ожидайте звонка."
+                    "</blockquote>"
+                )
+            else:
+                text = (
+                    "🚚 <b>Доставка ба роҳ баромад</b>\n\n"
+                    "<blockquote>"
+                    "Доставчик ба роҳ баромад.\n"
+                    "Лутфан зангро интизор шавед."
+                    "</blockquote>"
+                )
             image_key = "delivery_on_the_way_image_file_id"
 
         elif status == "delivered":
-            text = (
-                "✅ <b>Товар қабул шуд</b>\n\n"
-                "<blockquote>"
-                "Шумо товарро тавассути доставка қабул кардед.\n"
-                "🤝 Ташаккур барои боварӣ ба Wasit Cargo!"
-                "</blockquote>"
-            )
+            if request.user.language == "ru":
+                text = (
+                    "✅ <b>Товар получен</b>\n\n"
+                    "<blockquote>"
+                    "Вы получили товар через доставку.\n"
+                    "🤝 Спасибо за доверие к Wasit Cargo!"
+                    "</blockquote>"
+                )
+            else:
+                text = (
+                    "✅ <b>Товар қабул шуд</b>\n\n"
+                    "<blockquote>"
+                    "Шумо товарро тавассути доставка қабул кардед.\n"
+                    "🤝 Ташаккур барои боварӣ ба Wasit Cargo!"
+                    "</blockquote>"
+                )
             image_key = "delivery_delivered_image_file_id"
 
             try:
