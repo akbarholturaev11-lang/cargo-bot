@@ -92,6 +92,16 @@ def _status_keyboard(parcel) -> object:
                     f"admin_status:set:{parcel.id}:{STATUS_ARRIVED_DESTINATION}",
                 ),
             ),
+            (
+                (
+                    format_status(
+                        STATUS_RECEIVED,
+                        parcel.destination_city,
+                        LANG_TJ,
+                    ),
+                    f"admin_status:set:{parcel.id}:{STATUS_RECEIVED}",
+                ),
+            ),
         ),
     )
 
