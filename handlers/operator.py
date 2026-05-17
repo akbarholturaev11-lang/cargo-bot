@@ -1,5 +1,5 @@
 from aiogram import F, Router
-from aiogram.types import Message
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from handlers.user_menu import get_current_user
 from services.settings import DEFAULT_SETTINGS, get_many_settings
@@ -46,22 +46,69 @@ async def show_operator(message: Message) -> None:
             "operator_username": DEFAULT_SETTINGS["operator_username"],
             "operator_phone": DEFAULT_SETTINGS["operator_phone"],
             "operator_whatsapp": DEFAULT_SETTINGS["operator_whatsapp"],
+            "operator_work_time": DEFAULT_SETTINGS["operator_work_time"],
         },
     )
-    contacts = [
-        value
-        for value in (
-            values["operator_username"],
-            values["operator_phone"],
-            values["operator_whatsapp"],
-        )
-        if value
-    ]
-    if not contacts:
+
+    username = (values["operator_username"] or "").strip().replace("@", "")
+    phone = (values["operator_phone"] or "").strip()
+    whatsapp = (values["operator_whatsapp"] or "").strip()
+    work_time = (values["operator_work_time"] or "").strip() or "09:00–18:00"
+
+    if not username and not phone and not whatsapp:
         await message.answer(texts.OPERATOR_NOT_SET)
         return
 
-    await message.answer(texts.OPERATOR.format(contacts="\n".join(contacts)))
+    if user.language == LANG_RU:
+        text = (
+            "☎️ <b>Оператор</b>\n\n"
+            "<blockquote>"
+            f"Время работы: <b>{work_time}</b>\n\n"
+            "Пожалуйста, подробно опишите проблему:\n"
+            "— трек-код или код клиента\n"
+            "— что именно не работает\n"
+            "— скриншот или фото, если нужно\n\n"
+            "Оператор ответит после проверки сообщения."
+            "</blockquote>"
+        )
+        button_text = "👨‍💻 Написать оператору"
+    else:
+        text = (
+            "☎️ <b>Оператор</b>\n\n"
+            "<blockquote>"
+            f"Вақти кор: <b>{work_time}</b>\n\n"
+            "Лутфан мушкили худро пурра нависед:\n"
+            "— трек-код ё коди мизоҷ\n"
+            "— чӣ мушкил шуд\n"
+            "— скриншот ё фото, агар лозим бошад\n\n"
+            "Оператор баъд аз дидани паёми шумо ҷавоб медиҳад."
+            "</blockquote>"
+        )
+        button_text = "👨‍💻 Ба оператор нависед"
+
+    extra_contacts = []
+    if phone:
+        extra_contacts.append(f"📞 <code>{phone}</code>")
+    if whatsapp:
+        extra_contacts.append(f"💬 WhatsApp: <code>{whatsapp}</code>")
+
+    if extra_contacts:
+        text += "\n\n" + "\n".join(extra_contacts)
+
+    keyboard = None
+    if username:
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[
+                [
+                    InlineKeyboardButton(
+                        text=button_text,
+                        url=f"https://t.me/{username}",
+                    )
+                ]
+            ]
+        )
+
+    await message.answer(text, reply_markup=keyboard)
 
 
 @router.message(F.text.in_(PRICES_MENU_LABELS))
