@@ -181,3 +181,57 @@ async def get_user_warehouse(user_city: str | None) -> tuple[Warehouse | None, s
                 return warehouse, "user_city"
 
     return None, "need_choose"
+
+
+async def save_tj_pickup_warehouse(
+    *,
+    city_key: str,
+    media_type: str,
+    media_file_id: str | None,
+    caption: str,
+) -> Warehouse | None:
+    if media_type not in {"photo", "video", "text"}:
+        media_type = "text"
+        media_file_id = None
+
+    async with async_session() as session:
+        result = await session.execute(
+            select(Warehouse)
+            .where(Warehouse.city_key == city_key)
+            .order_by(Warehouse.updated_at.desc(), Warehouse.id.desc())
+            .limit(1)
+        )
+        warehouse = result.scalar_one_or_none()
+
+        if warehouse is None:
+            city_names = CITY_NAMES[city_key]
+            warehouse = Warehouse(
+                city_key=city_key,
+                city_name_tj=city_names[LANG_TJ],
+                city_name_ru=city_names[LANG_RU],
+                address_caption="",
+                image_file_id=None,
+                media_type="text",
+                media_file_id=None,
+                is_active=True,
+            )
+            session.add(warehouse)
+
+        warehouse.tj_pickup_caption = caption
+        warehouse.tj_pickup_media_type = media_type
+        warehouse.tj_pickup_media_file_id = media_file_id
+        warehouse.is_active = True
+
+        await session.commit()
+        await session.refresh(warehouse)
+        return warehouse
+
+
+def warehouse_has_tj_pickup_block(warehouse: Warehouse | None) -> bool:
+    if warehouse is None:
+        return False
+
+    has_caption = bool((warehouse.tj_pickup_caption or "").strip())
+    has_media = bool((warehouse.tj_pickup_media_file_id or "").strip())
+
+    return has_caption or has_media

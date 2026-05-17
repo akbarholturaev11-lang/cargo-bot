@@ -99,6 +99,11 @@ class Warehouse(Base):
     tj_address_text: Mapped[str | None] = mapped_column(Text)
     tj_work_time: Mapped[str | None] = mapped_column(String(255))
     tj_phone: Mapped[str | None] = mapped_column(String(64))
+
+    tj_pickup_caption: Mapped[str | None] = mapped_column(Text)
+    tj_pickup_media_type: Mapped[str | None] = mapped_column(String(16))
+    tj_pickup_media_file_id: Mapped[str | None] = mapped_column(String(255))
+
     is_active: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
