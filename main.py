@@ -9,6 +9,7 @@ from aiogram.client.default import DefaultBotProperties
 from config import BOT_TOKEN
 from database.init_db import init_db
 from handlers import (
+    admin_broadcast,
     admin_bulk,
     admin_delivery,
     admin_menu,
@@ -37,6 +38,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 ROUTERS = (
+    admin_broadcast.router,
     start.router,
     auth.router,
     user_menu.router,
