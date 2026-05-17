@@ -2,7 +2,7 @@ from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, Message, ReplyKeyboardRemove
 
-from keyboards.inline_user import auth_keyboard, cities_keyboard
+from keyboards.inline_user import auth_keyboard, cities_keyboard, pickup_cities_keyboard
 from keyboards.reply import (
     auth_back_keyboard,
     auth_phone_keyboard,
