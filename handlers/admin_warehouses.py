@@ -514,7 +514,7 @@ async def start_tj_pickup_warehouse(callback: CallbackQuery, state: FSMContext) 
 
     await callback.message.edit_text(
         "🇹🇯 <b>Адреси гирифтани бор</b>\n\n"
-        "<blockquote>Филиалро интихоб кунед. Ин адрес user’га юк TJK’га етиб келгандан кейин чиқади.</blockquote>",
+        "<blockquote>Филиалро интихоб кунед. Ин адрес вақте ба user нишон дода мешавад, ки бораш ба Тоҷикистон расида бошад.</blockquote>",
         reply_markup=admin_warehouse_city_keyboard("tj_pickup"),
     )
 
@@ -561,3 +561,4 @@ async def save_tj_pickup(callback: CallbackQuery, state: FSMContext) -> None:
             f"Филиал: {warehouse.city_name_tj}"
         ),
     )
+    await callback.answer()
