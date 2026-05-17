@@ -307,12 +307,12 @@ async def save_warehouse(callback: CallbackQuery, state: FSMContext) -> None:
         await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
 
         await callback.message.answer(
-            "✅ <b>Хитой склад адреси сабт шуд.</b>\n\n"
+            "✅ <b>Адреси склади Чин сабт шуд.</b>\n\n"
             f"<blockquote>Филиал: {warehouse.city_name_tj}</blockquote>\n\n"
-            "🇹🇯 <b>Энди Тоҷикистонда товар қабул қилинадиган адресни қўшинг.</b>\n\n"
+            "🇹🇯 <b>Акнун адреси гирифтани бор дар Тоҷикистонро илова кунед.</b>\n\n"
             "<blockquote>"
-            "Фото + caption, видео + caption ёки оддий text юборинг.\n"
-            "Бу адрес user <b>Складдан келиб олиш</b> босганда чиқади."
+            "Фото + caption, видео + caption ё матни одӣ фиристед.\n"
+            "Ин адрес вақте нишон дода мешавад, ки user <b>Аз склад гирифтан</b>-ро пахш кунад."
             "</blockquote>"
         )
         await callback.answer()
@@ -336,10 +336,10 @@ async def save_warehouse(callback: CallbackQuery, state: FSMContext) -> None:
         await _finish_preview(
             callback,
             (
-                "✅ Хитой склад адреси сабт шуд.\n"
+                "✅ Адреси склади Чин сабт шуд.\n"
                 f"Филиал: {warehouse.city_name_tj}\n\n"
-                "🇹🇯 Энди Тоҷикистонда товар қабул қилинадиган адресни қўшинг.\n"
-                "Фото + caption, видео + caption ёки оддий text юборинг."
+                "🇹🇯 Акнун адреси гирифтани бор дар Тоҷикистонро илова кунед.\n"
+                "Фото + caption, видео + caption ё матни одӣ фиристед."
             ),
         )
         await callback.answer()
@@ -532,8 +532,8 @@ async def choose_tj_pickup_city(callback: CallbackQuery, state: FSMContext) -> N
     await callback.message.answer(
         "🇹🇯 <b>Адреси гирифтани бор</b>\n\n"
         "<blockquote>"
-        "Фото + caption, видео + caption ёки оддий text юборинг.\n\n"
-        "Бу адрес user <b>Складдан келиб олиш</b> босганда чиқади."
+        "Фото + caption, видео + caption ё матни одӣ фиристед.\n\n"
+        "Ин адрес вақте нишон дода мешавад, ки user <b>Аз склад гирифтан</b>-ро пахш кунад."
         "</blockquote>"
     )
 
