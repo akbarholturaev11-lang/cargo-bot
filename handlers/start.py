@@ -23,10 +23,7 @@ router = Router(name="start")
 async def _send_welcome_screen(message: Message) -> None:
     values = await get_many_settings(WELCOME_SETTING_KEYS)
     image_file_id = values["welcome_image_file_id"].strip()
-    welcome_text = (
-        f"{values['welcome_text_tj']}\n\n"
-        f"{values['welcome_text_ru']}"
-    )
+    welcome_text = values["welcome_text_ru"].strip()
     keyboard = language_keyboard()
 
     if image_file_id:
