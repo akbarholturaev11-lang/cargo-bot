@@ -457,7 +457,7 @@ async def ask_media_photo(callback: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(AdminSettingsStates.waiting_for_value)
     await state.update_data(setting_key=key, setting_mode="media")
 
-    await callback.message.edit_text(
+    await callback.message.answer(
         f"🖼 <b>{setting_label(key)}</b>\n\n"
         "<blockquote>Лутфан фото фиристед. Фото ҳамчун расми ин бахш сабт мешавад.</blockquote>"
     )
