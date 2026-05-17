@@ -107,6 +107,12 @@ async def choose_language(callback: CallbackQuery, state: FSMContext) -> None:
 
     await state.update_data(language=lang)
     await state.set_state(AuthStates.choosing_auth_action)
+
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
+
     await callback.message.answer(
         f"{texts.REGISTER} / {texts.LOGIN}",
         reply_markup=auth_keyboard(lang),
