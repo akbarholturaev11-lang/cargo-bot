@@ -274,60 +274,80 @@ async def _operator_keyboard(lang: str) -> InlineKeyboardMarkup | None:
 
 
 async def _continue_after_phone(message: Message, state: FSMContext, *, lang: str, texts) -> None:
-    data = await state.get_data()
-    phone = data.get("phone")
-
-    existing_by_phone = await get_user_by_phone(phone)
-    if existing_by_phone is not None:
-        await state.clear()
-        await message.answer(
-            "❌ <b>Ин рақам аллакай сабт шудааст.</b>\n\n"
-            "<blockquote>Лутфан /start нависед ва аз «Ворид шудан» истифода баред.</blockquote>"
-        )
-        return
-
-    warehouses = await get_active_tj_pickup_warehouses()
-
-    if len(warehouses) == 1:
-        warehouse = warehouses[0]
+    try:
         data = await state.get_data()
+        phone = data.get("phone")
 
-        user = await create_user(
-            telegram_id=message.from_user.id,
-            username=message.from_user.username,
-            language=lang,
-            full_name=data["full_name"],
-            phone=data["phone"],
-            city=_city_name(warehouse.city_key, lang),
+        print(f"[AUTH] continue_after_phone telegram_id={message.from_user.id} phone={phone}")
+
+        existing_by_phone = await get_user_by_phone(phone)
+        print(f"[AUTH] existing_by_phone={bool(existing_by_phone)}")
+
+        if existing_by_phone is not None:
+            await state.clear()
+            await message.answer(
+                "❌ <b>Ин рақам аллакай сабт шудааст.</b>
+
+"
+                "<blockquote>Лутфан /start нависед ва аз «Ворид шудан» истифода баред.</blockquote>"
+            )
+            return
+
+        warehouses = await get_active_tj_pickup_warehouses()
+        print(f"[AUTH] active_pickup_warehouses_count={len(warehouses)}")
+
+        if len(warehouses) == 1:
+            warehouse = warehouses[0]
+
+            user = await create_user(
+                telegram_id=message.from_user.id,
+                username=message.from_user.username,
+                language=lang,
+                full_name=data["full_name"],
+                phone=phone,
+                city=_city_name(warehouse.city_key, lang),
+            )
+
+            await state.clear()
+            await message.answer(
+                texts.REGISTRATION_COMPLETED.format(client_code=user.client_code),
+                reply_markup=user_main_menu(lang),
+            )
+            return
+
+        if len(warehouses) > 1:
+            await state.set_state(AuthStates.register_city)
+            await message.answer(
+                texts.ASK_CITY,
+                reply_markup=pickup_cities_keyboard(warehouses, lang, include_back=True),
+            )
+            return
+
+        text = (
+            "❌ <b>Ҳоло ягон филиали гирифтани бор илова нашудааст.</b>
+
+"
+            "<blockquote>Лутфан ба оператор нависед.</blockquote>"
+            if lang == LANG_TJ
+            else
+            "❌ <b>Пока не добавлен ни один филиал для получения груза.</b>
+
+"
+            "<blockquote>Пожалуйста, напишите оператору.</blockquote>"
         )
-
-        await state.clear()
         await message.answer(
-            texts.REGISTRATION_COMPLETED.format(client_code=user.client_code),
-            reply_markup=user_main_menu(lang),
+            text,
+            reply_markup=await _operator_keyboard(lang),
         )
-        return
 
-    if len(warehouses) > 1:
-        await state.set_state(AuthStates.register_city)
+    except Exception as error:
+        print(f"[AUTH_ERROR] continue_after_phone failed: {type(error).__name__}: {error}")
         await message.answer(
-            texts.ASK_CITY,
-            reply_markup=pickup_cities_keyboard(warehouses, lang, include_back=True),
-        )
-        return
+            "❌ <b>Ҳангоми сабти ном хатогӣ шуд.</b>
 
-    text = (
-        "❌ <b>Ҳоло ягон филиали гирифтани бор илова нашудааст.</b>\n\n"
-        "<blockquote>Лутфан ба оператор нависед.</blockquote>"
-        if lang == LANG_TJ
-        else
-        "❌ <b>Пока не добавлен ни один филиал для получения груза.</b>\n\n"
-        "<blockquote>Пожалуйста, напишите оператору.</blockquote>"
-    )
-    await message.answer(
-        text,
-        reply_markup=await _operator_keyboard(lang),
-    )
+"
+            "<blockquote>Лутфан баъдтар такрор кунед ё ба оператор нависед.</blockquote>"
+        )
 
 
 @router.callback_query(AuthStates.register_phone, F.data == "auth:back")
