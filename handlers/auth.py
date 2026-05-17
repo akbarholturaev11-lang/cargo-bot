@@ -285,10 +285,15 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
 
         if existing_by_phone is not None:
             await state.clear()
-            await message.answer(
+            duplicate_text = (
+                "❌ <b>Этот номер уже зарегистрирован.</b>\n\n"
+                "<blockquote>Пожалуйста, напишите /start и используйте «Войти».</blockquote>"
+                if lang == LANG_RU
+                else
                 "❌ <b>Ин рақам аллакай сабт шудааст.</b>\n\n"
                 "<blockquote>Лутфан /start нависед ва аз «Ворид шудан» истифода баред.</blockquote>"
             )
+            await message.answer(duplicate_text)
             return
 
         warehouses = await get_active_tj_pickup_warehouses()
@@ -321,24 +326,34 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
             )
             return
 
-        text = (
-            "❌ <b>Ҳоло ягон филиали гирифтани бор илова нашудааст.</b>\n\n"
-            "<blockquote>Лутфан ба оператор нависед.</blockquote>"
-            if lang == LANG_TJ
-            else
+        no_branch_text = (
             "❌ <b>Пока не добавлен ни один филиал для получения груза.</b>\n\n"
             "<blockquote>Пожалуйста, напишите оператору.</blockquote>"
+            if lang == LANG_RU
+            else
+            "❌ <b>Ҳоло ягон филиали гирифтани бор илова нашудааст.</b>\n\n"
+            "<blockquote>Лутфан ба оператор нависед.</blockquote>"
         )
         await message.answer(
-            text,
+            no_branch_text,
             reply_markup=await _operator_keyboard(lang),
         )
 
     except Exception as error:
         print(f"[AUTH_ERROR] continue_after_phone failed: {type(error).__name__}: {error}")
-        await message.answer(
+
+        error_text = (
+            "❌ <b>Ошибка при регистрации.</b>\n\n"
+            "<blockquote>Пожалуйста, попробуйте позже или напишите оператору.</blockquote>"
+            if lang == LANG_RU
+            else
             "❌ <b>Ҳангоми сабти ном хатогӣ шуд.</b>\n\n"
             "<blockquote>Лутфан баъдтар такрор кунед ё ба оператор нависед.</blockquote>"
+        )
+
+        await message.answer(
+            error_text,
+            reply_markup=await _operator_keyboard(lang),
         )
 
 
