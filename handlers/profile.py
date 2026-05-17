@@ -7,7 +7,6 @@ from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 from handlers.user_menu import PROFILE_MENU_LABELS, get_current_user
 from keyboards.inline_user import (
     profile_city_keyboard,
-    pickup_cities_keyboard,
     profile_edit_keyboard,
     profile_language_keyboard,
 )
@@ -108,6 +107,29 @@ async def _edit_profile_message(
             _format_profile(user),
             reply_markup=profile_edit_keyboard(user.language),
         )
+
+
+def _profile_pickup_cities_keyboard(warehouses, lang: str):
+    from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+    rows = []
+    for warehouse in warehouses:
+        label = warehouse.city_name_ru if lang == LANG_RU else warehouse.city_name_tj
+        rows.append([
+            InlineKeyboardButton(
+                text=label,
+                callback_data=f"profile:city:{warehouse.city_key}",
+            )
+        ])
+
+    rows.append([
+        InlineKeyboardButton(
+            text="Назад" if lang == LANG_RU else "Бозгашт",
+            callback_data="profile:back",
+        )
+    ])
+
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 async def _answer_profile(callback: CallbackQuery, user) -> None:
@@ -290,7 +312,7 @@ async def edit_city_start(callback: CallbackQuery) -> None:
 
     await callback.message.edit_text(
         texts.ASK_CITY,
-        reply_markup=pickup_cities_keyboard(warehouses, user.language, include_back=True),
+        reply_markup=_profile_pickup_cities_keyboard(warehouses, user.language),
     )
     await callback.answer()
 
