@@ -41,7 +41,6 @@ def settings_categories_keyboard() -> InlineKeyboardMarkup:
             (("Нархҳо", "settings:prices"),),
             (("Ҳисобкунӣ", "settings:calculation"),),
             (("Доставка", "settings:delivery"),),
-            (("Складҳо", "settings:warehouses"),),
             (("Канал", "settings:channel"),),
             (("Оператор", "settings:operator"),),
             (("Медиа", "settings:media"),),
