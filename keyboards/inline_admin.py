@@ -45,6 +45,7 @@ def settings_categories_keyboard() -> InlineKeyboardMarkup:
             (("Оператор", "settings:operator"),),
             (("Медиа", "settings:media"),),
             (("Матнҳо", "settings:texts"),),
+            (("Складҳо", "settings:warehouses"),),
             (("Бозгашт", "settings:back"),),
         ),
     )
