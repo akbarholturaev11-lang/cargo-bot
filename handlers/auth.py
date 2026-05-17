@@ -274,6 +274,19 @@ async def _operator_keyboard(lang: str) -> InlineKeyboardMarkup | None:
 
 
 async def _continue_after_phone(message: Message, state: FSMContext, *, lang: str, texts) -> None:
+    data = await state.get_data()
+    phone = data.get("phone")
+
+    existing_by_phone = await get_user_by_phone(phone)
+    if existing_by_phone is not None:
+        await state.clear()
+        await message.answer(
+            "❌ <b>Ин рақам аллакай сабт шудааст.</b>\n\n"
+            "<blockquote>Лутфан аз тугмаи «Ворид шудан» истифода баред.</blockquote>",
+            reply_markup=auth_start_keyboard(lang),
+        )
+        return
+
     warehouses = await get_active_tj_pickup_warehouses()
 
     if len(warehouses) == 1:
