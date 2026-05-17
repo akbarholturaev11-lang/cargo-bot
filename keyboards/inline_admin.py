@@ -128,7 +128,11 @@ def settings_media_keyboard() -> InlineKeyboardMarkup:
             (("🖼 Расми старт", "settings:media:welcome_image_file_id"),),
             (("🧮 Расми ҳисобкунак", "settings:media:calculator_image_file_id"),),
             (("💰 Расми нархҳо", "settings:media:prices_image_file_id"),),
-            (("📦 Расми статус", "settings:media:status_image_file_id"),),
+            (("📦 Расми статус умумӣ", "settings:media:status_image_file_id"),),
+            (("🇨🇳 Расми статус: Дар склади Чин", "settings:media:status_image_china_received_file_id"),),
+            (("🚚 Расми статус: Дар роҳ", "settings:media:status_image_on_the_way_file_id"),),
+            (("🏬 Расми статус: Ба склад расид", "settings:media:status_image_arrived_destination_file_id"),),
+            (("✅ Расми статус: Супорида шуд", "settings:media:status_image_received_file_id"),),
             (("Бозгашт", "settings:main"),),
         ),
     )

@@ -27,6 +27,10 @@ SETTING_LABELS_TJ = {
     "calculator_image_file_id": "Расми ҳисобкунак",
     "prices_image_file_id": "Расми нархҳо",
     "status_image_file_id": "Расми статус",
+    "status_image_china_received_file_id": "🇨🇳 Расми статус: Дар склади Чин",
+    "status_image_on_the_way_file_id": "🚚 Расми статус: Дар роҳ",
+    "status_image_arrived_destination_file_id": "🏬 Расми статус: Ба склад расид",
+    "status_image_received_file_id": "✅ Расми статус: Супорида шуд",
 
     "prices_text_tj": "Матни нархҳо — тоҷикӣ",
     "prices_text_ru": "Матни нархҳо — русӣ",
@@ -86,6 +90,11 @@ MEDIA_SETTINGS = {
     "calculator_image_file_id",
     "prices_image_file_id",
     "status_image_file_id",
+
+    "status_image_china_received_file_id",
+    "status_image_on_the_way_file_id",
+    "status_image_arrived_destination_file_id",
+    "status_image_received_file_id",
 }
 
 
