@@ -12,6 +12,7 @@ from utils.constants import (
     STATUS_ARRIVED_DESTINATION,
     STATUS_CHINA_RECEIVED,
     STATUS_ON_THE_WAY,
+    STATUS_RECEIVED,
 )
 
 

@@ -26,6 +26,7 @@ from utils.constants import (
     STATUS_CHINA_RECEIVED,
     STATUS_CODES,
     STATUS_ON_THE_WAY,
+    STATUS_RECEIVED,
 )
 from utils.validators import is_admin
 
