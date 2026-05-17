@@ -144,7 +144,18 @@ async def get_active_warehouses() -> list[Warehouse]:
             .where(Warehouse.is_active.is_(True))
             .order_by(Warehouse.city_key, Warehouse.updated_at.desc(), Warehouse.id.desc())
         )
-        return list(result.scalars().all())
+        warehouses = list(result.scalars().all())
+
+    # User side must show only warehouses that already have an address/media block.
+    # If admin creates a warehouse without address/caption/media, it stays hidden.
+    visible_warehouses = []
+    for warehouse in warehouses:
+        has_caption = bool((warehouse.address_caption or "").strip())
+        has_media = bool((warehouse.media_file_id or "").strip())
+        if has_caption or has_media:
+            visible_warehouses.append(warehouse)
+
+    return visible_warehouses
 
 
 async def get_user_warehouse(user_city: str | None) -> tuple[Warehouse | None, str]:
