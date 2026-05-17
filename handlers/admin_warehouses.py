@@ -433,7 +433,7 @@ async def choose_tj_pickup_city(callback: CallbackQuery, state: FSMContext) -> N
     city_key = callback.data.split(":")[-1]
 
     await state.update_data(city_key=city_key, address_kind="tj_pickup")
-    await state.set_state(AdminWarehouseStates.waiting_for_block)
+    await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
 
     await callback.message.edit_text(
         "🇹🇯 <b>Адреси гирифтани бор</b>\n\n"
