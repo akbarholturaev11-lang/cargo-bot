@@ -10,6 +10,7 @@ from keyboards.inline_admin import (
 from services.warehouses import (
     list_warehouses,
     save_active_warehouse,
+    save_tj_pickup_warehouse,
     set_warehouse_inactive,
 )
 from states.admin_warehouse_states import AdminWarehouseStates
@@ -409,3 +410,58 @@ async def cancel_warehouse_flow(callback: CallbackQuery, state: FSMContext) -> N
         else:
             await callback.message.edit_text("Амалиёт бекор карда шуд.")
     await callback.answer()
+
+
+@router.callback_query(F.data == "admin_wh:tj_pickup")
+async def start_tj_pickup_warehouse(callback: CallbackQuery, state: FSMContext) -> None:
+    await state.clear()
+    await state.update_data(address_kind="tj_pickup")
+    await state.set_state(AdminWarehouseStates.choosing_city)
+
+    await callback.message.edit_text(
+        "🇹🇯 <b>Адреси гирифтани бор</b>\n\n"
+        "<blockquote>Филиалро интихоб кунед. Ин адрес user’га юк TJK’га етиб келгандан кейин чиқади.</blockquote>",
+        reply_markup=admin_warehouse_city_keyboard("tj_pickup"),
+    )
+
+
+@router.callback_query(
+    AdminWarehouseStates.choosing_city,
+    F.data.startswith("admin_wh:city:tj_pickup:")
+)
+async def choose_tj_pickup_city(callback: CallbackQuery, state: FSMContext) -> None:
+    city_key = callback.data.split(":")[-1]
+
+    await state.update_data(city_key=city_key, address_kind="tj_pickup")
+    await state.set_state(AdminWarehouseStates.waiting_for_block)
+
+    await callback.message.edit_text(
+        "🇹🇯 <b>Адреси гирифтани бор</b>\n\n"
+        "<blockquote>"
+        "Фото + caption, видео + caption ёки оддий text юборинг.\n\n"
+        "Бу адрес user <b>Складдан келиб олиш</b> босганда чиқади."
+        "</blockquote>"
+    )
+
+
+@router.callback_query(
+    AdminWarehouseStates.confirming,
+    F.data == "admin_wh:save_tj_pickup"
+)
+async def save_tj_pickup(callback: CallbackQuery, state: FSMContext) -> None:
+    data = await state.get_data()
+
+    warehouse = await save_tj_pickup_warehouse(
+        city_key=data["city_key"],
+        media_type=data["media_type"],
+        media_file_id=data.get("media_file_id"),
+        caption=data["address_caption"],
+    )
+
+    await state.clear()
+
+    await callback.message.edit_text(
+        "✅ <b>Адреси гирифтани бор сабт шуд.</b>\n\n"
+        f"<blockquote>Филиал: {warehouse.city_name_tj}</blockquote>",
+        reply_markup=warehouse_management_keyboard(),
+    )
