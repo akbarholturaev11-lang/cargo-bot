@@ -111,14 +111,16 @@ async def _send_tj_pickup_block(
         await message.answer(text)
         return
 
-    title = (
-        f"📍 <b>Адреси гирифтани бор</b>\n"
-        f"<blockquote>Филиал: {city}</blockquote>\n\n"
-        if lang == LANG_TJ
-        else
-        f"📍 <b>Адрес получения груза</b>\n"
-        f"<blockquote>Филиал: {city}</blockquote>\n\n"
-    )
+    if lang == LANG_RU:
+        title = (
+            f"📍 <b>Адрес получения груза</b>\n"
+            f"<blockquote>Филиал: {city}</blockquote>\n\n"
+        )
+    else:
+        title = (
+            f"📍 <b>Адреси гирифтани бор</b>\n"
+            f"<blockquote>Филиал: {city}</blockquote>\n\n"
+        )
 
     caption = title + f"<blockquote>{pickup_caption}</blockquote>" if pickup_caption else title
 

@@ -143,12 +143,12 @@ def delivery_keyboard(lang: str, parcel_id: int | None = None) -> InlineKeyboard
     if lang == LANG_RU:
         rows = (
             (("Доставка", delivery_callback),),
-            (("Адрес склада 🇹🇯", warehouse_callback),),
+            (("Адрес получения 🇹🇯", warehouse_callback),),
         )
     else:
         rows = (
             (("Доставка", delivery_callback),),
-            (("Адреси склад 🇹🇯", warehouse_callback),),
+            (("Адреси гирифтани бор 🇹🇯", warehouse_callback),),
         )
     return build_inline_keyboard(rows)
 

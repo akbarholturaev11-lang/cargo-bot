@@ -400,10 +400,18 @@ async def register_phone_command(message: Message, state: FSMContext) -> None:
         await admin_command(message)
         return
 
-    await message.answer(
-        "⚠️ <b>Ин команда дар вақти регистрация кор намекунад.</b>\n\n"
-        "<blockquote>Лутфан аввал рақами телефонро фиристед ё /start нависед.</blockquote>"
-    )
+    if lang == LANG_RU:
+        text = (
+            "⚠️ <b>Эта команда не работает во время регистрации.</b>\n\n"
+            "<blockquote>Сначала отправьте номер телефона или напишите /start.</blockquote>"
+        )
+    else:
+        text = (
+            "⚠️ <b>Ин команда дар вақти сабти ном кор намекунад.</b>\n\n"
+            "<blockquote>Лутфан аввал рақами телефонро фиристед ё /start нависед.</blockquote>"
+        )
+
+    await message.answer(text)
 
 
 @router.message(AuthStates.register_phone, F.contact)
