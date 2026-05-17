@@ -16,6 +16,7 @@ from sqlalchemy import distinct, func, select
 from database.db import async_session
 from database.models import Parcel, User
 from states.admin_broadcast_states import AdminBroadcastStates
+from services.normalizer import normalize_track_code
 from texts.status import format_status
 from utils.constants import (
     LANG_TJ,
@@ -48,6 +49,7 @@ def broadcast_main_keyboard() -> InlineKeyboardMarkup:
             [("📦 Аз рӯи статус", "broadcast:filter:status")],
             [("📅 Аз рӯи сана", "broadcast:filter:date")],
             [("🆔 Ба як user бо Telegram ID", "broadcast:filter:telegram_id")],
+            [("🔢 Бо трек-код", "broadcast:filter:track_code")],
             [("❌ Бекор кардан", "broadcast:cancel")],
         ]
     )
@@ -133,6 +135,21 @@ async def _target_telegram_ids(data: dict[str, Any]) -> list[int]:
             )
             return [int(x) for x in result.scalars().all() if x]
 
+        if filter_type == "track_code":
+            track_code = data.get("track_code")
+            if not track_code:
+                return []
+
+            normalized_track_code = normalize_track_code(track_code)
+
+            result = await session.execute(
+                select(User.telegram_id)
+                .join(Parcel, Parcel.user_id == User.id)
+                .where(Parcel.normalized_track_code == normalized_track_code)
+                .where(User.telegram_id.is_not(None))
+            )
+            return [int(x) for x in result.scalars().all() if x]
+
         if filter_type == "status":
             status_code = data.get("status_code")
             result = await session.execute(
@@ -186,6 +203,9 @@ def _filter_title(data: dict[str, Any]) -> str:
 
     if filter_type == "telegram_id":
         return f"Telegram ID: {data.get('telegram_id')}"
+
+    if filter_type == "track_code":
+        return f"Трек-код: {data.get('track_code')}"
 
     if filter_type == "status":
         return f"Статус: {format_status(data.get('status_code', ''), '', LANG_TJ)}"
@@ -377,6 +397,14 @@ async def choose_filter(callback: CallbackQuery, state: FSMContext) -> None:
             "🆔 <b>Telegram ID ворид кунед:</b>"
         )
 
+    elif filter_type == "track_code":
+        await state.update_data(filter_type="track_code")
+        await state.set_state(AdminBroadcastStates.waiting_for_track_code)
+        await callback.message.edit_text(
+            "🔢 <b>Трек-кодро ворид кунед:</b>\n\n"
+            "<blockquote>Мисол: <code>SF123456789CN</code></blockquote>"
+        )
+
     await callback.answer()
 
 
@@ -453,6 +481,59 @@ async def receive_telegram_id(message: Message, state: FSMContext) -> None:
     await message.answer(
         "✅ <b>Telegram ID қабул шуд.</b>\n\n"
         "<blockquote>Акнун тайёр хабар/фото/видео/голосро фиристед.</blockquote>"
+    )
+
+
+
+@router.message(AdminBroadcastStates.waiting_for_track_code)
+async def receive_track_code(message: Message, state: FSMContext) -> None:
+    if message.from_user is None or not is_admin(message.from_user.id):
+        return
+
+    raw = (message.text or "").strip()
+    if not raw:
+        await message.answer("❌ <b>Трек-код нодуруст аст.</b>")
+        return
+
+    normalized_track_code = normalize_track_code(raw)
+
+    async with async_session() as session:
+        result = await session.execute(
+            select(Parcel, User)
+            .join(User, Parcel.user_id == User.id)
+            .where(Parcel.normalized_track_code == normalized_track_code)
+        )
+        row = result.first()
+
+    if row is None:
+        await message.answer(
+            "❌ <b>Ин трек-код дар база ёфт нашуд.</b>"
+        )
+        return
+
+    parcel, user = row
+
+    if not user.telegram_id:
+        await message.answer(
+            "❌ <b>Ин user Telegram ID надорад.</b>\n\n"
+            "<blockquote>Эҳтимол user ҳоло ботро истифода накардааст.</blockquote>"
+        )
+        return
+
+    await state.update_data(
+        track_code=parcel.track_code,
+        telegram_id=user.telegram_id,
+    )
+    await state.set_state(AdminBroadcastStates.waiting_for_content)
+
+    await message.answer(
+        "✅ <b>Трек-код қабул шуд.</b>\n\n"
+        f"<blockquote>"
+        f"Трек-код: <code>{parcel.track_code}</code>\n"
+        f"Мизоҷ: <b>{user.full_name}</b>\n"
+        f"Telegram ID: <code>{user.telegram_id}</code>"
+        f"</blockquote>\n\n"
+        "Акнун тайёр хабар/фото/видео/голосро фиристед."
     )
 
 

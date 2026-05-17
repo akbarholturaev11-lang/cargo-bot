@@ -7,5 +7,6 @@ class AdminBroadcastStates(StatesGroup):
     choosing_date_field = State()
     waiting_for_date = State()
     waiting_for_telegram_id = State()
+    waiting_for_track_code = State()
     waiting_for_content = State()
     confirming = State()
