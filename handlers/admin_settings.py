@@ -65,7 +65,7 @@ from utils.validators import is_admin
 router = Router(name="admin_settings")
 
 
-ADMIN_SETTINGS_LABEL = ADMIN_MENU[4][0]
+ADMIN_SETTINGS_LABEL = "Танзимот"
 EDITABLE_SETTINGS = {
     "price_per_kg_tjs",
     "price_per_cube_tjs",
