@@ -71,6 +71,65 @@ async def _send_warehouse_block(
         await message.answer(caption)
 
 
+
+def _pickup_media(warehouse) -> tuple[str, str | None]:
+    media_type = getattr(warehouse, "tj_pickup_media_type", None) or "text"
+    media_file_id = getattr(warehouse, "tj_pickup_media_file_id", None)
+
+    if media_type not in {"photo", "video", "text"}:
+        media_type = "photo" if media_file_id else "text"
+
+    if media_type in {"photo", "video"} and not media_file_id:
+        media_type = "text"
+
+    return media_type, media_file_id
+
+
+async def _send_tj_pickup_block(
+    target,
+    warehouse,
+    *,
+    city: str,
+    lang: str,
+) -> None:
+    message = target.message if isinstance(target, CallbackQuery) else target
+    if message is None:
+        return
+
+    pickup_caption = (getattr(warehouse, "tj_pickup_caption", None) or "").strip()
+    media_type, media_file_id = _pickup_media(warehouse)
+
+    if not pickup_caption and not media_file_id:
+        text = (
+            "❌ <b>Адреси гирифтани бор ҳоло илова нашудааст.</b>\n\n"
+            "<blockquote>Лутфан ба оператор нависед.</blockquote>"
+            if lang == LANG_TJ
+            else
+            "❌ <b>Адрес получения груза ещё не добавлен.</b>\n\n"
+            "<blockquote>Пожалуйста, напишите оператору.</blockquote>"
+        )
+        await message.answer(text)
+        return
+
+    title = (
+        f"📍 <b>Адреси гирифтани бор</b>\n"
+        f"<blockquote>Филиал: {city}</blockquote>\n\n"
+        if lang == LANG_TJ
+        else
+        f"📍 <b>Адрес получения груза</b>\n"
+        f"<blockquote>Филиал: {city}</blockquote>\n\n"
+    )
+
+    caption = title + f"<blockquote>{pickup_caption}</blockquote>" if pickup_caption else title
+
+    if media_type == "photo" and media_file_id:
+        await message.answer_photo(photo=media_file_id, caption=caption)
+    elif media_type == "video" and media_file_id:
+        await message.answer_video(video=media_file_id, caption=caption)
+    else:
+        await message.answer(caption)
+
+
 @router.message(F.text.in_(WAREHOUSE_MENU_LABELS))
 async def show_warehouse_cities(message: Message) -> None:
     user = await get_current_user(message)
@@ -143,10 +202,16 @@ async def show_arrival_warehouse(callback: CallbackQuery) -> None:
         await callback.answer()
         return
 
-    await _send_warehouse_block(
+    city = (
+        warehouse.city_name_tj
+        if lang == LANG_TJ
+        else warehouse.city_name_ru
+    )
+
+    await _send_tj_pickup_block(
         callback,
         warehouse,
-        city=parcel.destination_city,
+        city=city,
         lang=lang,
     )
     await callback.answer()
