@@ -1,4 +1,5 @@
 from datetime import date, datetime
+import logging
 
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
@@ -15,6 +16,8 @@ from texts.status import format_status
 from utils.constants import LANG_RU, LANG_TJ
 from utils.validators import is_admin
 
+
+logger = logging.getLogger(__name__)
 
 router = Router(name="parcel_search")
 
@@ -70,7 +73,19 @@ async def _format_parcel_found(parcel, lang: str) -> str:
 
 
 async def _send_status_message(message: Message, parcel, text: str) -> None:
+    logger.warning(
+        "[PARCEL_SEARCH_MEDIA] track=%s status_code=%s",
+        getattr(parcel, "track_code", None),
+        getattr(parcel, "status_code", None),
+    )
+
     image_file_id = await get_status_image_file_id(parcel.status_code)
+
+    logger.warning(
+        "[PARCEL_SEARCH_MEDIA] image_exists=%s",
+        bool(image_file_id),
+    )
+
     if image_file_id:
         await message.answer_photo(photo=image_file_id, caption=text)
         return
