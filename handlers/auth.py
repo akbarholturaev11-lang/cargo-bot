@@ -282,8 +282,7 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
         await state.clear()
         await message.answer(
             "❌ <b>Ин рақам аллакай сабт шудааст.</b>\n\n"
-            "<blockquote>Лутфан аз тугмаи «Ворид шудан» истифода баред.</blockquote>",
-            reply_markup=auth_start_keyboard(lang),
+            "<blockquote>Лутфан /start нависед ва аз «Ворид шудан» истифода баред.</blockquote>"
         )
         return
 
