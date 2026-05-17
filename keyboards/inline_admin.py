@@ -138,14 +138,13 @@ def settings_media_keyboard() -> InlineKeyboardMarkup:
     )
 
 def warehouse_management_keyboard() -> InlineKeyboardMarkup:
-    return build_inline_keyboard(
+    return _kb(
         (
-            (("🇨🇳 Хитой склад адрес", "admin_wh:add"),),
-            (("🇨🇳 Хитой адрес иваз кардан", "admin_wh:edit"),),
+            (("🇨🇳 Адреси склади Чин", "admin_wh:add"),),
             (("🇹🇯 Адреси гирифтани бор", "admin_wh:tj_pickup"),),
-            (("Складро ғайрифаъол кардан", "admin_wh:inactive"),),
             (("Рӯйхати складҳо", "admin_wh:list"),),
-        ),
+            (("Бозгашт", "settings:main"),),
+        )
     )
 
 
