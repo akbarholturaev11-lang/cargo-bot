@@ -93,7 +93,7 @@ MY_PARCELS_EMPTY = (
     "<blockquote>Когда ваш груз будет принят на складе в Китае, бот отправит уведомление.</blockquote>"
 )
 
-MY_PARCELS_TITLE = "📦 <b>📦 Мои грузы</b>"
+MY_PARCELS_TITLE = "📦 <b>Мои грузы</b>"
 
 MY_PARCELS_ITEM = (
     "📦 <b>{index}. Груз</b>\n"

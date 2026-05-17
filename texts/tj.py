@@ -93,7 +93,7 @@ MY_PARCELS_EMPTY = (
     "<blockquote>Вақте бори шумо ба склади Чин қабул мешавад, бот ба шумо хабар медиҳад.</blockquote>"
 )
 
-MY_PARCELS_TITLE = "📦 <b>📦 Борҳои ман</b>"
+MY_PARCELS_TITLE = "📦 <b>Борҳои ман</b>"
 
 MY_PARCELS_ITEM = (
     "📦 <b>{index}. Бор</b>\n"

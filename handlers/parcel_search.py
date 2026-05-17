@@ -69,7 +69,7 @@ async def _format_parcel_found(parcel, lang: str) -> str:
     )
 
 
-async def _send_status_message(message: Message, text: str) -> None:
+async def _send_status_message(message: Message, parcel, text: str) -> None:
     image_file_id = await get_status_image_file_id(parcel.status_code)
     if image_file_id:
         await message.answer_photo(photo=image_file_id, caption=text)
@@ -108,6 +108,7 @@ async def search_parcel(message: Message, state: FSMContext) -> None:
 
     await _send_status_message(
         message,
+        parcel,
         await _format_parcel_found(parcel, user.language),
     )
 
