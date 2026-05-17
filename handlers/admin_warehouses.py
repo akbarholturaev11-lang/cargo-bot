@@ -291,6 +291,33 @@ async def save_warehouse(callback: CallbackQuery, state: FSMContext) -> None:
         media_file_id=data.get("media_file_id"),
         address_caption=data["address_caption"],
     )
+    has_tj_pickup = bool(
+        (getattr(warehouse, "tj_pickup_caption", None) or "").strip()
+        or (getattr(warehouse, "tj_pickup_media_file_id", None) or "").strip()
+    )
+
+    if not has_tj_pickup:
+        await state.update_data(
+            address_kind="tj_pickup",
+            city_key=warehouse.city_key,
+            media_type="text",
+            media_file_id=None,
+            address_caption="",
+        )
+        await state.set_state(AdminWarehouseStates.waiting_for_photo_caption)
+
+        await callback.message.edit_text(
+            "✅ <b>Хитой склад адреси сабт шуд.</b>\n\n"
+            f"<blockquote>Филиал: {warehouse.city_name_tj}</blockquote>\n\n"
+            "🇹🇯 <b>Энди Тоҷикистонда товар қабул қилинадиган адресни қўшинг.</b>\n\n"
+            "<blockquote>"
+            "Фото + caption, видео + caption ёки оддий text юборинг.\n"
+            "Бу адрес user <b>Складдан келиб олиш</b> босганда чиқади."
+            "</blockquote>"
+        )
+        await callback.answer()
+        return
+
     await state.clear()
     await _finish_preview(
         callback,
