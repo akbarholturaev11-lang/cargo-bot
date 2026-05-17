@@ -20,8 +20,8 @@ ASK_PHONE = (
 )
 
 ASK_CITY = (
-    "🏙 <b>Выберите город</b>\n\n"
-    "Ваш основной склад будет определён по этому городу."
+    "🏬 <b>Выберите филиал</b>\n\n"
+    "Ваш основной филиал будет определён по этому выбору."
 )
 
 REGISTRATION_COMPLETED = (
@@ -54,13 +54,13 @@ INVALID_PHONE = (
 
 BACK = "⬅️ Назад"
 
-MENU_SEARCH_PARCEL = "Найти груз"
-MENU_MY_PARCELS = "Мои грузы"
-MENU_CALCULATOR = "Примерный расчёт"
-MENU_PROFILE = "Мой профиль"
-MENU_WAREHOUSES = "Адреса складов"
-MENU_PRICES = "Цены"
-MENU_OPERATOR = "Оператор"
+MENU_SEARCH_PARCEL = "🔍 Найти груз"
+MENU_MY_PARCELS = "📦 Мои грузы"
+MENU_CALCULATOR = "🧮 Примерный расчёт"
+MENU_PROFILE = "👤 Мой профиль"
+MENU_WAREHOUSES = "🏬 Адреса складов"
+MENU_PRICES = "💰 Цены"
+MENU_OPERATOR = "☎️ Оператор"
 
 PARCEL_FOUND = (
     "📦 <b>Ваш груз найден</b>\n\n"
@@ -93,7 +93,7 @@ MY_PARCELS_EMPTY = (
     "<blockquote>Когда ваш груз будет принят на складе в Китае, бот отправит уведомление.</blockquote>"
 )
 
-MY_PARCELS_TITLE = "📦 <b>Мои грузы</b>"
+MY_PARCELS_TITLE = "📦 <b>📦 Мои грузы</b>"
 
 MY_PARCELS_ITEM = (
     "📦 <b>{index}. Груз</b>\n"
@@ -104,7 +104,7 @@ MY_PARCELS_ITEM = (
 )
 
 PROFILE = (
-    "👤 <b>Мой профиль</b>\n\n"
+    "👤 <b>👤 Мой профиль</b>\n\n"
     "<blockquote>"
     "🧑 Имя: <b>{full_name}</b>\n"
     "📞 Телефон: <code>{phone}</code>\n"
@@ -120,7 +120,7 @@ PROFILE_UPDATED = "✅ <b>Данные обновлены.</b>"
 PHONE_ALREADY_USED = "❌ <b>Этот номер телефона уже используется.</b>"
 
 CALCULATOR = (
-    "🧮 <b>Примерный расчёт</b>\n\n"
+    "🧮 <b>🧮 Примерный расчёт</b>\n\n"
     "Каким способом хотите рассчитать?"
 )
 
@@ -129,7 +129,7 @@ CALCULATOR_BY_CUBE = "📐 По кубам"
 CALCULATOR_RESULT = "💰 Примерная стоимость: <b>{amount} сомонӣ</b>"
 
 CALCULATOR_CHOOSE = (
-    "🧮 <b>Примерный расчёт</b>\n\n"
+    "🧮 <b>🧮 Примерный расчёт</b>\n\n"
     "Каким способом хотите рассчитать?"
 )
 
@@ -151,7 +151,7 @@ CALCULATOR_INVALID_NUMBER = (
 )
 
 CALCULATOR_KG_RESULT = (
-    "🧮 <b>Примерный расчёт</b>\n\n"
+    "🧮 <b>🧮 Примерный расчёт</b>\n\n"
     "<blockquote>"
     "⚖️ Вес: <b>{amount} кг</b>\n"
     "💰 Цена за 1 кг: <b>{price} сомонӣ</b>\n"
@@ -161,7 +161,7 @@ CALCULATOR_KG_RESULT = (
 )
 
 CALCULATOR_CUBE_RESULT = (
-    "🧮 <b>Примерный расчёт</b>\n\n"
+    "🧮 <b>🧮 Примерный расчёт</b>\n\n"
     "<blockquote>"
     "📐 Объём: <b>{amount} куб</b>\n"
     "💰 Цена за 1 куб: <b>{price} сомонӣ</b>\n"
@@ -176,8 +176,8 @@ WAREHOUSE_ACTIVE = (
 )
 
 WAREHOUSE_INACTIVE = (
-    "❌ <b>Сейчас для этого региона склад недоступен.</b>\n\n"
-    "<blockquote>Пожалуйста, выберите вариант <b>Истаравшан</b>.</blockquote>"
+    "❌ <b>Сейчас для этого региона филиал недоступен.</b>\n\n"
+    "<blockquote>Пожалуйста, выберите доступный филиал или напишите оператору.</blockquote>"
 )
 
 WAREHOUSE_ADDRESS_MISSING = (
@@ -252,7 +252,7 @@ OPERATOR_NOT_SET = (
 )
 
 PRICES = (
-    "💰 <b>Цены</b>\n\n"
+    "💰 <b>💰 Цены</b>\n\n"
     "<blockquote>"
     "🇨🇳 Китай → Таджикистан\n\n"
     "📦 1 кг: <b>{price_per_kg_tjs} сомонӣ</b>\n"

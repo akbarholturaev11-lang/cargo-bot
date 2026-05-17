@@ -38,11 +38,11 @@ def parcel_statuses_keyboard() -> InlineKeyboardMarkup:
 def settings_categories_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("Нархҳо", "settings:prices"),),
+            (("💰 Нархҳо", "settings:prices"),),
             (("Ҳисобкунӣ", "settings:calculation"),),
             (("Доставка", "settings:delivery"),),
             (("Канал", "settings:channel"),),
-            (("Оператор", "settings:operator"),),
+            (("☎️ Оператор", "settings:operator"),),
             (("Медиа", "settings:media"),),
             (("Матнҳо", "settings:texts"),),
             (("Складҳо", "settings:warehouses"),),

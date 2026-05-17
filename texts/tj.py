@@ -20,8 +20,8 @@ ASK_PHONE = (
 )
 
 ASK_CITY = (
-    "🏙 <b>Шаҳрро интихоб кунед</b>\n\n"
-    "Склади асосии шумо аз рӯи ҳамин шаҳр муайян мешавад."
+    "🏬 <b>Филиалро интихоб кунед</b>\n\n"
+    "Филиали асосии шумо аз рӯи ҳамин интихоб муайян мешавад."
 )
 
 REGISTRATION_COMPLETED = (
@@ -54,13 +54,13 @@ INVALID_PHONE = (
 
 BACK = "⬅️ Бозгашт"
 
-MENU_SEARCH_PARCEL = "Ҷустуҷӯи бор"
-MENU_MY_PARCELS = "Борҳои ман"
-MENU_CALCULATOR = "Ҳисоби тахминӣ"
-MENU_PROFILE = "Профили ман"
-MENU_WAREHOUSES = "Суроғаҳои склад"
-MENU_PRICES = "Нархҳо"
-MENU_OPERATOR = "Оператор"
+MENU_SEARCH_PARCEL = "🔍 Ҷустуҷӯи бор"
+MENU_MY_PARCELS = "📦 Борҳои ман"
+MENU_CALCULATOR = "🧮 Ҳисоби тахминӣ"
+MENU_PROFILE = "👤 Профили ман"
+MENU_WAREHOUSES = "🏬 Суроғаҳои склад"
+MENU_PRICES = "💰 Нархҳо"
+MENU_OPERATOR = "☎️ Оператор"
 
 PARCEL_FOUND = (
     "📦 <b>Бори шумо ёфт шуд</b>\n\n"
@@ -75,7 +75,7 @@ PARCEL_FOUND = (
 )
 
 ASK_TRACK_CODE = (
-    "🔍 <b>Ҷустуҷӯи бор</b>\n\n"
+    "🔍 <b>🔍 Ҷустуҷӯи бор</b>\n\n"
     "Трек-коди борро фиристед.\n\n"
     "<blockquote>Мисол: <code>SF123456789CN</code></blockquote>"
 )
@@ -93,7 +93,7 @@ MY_PARCELS_EMPTY = (
     "<blockquote>Вақте бори шумо ба склади Чин қабул мешавад, бот ба шумо хабар медиҳад.</blockquote>"
 )
 
-MY_PARCELS_TITLE = "📦 <b>Борҳои ман</b>"
+MY_PARCELS_TITLE = "📦 <b>📦 Борҳои ман</b>"
 
 MY_PARCELS_ITEM = (
     "📦 <b>{index}. Бор</b>\n"
@@ -104,7 +104,7 @@ MY_PARCELS_ITEM = (
 )
 
 PROFILE = (
-    "👤 <b>Профили ман</b>\n\n"
+    "👤 <b>👤 Профили ман</b>\n\n"
     "<blockquote>"
     "🧑 Ном: <b>{full_name}</b>\n"
     "📞 Телефон: <code>{phone}</code>\n"
@@ -120,7 +120,7 @@ PROFILE_UPDATED = "✅ <b>Маълумот нав шуд.</b>"
 PHONE_ALREADY_USED = "❌ <b>Ин рақами телефон аллакай истифода мешавад.</b>"
 
 CALCULATOR = (
-    "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "🧮 <b>🧮 Ҳисоби тахминӣ</b>\n\n"
     "Бо кадом усул ҳисоб мекунед?"
 )
 
@@ -129,7 +129,7 @@ CALCULATOR_BY_CUBE = "📐 Бо куб ҳисоб кардан"
 CALCULATOR_RESULT = "💰 Нархи тахминӣ: <b>{amount} сомонӣ</b>"
 
 CALCULATOR_CHOOSE = (
-    "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "🧮 <b>🧮 Ҳисоби тахминӣ</b>\n\n"
     "Бо кадом усул ҳисоб мекунед?"
 )
 
@@ -151,7 +151,7 @@ CALCULATOR_INVALID_NUMBER = (
 )
 
 CALCULATOR_KG_RESULT = (
-    "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "🧮 <b>🧮 Ҳисоби тахминӣ</b>\n\n"
     "<blockquote>"
     "⚖️ Вазн: <b>{amount} кг</b>\n"
     "💰 Нарх барои 1 кг: <b>{price} сомонӣ</b>\n"
@@ -161,7 +161,7 @@ CALCULATOR_KG_RESULT = (
 )
 
 CALCULATOR_CUBE_RESULT = (
-    "🧮 <b>Ҳисоби тахминӣ</b>\n\n"
+    "🧮 <b>🧮 Ҳисоби тахминӣ</b>\n\n"
     "<blockquote>"
     "📐 Ҳаҷм: <b>{amount} куб</b>\n"
     "💰 Нарх барои 1 куб: <b>{price} сомонӣ</b>\n"
@@ -176,8 +176,8 @@ WAREHOUSE_ACTIVE = (
 )
 
 WAREHOUSE_INACTIVE = (
-    "❌ <b>Ҳозирча барои ин минтақа склад фаъол нест.</b>\n\n"
-    "<blockquote>Лутфан варианти <b>Истаравшан</b>-ро интихоб кунед.</blockquote>"
+    "❌ <b>Ҳозирча барои ин минтақа филиал фаъол нест.</b>\n\n"
+    "<blockquote>Лутфан филиали дастрасро интихоб кунед ё ба оператор нависед.</blockquote>"
 )
 
 WAREHOUSE_ADDRESS_MISSING = (
@@ -252,7 +252,7 @@ OPERATOR_NOT_SET = (
 )
 
 PRICES = (
-    "💰 <b>Нархҳо</b>\n\n"
+    "💰 <b>💰 Нархҳо</b>\n\n"
     "<blockquote>"
     "🇨🇳 Чин → Тоҷикистон\n\n"
     "📦 1 кг: <b>{price_per_kg_tjs} сомонӣ</b>\n"
