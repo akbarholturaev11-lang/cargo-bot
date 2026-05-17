@@ -30,6 +30,7 @@ def parcel_statuses_keyboard() -> InlineKeyboardMarkup:
             (("🇨🇳 Дар склади Чин", f"parcel_status:{STATUS_CHINA_RECEIVED}"),),
             (("🚚 Дар роҳ", f"parcel_status:{STATUS_ON_THE_WAY}"),),
             (("🏬 Ба склад расид", f"parcel_status:{STATUS_ARRIVED_DESTINATION}"),),
+            (("✅ Супорида шуд", f"parcel_status:{STATUS_RECEIVED}"),),
         ),
     )
 

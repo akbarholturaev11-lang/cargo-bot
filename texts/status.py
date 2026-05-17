@@ -13,11 +13,13 @@ STATUS_TEXTS = {
         STATUS_CHINA_RECEIVED: "🇨🇳 Дар склади Чин",
         STATUS_ON_THE_WAY: "🚚 Дар роҳ",
         STATUS_ARRIVED_DESTINATION: "🏬 Ба склад расид",
+        STATUS_RECEIVED: "✅ Супорида шуд",
     },
     LANG_RU: {
         STATUS_CHINA_RECEIVED: "🇨🇳 На складе в Китае",
         STATUS_ON_THE_WAY: "🚚 В пути",
         STATUS_ARRIVED_DESTINATION: "🏬 Прибыл на склад",
+        STATUS_RECEIVED: "✅ Получено",
     },
 }
 
