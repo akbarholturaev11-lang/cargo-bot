@@ -1,13 +1,44 @@
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
-from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message, TelegramObject
 from aiogram.exceptions import TelegramBadRequest
+from aiogram.types import (
+    CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    Message,
+    TelegramObject,
+)
 
 from config import ADMIN_IDS
 from services.channel import get_required_channel, is_channel_join_required, is_user_subscribed
 
 CHECK_SUB_CALLBACK = "channel:check"
+
+
+def _lang(tg_user) -> str:
+    code = (getattr(tg_user, "language_code", "") or "").lower()
+    if code.startswith("ru"):
+        return "ru"
+    return "tj"
+
+
+def _txt(lang: str, key: str) -> str:
+    texts = {
+        "tj": {
+            "open": "📢 Ба канал обуна шавед",
+            "check": "✅ Обуна шудам",
+            "need": "📢 Аввал ба канал обуна шавед.",
+            "not_found": "❌ Обуна ёфт нашуд",
+        },
+        "ru": {
+            "open": "📢 Перейти в канал",
+            "check": "✅ Я подписался",
+            "need": "📢 Сначала подпишитесь на канал.",
+            "not_found": "❌ Подписка не найдена",
+        },
+    }
+    return texts.get(lang, texts["tj"])[key]
 
 
 def _channel_url(channel: str) -> str:
@@ -22,18 +53,18 @@ def _channel_url(channel: str) -> str:
     return f"https://t.me/{channel}"
 
 
-def _subscribe_keyboard(channel: str) -> InlineKeyboardMarkup:
+def _subscribe_keyboard(channel: str, lang: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="📢 Каналга ўтиш",
+                    text=_txt(lang, "open"),
                     url=_channel_url(channel),
                 )
             ],
             [
                 InlineKeyboardButton(
-                    text="✅ Обуна бўлдим",
+                    text=_txt(lang, "check"),
                     callback_data=CHECK_SUB_CALLBACK,
                 )
             ],
@@ -41,14 +72,18 @@ def _subscribe_keyboard(channel: str) -> InlineKeyboardMarkup:
     )
 
 
-async def _safe_delete_message(message) -> None:
-    if not message:
-        return
-
+async def _remove_subscribe_block(message: Message) -> None:
     try:
         await message.delete()
-    except TelegramBadRequest:
         return
+    except TelegramBadRequest:
+        pass
+
+    # Agar delete bo‘lmasa, hech bo‘lmasa knopkalarni olib tashlaydi
+    try:
+        await message.edit_reply_markup(reply_markup=None)
+    except TelegramBadRequest:
+        pass
 
 
 class ChannelRequiredMiddleware(BaseMiddleware):
@@ -75,39 +110,36 @@ class ChannelRequiredMiddleware(BaseMiddleware):
         if not channel:
             return await handler(event, data)
 
-        # User "✅ Обуна бўлдим" босганда middleware ўзи текширади
+        lang = _lang(tg_user)
+
         if isinstance(event, CallbackQuery) and event.data == CHECK_SUB_CALLBACK:
             subscribed = await is_user_subscribed(bot, tg_user.id)
 
             if subscribed:
-                await event.answer("✅ Обуна тасдиқ шуд")
-                await _safe_delete_message(event.message)
-
-                await event.message.answer(
-                    "✅ Обуна тасдиқ шуд. Акнун ботдан фойдаланишингиз мумкин.\n\n"
-                    "Бошлаш учун /start босинг."
-                )
+                await event.answer()
+                await _remove_subscribe_block(event.message)
                 return
 
-            await event.answer("❌ Ҳали обуна бўлмагансиз", show_alert=True)
+            await event.answer(_txt(lang, "not_found"), show_alert=True)
             return
 
         subscribed = await is_user_subscribed(bot, tg_user.id)
         if subscribed:
             return await handler(event, data)
 
-        text = (
-            "📢 <b>Ботдан фойдаланиш учун аввал каналга обуна бўлинг.</b>\n\n"
-            "Обуна бўлгандан кейин <b>✅ Обуна бўлдим</b> тугмасини босинг."
-        )
-
         if isinstance(event, Message):
-            await event.answer(text, reply_markup=_subscribe_keyboard(channel))
+            await event.answer(
+                _txt(lang, "need"),
+                reply_markup=_subscribe_keyboard(channel, lang),
+            )
             return
 
         if isinstance(event, CallbackQuery):
             await event.answer()
-            await event.message.answer(text, reply_markup=_subscribe_keyboard(channel))
+            await event.message.answer(
+                _txt(lang, "need"),
+                reply_markup=_subscribe_keyboard(channel, lang),
+            )
             return
 
         return
