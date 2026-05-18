@@ -1,7 +1,7 @@
 from aiogram import F, Router
 from aiogram.types import Message
 
-from services.users import get_current_user
+from handlers.user_menu import get_current_user
 from texts import ru, tj
 from utils.constants import LANG_RU, LANG_TJ
 
