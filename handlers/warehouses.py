@@ -31,6 +31,30 @@ def _city_name(city_key: str, lang: str) -> str:
     return names.get(lang, names[LANG_TJ])
 
 
+def _render_client_address(text: str | None, user) -> str:
+    value = (text or "").strip()
+    client_code = (getattr(user, "client_code", "") or "").strip()
+    full_name = (getattr(user, "full_name", "") or "").strip()
+    phone = (getattr(user, "phone", "") or "").strip()
+
+    if not value:
+        return ""
+
+    rendered = (
+        value
+        .replace("{client_code}", client_code)
+        .replace("{code}", client_code)
+        .replace("{full_name}", full_name)
+        .replace("{phone}", phone)
+    )
+
+    # Агар admin {client_code} қўйишни унутса, bot ўзи охирига қўшади
+    if client_code and client_code not in rendered:
+        rendered = f"{rendered}\n\n客户代码：{client_code}"
+
+    return rendered
+
+
 def _warehouse_media(warehouse) -> tuple[str, str | None]:
     media_type = getattr(warehouse, "media_type", None) or "photo"
     media_file_id = getattr(warehouse, "media_file_id", None) or warehouse.image_file_id
@@ -47,14 +71,16 @@ async def _send_warehouse_block(
     *,
     city: str,
     lang: str,
+    user=None,
 ) -> None:
     message = target.message if isinstance(target, CallbackQuery) else target
     if message is None:
         return
 
+    address_caption = _render_client_address(warehouse.address_caption, user)
     caption = _texts(lang).WAREHOUSE_ACTIVE.format(
         city=city,
-        caption=warehouse.address_caption,
+        caption=address_caption,
     )
     media_type, media_file_id = _warehouse_media(warehouse)
     if media_type == "photo" and media_file_id:
@@ -159,6 +185,7 @@ async def show_warehouse_cities(message: Message) -> None:
             warehouse,
             city=city,
             lang=lang,
+            user=user,
         )
         return
 
@@ -244,5 +271,6 @@ async def show_warehouse(callback: CallbackQuery) -> None:
         warehouse,
         city=_city_name(city_key, lang),
         lang=lang,
+        user=user,
     )
     await callback.answer()
