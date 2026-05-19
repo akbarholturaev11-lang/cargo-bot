@@ -17,6 +17,7 @@ router = Router(name="my_parcels")
 
 
 MY_PARCELS_MENU_LABELS = {tj.MENU_MY_PARCELS, ru.MENU_MY_PARCELS}
+MY_PARCELS_MENU_LABELS.update({"Борҳои ман", "Мои грузы"})
 TEXTS = {
     LANG_TJ: tj,
     LANG_RU: ru,
@@ -65,7 +66,7 @@ async def show_my_parcels(message: Message) -> None:
             getattr(user, "client_code", None),
         )
 
-        parcels = await get_user_parcels(user.id)
+        parcels = await get_parcels_by_client_code(user.client_code)
         logger.warning("[MY_PARCELS] parcels_count=%s", len(parcels))
 
         if not parcels:
