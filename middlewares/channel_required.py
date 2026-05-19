@@ -1,7 +1,7 @@
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
-from aiogram.exceptions import TelegramBadRequest
+from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 from aiogram.types import (
     CallbackQuery,
     InlineKeyboardButton,
@@ -72,17 +72,20 @@ def _subscribe_keyboard(channel: str, lang: str) -> InlineKeyboardMarkup:
     )
 
 
-async def _remove_subscribe_block(message: Message) -> None:
+async def _remove_subscribe_block(message: Message | None) -> None:
+    if message is None:
+        return
+
     try:
         await message.delete()
         return
-    except TelegramBadRequest:
+    except (AttributeError, TelegramBadRequest, TelegramForbiddenError):
         pass
 
     # Agar delete bo‘lmasa, hech bo‘lmasa knopkalarni olib tashlaydi
     try:
         await message.edit_reply_markup(reply_markup=None)
-    except TelegramBadRequest:
+    except (AttributeError, TelegramBadRequest, TelegramForbiddenError):
         pass
 
 
@@ -116,8 +119,8 @@ class ChannelRequiredMiddleware(BaseMiddleware):
             subscribed = await is_user_subscribed(bot, tg_user.id)
 
             if subscribed:
-                await event.answer()
                 await _remove_subscribe_block(event.message)
+                await event.answer()
                 return
 
             await event.answer(_txt(lang, "not_found"), show_alert=True)
