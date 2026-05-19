@@ -30,7 +30,7 @@ def _get_float(name: str, default: float) -> float:
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 DATABASE_URL = os.getenv("DATABASE_URL", "")
 ADMIN_IDS = _get_int_list(os.getenv("ADMIN_IDS"))
-CLIENT_CODE_PREFIX = os.getenv("CLIENT_CODE_PREFIX", "WS")
+CLIENT_CODE_PREFIX = os.getenv("CLIENT_CODE_PREFIX", "AK")
 
 DEFAULT_KG_PRICE_TJS = _get_float("DEFAULT_KG_PRICE_TJS", 0.0)
 DEFAULT_CUBE_PRICE_TJS = _get_float("DEFAULT_CUBE_PRICE_TJS", 0.0)

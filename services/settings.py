@@ -7,9 +7,9 @@ from database.models import Setting
 
 
 DEFAULT_SETTINGS = {
-    "cargo_name": "Wasit Cargo",
+    "cargo_name": "Akbarshoy bot",
     "cargo_region": "Истаравшан",
-    "client_code_prefix": "WS",
+    "client_code_prefix": "AK",
     "price_per_kg_tjs": "25",
     "price_per_cube_tjs": "3500",
     "delivery_days_tj": "18–25 рӯз",
@@ -35,12 +35,12 @@ DEFAULT_SETTINGS = {
     "operator_whatsapp": "",
     "welcome_image_file_id": "",
     "welcome_text_tj": (
-        "🚚 Хуш омадед ба Wasit Cargo!\n\n"
+        "🚚 <b>Akbarshoy botiga xush kelibsiz!</b>\n\n"
         "Борҳои худро аз Чин то Тоҷикистон осон пайгирӣ кунед.\n"
         "Лутфан забонро интихоб кунед:"
     ),
     "welcome_text_ru": (
-        "🚚 <b>Добро пожаловать в Wasit Cargo!</b>" + chr(10) + chr(10) +
+        "🚚 <b>Akbarshoy botiga xush kelibsiz!</b>" + chr(10) + chr(10) +
         "<blockquote>" +
         "Ваш карго-сервис из Китая в Таджикистан." + chr(10) +
         "Выберите язык, чтобы продолжить." +

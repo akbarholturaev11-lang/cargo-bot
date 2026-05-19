@@ -1,5 +1,5 @@
 CHOOSE_LANGUAGE = (
-    "🚚 <b>Добро пожаловать в Wasit Cargo!</b>\n\n"
+    "🚚 <b>Akbarshoy botiga xush kelibsiz!</b>\n\n"
     "Отслеживайте свои грузы из Китая в Таджикистан.\n\n"
     "<blockquote>Пожалуйста, выберите язык:</blockquote>"
 )
@@ -26,7 +26,7 @@ ASK_CITY = (
 
 REGISTRATION_COMPLETED = (
     "✅ <b>Регистрация завершена!</b>\n\n"
-    "🎉 Вы стали клиентом Wasit Cargo.\n"
+    "🎉 Вы стали клиентом Akbarshoy bot.\n"
     "🔐 Ваш клиентский код: <code>{client_code}</code>\n\n"
     "<blockquote>Этот код используется для отслеживания груза и идентификации клиента.</blockquote>"
 )

@@ -66,8 +66,8 @@ async def _get_client_code_prefix(session: AsyncSession) -> str:
     result = await session.execute(
         select(Setting.value).where(Setting.key == "client_code_prefix"),
     )
-    prefix = result.scalar_one_or_none() or CLIENT_CODE_PREFIX or "WS"
-    return prefix.strip() or "WS"
+    prefix = result.scalar_one_or_none() or CLIENT_CODE_PREFIX or "AK"
+    return prefix.strip() or "AK"
 
 
 def _client_code_number(client_code: str, prefix: str) -> int | None:
