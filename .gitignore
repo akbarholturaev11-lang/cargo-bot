@@ -8,4 +8,5 @@ env/
 .vscode/
 .DS_Store
 *.log
+*.textClipping
 alembic/versions/*.py
