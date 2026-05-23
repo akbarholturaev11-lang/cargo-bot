@@ -149,6 +149,7 @@ Important keys include:
 - Feature flag: `require_channel_join`.
 - Channel setting: `channel_username`.
 - Admins bypass the channel gate.
+- 2026-05-24: the channel middleware is registered as one shared instance for messages and callbacks, so it can remember the latest subscribe prompt per chat/user and remove it after subscription is confirmed.
 
 ## Business Logic Notes
 

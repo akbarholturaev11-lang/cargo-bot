@@ -81,8 +81,9 @@ async def main() -> None:
     )
     dp = Dispatcher()
 
-    dp.message.middleware(ChannelRequiredMiddleware())
-    dp.callback_query.middleware(ChannelRequiredMiddleware())
+    channel_required_middleware = ChannelRequiredMiddleware()
+    dp.message.middleware(channel_required_middleware)
+    dp.callback_query.middleware(channel_required_middleware)
 
     dp.include_routers(*ROUTERS)
 
