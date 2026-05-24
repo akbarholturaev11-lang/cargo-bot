@@ -2,6 +2,7 @@ from sqlalchemy import select
 
 from database.db import async_session
 from database.models import Warehouse
+from services.airtable_sync import sync_warehouse_to_airtable
 from utils.constants import CITY_NAMES, LANG_RU, LANG_TJ
 
 
@@ -120,7 +121,10 @@ async def save_active_warehouse(
 
         await session.commit()
         await session.refresh(warehouse)
-        return warehouse
+        warehouse_id = warehouse.id
+
+    await sync_warehouse_to_airtable(warehouse_id)
+    return warehouse
 
 
 async def set_warehouse_inactive(city_key: str) -> int:
@@ -134,7 +138,11 @@ async def set_warehouse_inactive(city_key: str) -> int:
             warehouse.is_active = False
 
         await session.commit()
-        return len(warehouses)
+        warehouse_ids = [warehouse.id for warehouse in warehouses]
+
+    for warehouse_id in warehouse_ids:
+        await sync_warehouse_to_airtable(warehouse_id)
+    return len(warehouse_ids)
 
 
 async def get_active_warehouses() -> list[Warehouse]:
@@ -224,7 +232,10 @@ async def save_tj_pickup_warehouse(
 
         await session.commit()
         await session.refresh(warehouse)
-        return warehouse
+        warehouse_id = warehouse.id
+
+    await sync_warehouse_to_airtable(warehouse_id)
+    return warehouse
 
 
 def warehouse_has_tj_pickup_block(warehouse: Warehouse | None) -> bool:

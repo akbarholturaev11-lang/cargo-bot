@@ -5,6 +5,11 @@ from sqlalchemy.orm import selectinload
 
 from database.db import async_session
 from database.models import Parcel
+from services.airtable_sync import (
+    sync_daily_stats_to_airtable,
+    sync_parcel_to_airtable,
+    sync_parcels_to_airtable,
+)
 from utils.constants import STATUS_CHINA_RECEIVED
 
 
@@ -77,10 +82,16 @@ async def create_parcel(
         session.add(parcel)
         await session.commit()
         await session.refresh(parcel)
-        return parcel
+        parcel_id = parcel.id
+        stats_date = parcel.received_china_at.date()
+
+    await sync_parcel_to_airtable(parcel_id)
+    await sync_daily_stats_to_airtable(stats_date)
+    return parcel
 
 
 async def mark_china_received_notified(parcel_id: int) -> Parcel | None:
+    sync_needed = False
     async with async_session() as session:
         parcel = await session.get(Parcel, parcel_id)
         if parcel is None:
@@ -90,7 +101,11 @@ async def mark_china_received_notified(parcel_id: int) -> Parcel | None:
             parcel.china_received_notified_at = datetime.now(timezone.utc)
             await session.commit()
             await session.refresh(parcel)
-        return parcel
+            sync_needed = True
+
+    if sync_needed:
+        await sync_parcel_to_airtable(parcel_id)
+    return parcel
 
 
 async def update_parcel_status(parcel_id: int, status_code: str) -> Parcel | None:
@@ -112,10 +127,18 @@ async def update_parcel_status(parcel_id: int, status_code: str) -> Parcel | Non
             .options(selectinload(Parcel.user))
             .where(Parcel.id == parcel_id),
         )
-        return result.scalar_one_or_none()
+        parcel = result.scalar_one_or_none()
+        stats_date = parcel.updated_at.date() if parcel is not None else None
+
+    if parcel is not None:
+        await sync_parcel_to_airtable(parcel.id)
+        if stats_date is not None:
+            await sync_daily_stats_to_airtable(stats_date)
+    return parcel
 
 
 async def mark_arrival_notified(parcel_id: int) -> Parcel | None:
+    sync_needed = False
     async with async_session() as session:
         parcel = await session.get(Parcel, parcel_id)
         if parcel is None:
@@ -125,7 +148,11 @@ async def mark_arrival_notified(parcel_id: int) -> Parcel | None:
             parcel.arrival_notified_at = datetime.now(timezone.utc)
             await session.commit()
             await session.refresh(parcel)
-        return parcel
+            sync_needed = True
+
+    if sync_needed:
+        await sync_parcel_to_airtable(parcel_id)
+    return parcel
 
 
 async def count_parcels_for_bulk_status_update(
@@ -170,4 +197,9 @@ async def bulk_update_parcel_status(
             parcel.updated_at = now
 
         await session.commit()
-        return parcels
+        parcel_ids = [parcel.id for parcel in parcels]
+        stats_date = now.date()
+
+    await sync_parcels_to_airtable(parcel_ids)
+    await sync_daily_stats_to_airtable(stats_date)
+    return parcels

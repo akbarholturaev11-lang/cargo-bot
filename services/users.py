@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from config import CLIENT_CODE_PREFIX
 from database.db import async_session
 from database.models import Setting, User
+from services.airtable_sync import sync_daily_stats_to_airtable, sync_user_to_airtable
 from services.normalizer import normalize_full_name
 from utils.constants import CITY_NAMES, LANG_TJ
 
@@ -126,7 +127,12 @@ async def create_user(
         session.add(user)
         await session.commit()
         await session.refresh(user)
-        return user
+        user_id = user.id
+        stats_date = user.created_at.date()
+
+    await sync_user_to_airtable(user_id)
+    await sync_daily_stats_to_airtable(stats_date)
+    return user
 
 
 async def attach_telegram_account(
@@ -145,7 +151,10 @@ async def attach_telegram_account(
         user.last_seen = datetime.now(timezone.utc)
         await session.commit()
         await session.refresh(user)
-        return user
+        user_id = user.id
+
+    await sync_user_to_airtable(user_id)
+    return user
 
 
 def city_display_name(city: str, lang: str) -> str:
@@ -170,7 +179,10 @@ async def update_user_full_name(user_id: int, full_name: str) -> User:
         user.last_seen = datetime.now(timezone.utc)
         await session.commit()
         await session.refresh(user)
-        return user
+        user_id = user.id
+
+    await sync_user_to_airtable(user_id)
+    return user
 
 
 async def update_user_phone(user_id: int, phone: str) -> User | None:
@@ -193,7 +205,10 @@ async def update_user_phone(user_id: int, phone: str) -> User | None:
         user.last_seen = datetime.now(timezone.utc)
         await session.commit()
         await session.refresh(user)
-        return user
+        user_id = user.id
+
+    await sync_user_to_airtable(user_id)
+    return user
 
 
 async def update_user_city(user_id: int, city: str) -> User:
@@ -206,7 +221,10 @@ async def update_user_city(user_id: int, city: str) -> User:
         user.last_seen = datetime.now(timezone.utc)
         await session.commit()
         await session.refresh(user)
-        return user
+        user_id = user.id
+
+    await sync_user_to_airtable(user_id)
+    return user
 
 
 async def update_user_language(user_id: int, language: str) -> User:
@@ -219,4 +237,7 @@ async def update_user_language(user_id: int, language: str) -> User:
         user.last_seen = datetime.now(timezone.utc)
         await session.commit()
         await session.refresh(user)
-        return user
+        user_id = user.id
+
+    await sync_user_to_airtable(user_id)
+    return user

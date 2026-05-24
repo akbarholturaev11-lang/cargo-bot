@@ -7,6 +7,10 @@ from config import ADMIN_IDS
 from database.db import async_session
 from database.models import DeliveryRequest, Parcel, User
 from keyboards.builders import build_inline_keyboard
+from services.airtable_sync import (
+    sync_daily_stats_to_airtable,
+    sync_delivery_request_to_airtable,
+)
 from services.normalizer import normalize_track_code
 from utils.constants import (
     DELIVERY_STATUS_ACCEPTED,
@@ -98,7 +102,12 @@ async def create_delivery_request(
         session.add(request)
         await session.commit()
         await session.refresh(request)
-        return request
+        request_id = request.id
+        stats_date = request.created_at.date()
+
+    await sync_delivery_request_to_airtable(request_id)
+    await sync_daily_stats_to_airtable(stats_date)
+    return request
 
 
 async def get_delivery_requests() -> list[DeliveryRequest]:
@@ -146,7 +155,12 @@ async def update_delivery_status(
         request.handled_by_admin_id = admin_id
         await session.commit()
         await session.refresh(request)
-        return request
+        request_id = request.id
+        stats_date = request.updated_at.date()
+
+    await sync_delivery_request_to_airtable(request_id)
+    await sync_daily_stats_to_airtable(stats_date)
+    return request
 
 
 def format_delivery_request_for_admin(request: DeliveryRequest, user: User) -> str:

@@ -10,3 +10,12 @@ env/
 *.log
 *.textClipping
 alembic/versions/*.py
+database/bot.db
+.env
+PROJECT_MEMORY.md
+database/bot.db
+
+.env
+.env.example
+PROJECT_MEMORY.md
+database/bot.db
