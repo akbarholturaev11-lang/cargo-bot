@@ -28,7 +28,13 @@ def _welcome_text_key(message: Message) -> str:
 async def _send_welcome_screen(message: Message) -> None:
     values = await get_many_settings(WELCOME_SETTING_KEYS)
     image_file_id = values["welcome_image_file_id"].strip()
-    welcome_text = values[_welcome_text_key(message)].strip()
+    welcome_text = (
+    "🚚 <b>Добро пожаловать в Tajway Cargo!</b>\n\n"
+    "<blockquote>"
+    "Ваш карго-сервис из Китая в Таджикистан.\n"
+    "Выберите язык, чтобы продолжить."
+    "</blockquote>"
+)
     keyboard = language_keyboard()
 
     if image_file_id:
