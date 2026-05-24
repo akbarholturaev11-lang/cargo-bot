@@ -22,11 +22,7 @@ router = Router(name="start")
 
 
 def _welcome_text_key(message: Message) -> str:
-    language_code = ""
-    if message.from_user is not None:
-        language_code = (message.from_user.language_code or "").lower()
-
-    return "welcome_text_ru" if language_code.startswith(LANG_RU) else "welcome_text_tj"
+    return "welcome_text_ru"
 
 
 async def _send_welcome_screen(message: Message) -> None:
