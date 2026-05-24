@@ -123,7 +123,7 @@ def _format_confirmation(data: dict, count: int) -> str:
     )
 
 
-@router.message(F.text == ADMIN_BULK_LABEL)
+@router.message(F.text.in_({ADMIN_BULK_LABEL, "Ивази гурӯҳӣ"}))
 async def start_bulk_status(message: Message, state: FSMContext) -> None:
     if not _is_admin_message(message):
         return

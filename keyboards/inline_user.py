@@ -23,16 +23,16 @@ CITY_ROWS = (
 def language_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("Тоҷикӣ", "lang:tj"), ("Русский", "lang:ru")),
+            (("🇹🇯 Тоҷикӣ", "lang:tj"), ("🇷🇺 Русский", "lang:ru")),
         ),
     )
 
 
 def auth_keyboard(lang: str) -> InlineKeyboardMarkup:
     if lang == LANG_RU:
-        rows = ((("Регистрация", "auth:register"), ("Войти", "auth:login")),)
+        rows = ((("📝 Регистрация", "auth:register"), ("🔐 Войти", "auth:login")),)
     else:
-        rows = ((("Бақайдгирӣ", "auth:register"), ("Ворид шудан", "auth:login")),)
+        rows = ((("📝 Бақайдгирӣ", "auth:register"), ("🔐 Ворид шудан", "auth:login")),)
     return build_inline_keyboard(rows)
 
 
@@ -48,7 +48,7 @@ def cities_keyboard(lang: str, include_back: bool = False) -> InlineKeyboardMark
         for row in CITY_ROWS
     )
     if include_back:
-        back_label = "Назад" if lang == LANG_RU else "Бозгашт"
+        back_label = "⬅️ Назад" if lang == LANG_RU else "⬅️ Бозгашт"
         rows = rows + (((back_label, "auth:back"),),)
     return build_inline_keyboard(rows)
 
@@ -56,15 +56,15 @@ def cities_keyboard(lang: str, include_back: bool = False) -> InlineKeyboardMark
 def profile_edit_keyboard(lang: str) -> InlineKeyboardMarkup:
     if lang == LANG_RU:
         rows = (
-            (("Изменить имя", "profile:edit_name"), ("Изменить телефон", "profile:edit_phone")),
-            (("Изменить город", "profile:edit_city"), ("Изменить язык", "profile:edit_language")),
-            (("Назад", "profile:back"),),
+            (("🧑 Изменить имя", "profile:edit_name"), ("📞 Изменить телефон", "profile:edit_phone")),
+            (("🏙 Изменить город", "profile:edit_city"), ("🌐 Изменить язык", "profile:edit_language")),
+            (("⬅️ Назад", "profile:back"),),
         )
     else:
         rows = (
-            (("Иваз кардани ном", "profile:edit_name"), ("Иваз кардани телефон", "profile:edit_phone")),
-            (("Иваз кардани шаҳр", "profile:edit_city"), ("Иваз кардани забон", "profile:edit_language")),
-            (("Бозгашт", "profile:back"),),
+            (("🧑 Иваз кардани ном", "profile:edit_name"), ("📞 Иваз кардани телефон", "profile:edit_phone")),
+            (("🏙 Иваз кардани шаҳр", "profile:edit_city"), ("🌐 Иваз кардани забон", "profile:edit_language")),
+            (("⬅️ Бозгашт", "profile:back"),),
         )
     return build_inline_keyboard(rows)
 
@@ -89,13 +89,13 @@ def profile_language_keyboard(lang: str) -> InlineKeyboardMarkup:
         rows = (
             (("Тоҷикӣ", "profile:language:tj"),),
             (("Русский", "profile:language:ru"),),
-            (("Назад", "profile:show"),),
+            (("⬅️ Назад", "profile:show"),),
         )
     else:
         rows = (
             (("Тоҷикӣ", "profile:language:tj"),),
             (("Русский", "profile:language:ru"),),
-            (("Бозгашт", "profile:show"),),
+            (("⬅️ Бозгашт", "profile:show"),),
         )
     return build_inline_keyboard(rows)
 
@@ -103,13 +103,13 @@ def profile_language_keyboard(lang: str) -> InlineKeyboardMarkup:
 def calculator_keyboard(lang: str) -> InlineKeyboardMarkup:
     if lang == LANG_RU:
         rows = (
-            (("Рассчитать по кг", "calc:kg"),),
-            (("Рассчитать по кубу", "calc:cube"),),
+            (("⚖️ Рассчитать по кг", "calc:kg"),),
+            (("📐 Рассчитать по кубу", "calc:cube"),),
         )
     else:
         rows = (
-            (("Бо кг ҳисоб кардан", "calc:kg"),),
-            (("Бо куб ҳисоб кардан", "calc:cube"),),
+            (("⚖️ Бо кг ҳисоб кардан", "calc:kg"),),
+            (("📐 Бо куб ҳисоб кардан", "calc:cube"),),
         )
     return build_inline_keyboard(rows)
 
@@ -142,13 +142,13 @@ def delivery_keyboard(lang: str, parcel_id: int | None = None) -> InlineKeyboard
     )
     if lang == LANG_RU:
         rows = (
-            (("Доставка", delivery_callback),),
-            (("Адрес получения 🇹🇯", warehouse_callback),),
+            (("🚚 Доставка", delivery_callback),),
+            (("📍 Адрес получения 🇹🇯", warehouse_callback),),
         )
     else:
         rows = (
-            (("Доставка", delivery_callback),),
-            (("Адреси гирифтани бор 🇹🇯", warehouse_callback),),
+            (("🚚 Доставка", delivery_callback),),
+            (("📍 Адреси гирифтани бор 🇹🇯", warehouse_callback),),
         )
     return build_inline_keyboard(rows)
 
@@ -178,7 +178,7 @@ def pickup_cities_keyboard(warehouses, lang: str, include_back: bool = False) ->
         rows.append(((label, f"city:{warehouse.city_key}"),))
 
     if include_back:
-        back_label = "Назад" if lang == LANG_RU else "Бозгашт"
+        back_label = "⬅️ Назад" if lang == LANG_RU else "⬅️ Бозгашт"
         rows.append(((back_label, "auth:back"),))
 
     return build_inline_keyboard(tuple(rows))

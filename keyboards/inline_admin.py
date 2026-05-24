@@ -19,7 +19,7 @@ from utils.constants import (
 def admin_confirm_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("Тасдиқ", "admin:confirm"), ("Бекор", "admin:cancel")),
+            (("✅ Тасдиқ", "admin:confirm"), ("❌ Бекор", "admin:cancel")),
         ),
     )
 
@@ -39,14 +39,14 @@ def settings_categories_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
             (("💰 Нархҳо", "settings:prices"),),
-            (("Ҳисобкунӣ", "settings:calculation"),),
-            (("Доставка", "settings:delivery"),),
-            (("Канал", "settings:channel"),),
+            (("🧮 Ҳисобкунӣ", "settings:calculation"),),
+            (("🚚 Доставка", "settings:delivery"),),
+            (("📢 Канал", "settings:channel"),),
             (("☎️ Оператор", "settings:operator"),),
-            (("Медиа", "settings:media"),),
-            (("Матнҳо", "settings:texts"),),
-            (("Складҳо", "settings:warehouses"),),
-            (("Бозгашт", "settings:back"),),
+            (("🖼 Медиа", "settings:media"),),
+            (("📝 Матнҳо", "settings:texts"),),
+            (("🏬 Складҳо", "settings:warehouses"),),
+            (("⬅️ Бозгашт", "settings:back"),),
         ),
     )
 
@@ -58,7 +58,7 @@ def settings_prices_keyboard() -> InlineKeyboardMarkup:
             (("📐 Нархи 1 куб", "settings:edit:price_per_cube_tjs"),),
             (("🚚 Муддати расидан TJ", "settings:edit:delivery_days_tj"),),
             (("🚚 Муддати расидан RU", "settings:edit:delivery_days_ru"),),
-            (("Бозгашт", "settings:main"),),
+            (("⬅️ Бозгашт", "settings:main"),),
         ),
     )
 
@@ -68,7 +68,7 @@ def settings_calculation_keyboard() -> InlineKeyboardMarkup:
         (
             (("📦 Нархи 1 кг", "settings:edit:price_per_kg_tjs"),),
             (("📐 Нархи 1 куб", "settings:edit:price_per_cube_tjs"),),
-            (("Бозгашт", "settings:main"),),
+            (("⬅️ Бозгашт", "settings:main"),),
         ),
     )
 
@@ -81,7 +81,7 @@ def settings_delivery_keyboard() -> InlineKeyboardMarkup:
             (("🚕 Берун аз шаҳр TJ", "settings:edit:delivery_outside_city_tj"),),
             (("🏙 Дохили шаҳр RU", "settings:edit:delivery_inside_city_ru"),),
             (("🚕 Берун аз шаҳр RU", "settings:edit:delivery_outside_city_ru"),),
-            (("Бозгашт", "settings:main"),),
+            (("⬅️ Бозгашт", "settings:main"),),
         ),
     )
 
@@ -91,7 +91,7 @@ def settings_channel_keyboard() -> InlineKeyboardMarkup:
         (
             (("📢 Обуна ба канал ON/OFF", "settings:toggle:require_channel_join"),),
             (("🔗 Username-и канал", "settings:edit:channel_username"),),
-            (("Бозгашт", "settings:main"),),
+            (("⬅️ Бозгашт", "settings:main"),),
         ),
     )
 
@@ -103,7 +103,7 @@ def settings_operator_keyboard() -> InlineKeyboardMarkup:
             (("📞 Телефони оператор", "settings:edit:operator_phone"),),
             (("💬 WhatsApp-и оператор", "settings:edit:operator_whatsapp"),),
             (("🕘 Вақти кори оператор", "settings:edit:operator_work_time"),),
-            (("Бозгашт", "settings:main"),),
+            (("⬅️ Бозгашт", "settings:main"),),
         ),
     )
 
@@ -117,7 +117,7 @@ def settings_texts_keyboard() -> InlineKeyboardMarkup:
             (("🚕 Берун аз шаҳр TJ", "settings:edit_text:delivery_outside_city_tj"),),
             (("🏙 Дохили шаҳр RU", "settings:edit_text:delivery_inside_city_ru"),),
             (("🚕 Берун аз шаҳр RU", "settings:edit_text:delivery_outside_city_ru"),),
-            (("Бозгашт", "settings:main"),),
+            (("⬅️ Бозгашт", "settings:main"),),
         ),
     )
 
@@ -134,7 +134,7 @@ def settings_media_keyboard() -> InlineKeyboardMarkup:
             (("🚚 Расми статус: Дар роҳ", "settings:media:status_image_on_the_way_file_id"),),
             (("🏬 Расми статус: Ба склад расид", "settings:media:status_image_arrived_destination_file_id"),),
             (("✅ Расми статус: Супорида шуд", "settings:media:status_image_received_file_id"),),
-            (("Бозгашт", "settings:main"),),
+            (("⬅️ Бозгашт", "settings:main"),),
         ),
     )
 
@@ -144,8 +144,8 @@ def warehouse_management_keyboard() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="➕ Адрес илова кардан", callback_data="admin_wh:add")],
-            [InlineKeyboardButton(text="Рӯйхати адресҳо", callback_data="admin_wh:list")],
-            [InlineKeyboardButton(text="Бозгашт", callback_data="settings:main")],
+            [InlineKeyboardButton(text="📋 Рӯйхати адресҳо", callback_data="admin_wh:list")],
+            [InlineKeyboardButton(text="⬅️ Бозгашт", callback_data="settings:main")],
         ]
     )
 
@@ -173,10 +173,10 @@ def admin_warehouse_city_keyboard(action: str) -> InlineKeyboardMarkup:
 def warehouse_preview_keyboard() -> InlineKeyboardMarkup:
     return build_inline_keyboard(
         (
-            (("Сабт кардан", "admin_wh:save"),),
-            (("Матнро иваз кардан", "admin_wh:change_caption"),),
-            (("Медиа иваз кардан", "admin_wh:change_media"),),
-            (("Аз нав фиристодан", "admin_wh:resend"),),
-            (("Бекор кардан", "admin_wh:cancel"),),
+            (("✅ Сабт кардан", "admin_wh:save"),),
+            (("📝 Матнро иваз кардан", "admin_wh:change_caption"),),
+            (("🖼 Медиа иваз кардан", "admin_wh:change_media"),),
+            (("🔁 Аз нав фиристодан", "admin_wh:resend"),),
+            (("❌ Бекор кардан", "admin_wh:cancel"),),
         ),
     )

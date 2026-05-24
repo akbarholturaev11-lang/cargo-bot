@@ -66,7 +66,7 @@ from utils.validators import is_admin
 router = Router(name="admin_settings")
 
 
-ADMIN_SETTINGS_LABEL = "Танзимот"
+ADMIN_SETTINGS_LABEL = ADMIN_MENU[4][1]
 EDITABLE_SETTINGS = {
     "price_per_kg_tjs",
     "price_per_cube_tjs",
@@ -263,7 +263,7 @@ async def _edit_category_message(message: Message, category: str) -> None:
         await message.answer(text, reply_markup=keyboard)
 
 
-@router.message(F.text == ADMIN_SETTINGS_LABEL)
+@router.message(F.text.in_({ADMIN_SETTINGS_LABEL, "Танзимот"}))
 async def show_admin_settings(message: Message, state: FSMContext) -> None:
     if not _is_admin_message(message):
         return
@@ -491,4 +491,3 @@ async def save_media_photo(message: Message, state: FSMContext) -> None:
         f"✅ <b>{setting_label(key)} сабт шуд.</b>",
         reply_markup=admin_main_menu(),
     )
-

@@ -9,8 +9,8 @@ from utils.validators import is_admin
 router = Router(name="admin_menu")
 
 
-ACCESS_DENIED = "Дастрасӣ иҷозат нест."
-ADMIN_PANEL = "Панели админ"
+ACCESS_DENIED = "⛔ Дастрасӣ иҷозат нест."
+ADMIN_PANEL = "⚙️ Панели админ"
 
 
 @router.message(Command("admin"))

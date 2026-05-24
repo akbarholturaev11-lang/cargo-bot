@@ -1,3 +1,4 @@
+import asyncio
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
@@ -28,14 +29,20 @@ def _txt(lang: str, key: str) -> str:
         "tj": {
             "open": "📢 Ба канал обуна шавед",
             "check": "✅ Обуна шудам",
-            "need": "📢 Аввал ба канал обуна шавед.",
+            "need": (
+                "📢 <b>Аввал ба канал обуна шавед.</b>\n\n"
+                "<blockquote>Пас аз обуна шудан ин блок худкор тоза мешавад.</blockquote>"
+            ),
             "not_found": "❌ Обуна ёфт нашуд",
             "confirmed": "✅ Обуна тасдиқ шуд.",
         },
         "ru": {
             "open": "📢 Перейти в канал",
             "check": "✅ Я подписался",
-            "need": "📢 Сначала подпишитесь на канал.",
+            "need": (
+                "📢 <b>Сначала подпишитесь на канал.</b>\n\n"
+                "<blockquote>После подписки этот блок исчезнет автоматически.</blockquote>"
+            ),
             "not_found": "❌ Подписка не найдена",
             "confirmed": "✅ Подписка подтверждена.",
         },
@@ -104,6 +111,7 @@ async def _remove_subscribe_block(
 class ChannelRequiredMiddleware(BaseMiddleware):
     def __init__(self) -> None:
         self._subscribe_blocks: dict[tuple[int, int], int] = {}
+        self._subscription_watchers: dict[tuple[int, int], asyncio.Task] = {}
 
     @staticmethod
     def _block_key(event: TelegramObject, user_id: int) -> tuple[int, int] | None:
@@ -114,6 +122,37 @@ class ChannelRequiredMiddleware(BaseMiddleware):
             return (event.message.chat.id, user_id)
 
         return None
+
+    def _cancel_subscription_watch(self, key: tuple[int, int]) -> None:
+        task = self._subscription_watchers.pop(key, None)
+        if task is not None and task is not asyncio.current_task():
+            task.cancel()
+
+    def _start_subscription_watch(self, bot, key: tuple[int, int] | None, user_id: int) -> None:
+        if key is None:
+            return
+
+        self._cancel_subscription_watch(key)
+        task = asyncio.create_task(self._watch_subscription(bot, key, user_id))
+        self._subscription_watchers[key] = task
+
+    async def _watch_subscription(self, bot, key: tuple[int, int], user_id: int) -> None:
+        try:
+            for _ in range(60):
+                await asyncio.sleep(2)
+                try:
+                    subscribed = await is_user_subscribed(bot, user_id)
+                except Exception:
+                    return
+
+                if subscribed:
+                    await self._remove_saved_subscribe_block(bot, key)
+                    return
+        except asyncio.CancelledError:
+            raise
+        finally:
+            if self._subscription_watchers.get(key) is asyncio.current_task():
+                self._subscription_watchers.pop(key, None)
 
     async def _remove_saved_subscribe_block(
         self,
@@ -126,6 +165,7 @@ class ChannelRequiredMiddleware(BaseMiddleware):
             return
 
         message_id = self._subscribe_blocks.pop(key, None)
+        self._cancel_subscription_watch(key)
         if message_id is None or message_id == current_message_id:
             return
 
@@ -165,7 +205,12 @@ class ChannelRequiredMiddleware(BaseMiddleware):
             subscribed = await is_user_subscribed(bot, tg_user.id)
 
             if subscribed:
-                self._subscribe_blocks.pop(block_key, None)
+                current_message_id = event.message.message_id if event.message is not None else None
+                await self._remove_saved_subscribe_block(
+                    bot,
+                    block_key,
+                    current_message_id=current_message_id,
+                )
                 await _remove_subscribe_block(
                     event.message,
                     fallback_text=_txt(lang, "confirmed"),
@@ -189,6 +234,7 @@ class ChannelRequiredMiddleware(BaseMiddleware):
             )
             if block_key is not None:
                 self._subscribe_blocks[block_key] = block_message.message_id
+                self._start_subscription_watch(bot, block_key, tg_user.id)
             return
 
         if isinstance(event, CallbackQuery):
@@ -201,6 +247,7 @@ class ChannelRequiredMiddleware(BaseMiddleware):
                 )
                 if block_key is not None:
                     self._subscribe_blocks[block_key] = block_message.message_id
+                    self._start_subscription_watch(bot, block_key, tg_user.id)
             return
 
         return

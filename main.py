@@ -87,12 +87,12 @@ async def main() -> None:
 
     dp.include_routers(*ROUTERS)
 
-    logger.info("Starting Akbarshoy bot")
+    logger.info("Starting Tajway_cargo bot")
     await bot.delete_webhook(drop_pending_updates=True)
     try:
         await dp.start_polling(bot)
     finally:
-        logger.info("Stopping Akbarshoy bot")
+        logger.info("Stopping Tajway_cargo bot")
         await bot.session.close()
 
 

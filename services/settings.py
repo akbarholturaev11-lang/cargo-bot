@@ -6,8 +6,12 @@ from database.db import async_session
 from database.models import Setting
 
 
+BRAND_NAME = "Tajway_cargo"
+LEGACY_BRAND_NAMES = ("Akbarshoy bot", "AK Cargo", "Wasit Cargo", "wasit_cargo")
+BRAND_SYNC_SETTING_KEYS = {"cargo_name", "welcome_text_tj", "welcome_text_ru"}
+
 DEFAULT_SETTINGS = {
-    "cargo_name": "Akbarshoy bot",
+    "cargo_name": BRAND_NAME,
     "cargo_region": "Истаравшан",
     "client_code_prefix": "AK",
     "price_per_kg_tjs": "25",
@@ -31,16 +35,14 @@ DEFAULT_SETTINGS = {
     "operator_phone": "",
     "operator_whatsapp": "",
     "operator_work_time": "09:00–18:00",
-    "operator_phone": "",
-    "operator_whatsapp": "",
     "welcome_image_file_id": "",
     "welcome_text_tj": (
-        "🚚 <b>Akbarshoy botiga xush kelibsiz!</b>\n\n"
-        "Борҳои худро аз Чин то Тоҷикистон осон пайгирӣ кунед.\n"
+        "🚚 <b>Хуш омадед ба Tajway_cargo!</b>\n\n"
+        "Борҳои худро аз Чин то Тоҷикистон осон ва ором пайгирӣ кунед.\n"
         "Лутфан забонро интихоб кунед:"
     ),
     "welcome_text_ru": (
-        "🚚 <b>Akbarshoy botiga xush kelibsiz!</b>" + chr(10) + chr(10) +
+        "🚚 <b>Добро пожаловать в Tajway_cargo!</b>" + chr(10) + chr(10) +
         "<blockquote>" +
         "Ваш карго-сервис из Китая в Таджикистан." + chr(10) +
         "Выберите язык, чтобы продолжить." +
@@ -66,6 +68,13 @@ DEFAULT_SETTINGS = {
         "⚠️ Точный вес и сумма будут известны после прибытия груза."
     ),
 }
+
+
+def _replace_legacy_brand(value: str) -> str:
+    updated = value
+    for old_name in LEGACY_BRAND_NAMES:
+        updated = updated.replace(old_name, BRAND_NAME)
+    return updated
 
 
 def _stringify_setting_value(value: Any) -> str:
@@ -154,5 +163,11 @@ async def seed_default_settings() -> None:
         for key, value in DEFAULT_SETTINGS.items():
             if key not in existing_keys:
                 session.add(Setting(key=key, value=value))
+
+        brand_result = await session.execute(
+            select(Setting).where(Setting.key.in_(BRAND_SYNC_SETTING_KEYS)),
+        )
+        for setting in brand_result.scalars().all():
+            setting.value = _replace_legacy_brand(setting.value)
 
         await session.commit()

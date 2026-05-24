@@ -33,6 +33,9 @@ router = Router(name="admin_status")
 
 ADMIN_SEARCH_LABEL = ADMIN_MENU[0][1]
 ADMIN_STATUS_UPDATE_LABEL = ADMIN_MENU[1][0]
+ADMIN_CHINA_RECEIVED_LABEL = ADMIN_MENU[2][0]
+ADMIN_ON_THE_WAY_LABEL = ADMIN_MENU[2][1]
+ADMIN_ARRIVED_LABEL = ADMIN_MENU[3][0]
 
 
 class AdminParcelStatusStates(StatesGroup):
@@ -123,7 +126,7 @@ async def _find_parcel_by_message_track_code(message: Message):
     return await get_parcel_with_user_by_normalized_track_code(normalized_track_code)
 
 
-@router.message(F.text == ADMIN_SEARCH_LABEL)
+@router.message(F.text.in_({ADMIN_SEARCH_LABEL, "🔍 Ҷустуҷӯи бор"}))
 async def start_admin_search(message: Message, state: FSMContext) -> None:
     if not _is_admin_message(message):
         return
@@ -147,7 +150,7 @@ async def admin_search_parcel(message: Message, state: FSMContext) -> None:
     await message.answer(_format_parcel(parcel))
 
 
-@router.message(F.text == ADMIN_STATUS_UPDATE_LABEL)
+@router.message(F.text.in_({ADMIN_STATUS_UPDATE_LABEL, "Иваз кардани статус"}))
 async def start_status_update(message: Message, state: FSMContext) -> None:
     if not _is_admin_message(message):
         return
@@ -232,7 +235,7 @@ async def set_single_status(callback: CallbackQuery) -> None:
                 "✅ <b>Ваш груз получен</b>\n\n"
                 "<blockquote>"
                 "Вы получили товар со склада.\n"
-                "🤝 Спасибо за доверие к Akbarshoy bot!"
+                "🤝 Спасибо за доверие к Tajway_cargo!"
                 "</blockquote>"
             )
         else:
@@ -240,7 +243,7 @@ async def set_single_status(callback: CallbackQuery) -> None:
                 "✅ <b>Бори шумо супорида шуд</b>\n\n"
                 "<blockquote>"
                 "Шумо товарро аз склад қабул кардед.\n"
-                "🤝 Ташаккур барои боварӣ ба Akbarshoy bot!"
+                "🤝 Ташаккур барои боварӣ ба Tajway_cargo!"
                 "</blockquote>"
             )
 
@@ -316,28 +319,28 @@ async def _admin_send_parcels_by_status(message, status_code: str, title: str):
     await message.answer("\n\n".join(parts))
 
 
-@router.message(F.text == "Қабулшудаҳо")
+@router.message(F.text.in_({ADMIN_CHINA_RECEIVED_LABEL, "Қабулшудаҳо"}))
 async def admin_china_received_list(message):
     await _admin_send_parcels_by_status(
         message=message,
         status_code="china_received",
-        title="Қабулшудаҳо",
+        title=ADMIN_CHINA_RECEIVED_LABEL,
     )
 
 
-@router.message(F.text == "Дар роҳ")
+@router.message(F.text.in_({ADMIN_ON_THE_WAY_LABEL, "Дар роҳ"}))
 async def admin_on_the_way_list(message):
     await _admin_send_parcels_by_status(
         message=message,
         status_code="on_the_way",
-        title="Дар роҳ",
+        title=ADMIN_ON_THE_WAY_LABEL,
     )
 
 
-@router.message(F.text == "Расидаҳо")
+@router.message(F.text.in_({ADMIN_ARRIVED_LABEL, "Расидаҳо"}))
 async def admin_arrived_list(message):
     await _admin_send_parcels_by_status(
         message=message,
         status_code="arrived_destination",
-        title="Расидаҳо",
+        title=ADMIN_ARRIVED_LABEL,
     )

@@ -8,6 +8,7 @@ from keyboards.reply import user_main_menu
 from services.settings import DEFAULT_SETTINGS, get_many_settings
 from services.users import get_user_by_telegram_id
 from states.auth_states import AuthStates
+from utils.constants import LANG_RU
 
 
 WELCOME_SETTING_KEYS = {
@@ -20,10 +21,18 @@ WELCOME_SETTING_KEYS = {
 router = Router(name="start")
 
 
+def _welcome_text_key(message: Message) -> str:
+    language_code = ""
+    if message.from_user is not None:
+        language_code = (message.from_user.language_code or "").lower()
+
+    return "welcome_text_ru" if language_code.startswith(LANG_RU) else "welcome_text_tj"
+
+
 async def _send_welcome_screen(message: Message) -> None:
     values = await get_many_settings(WELCOME_SETTING_KEYS)
     image_file_id = values["welcome_image_file_id"].strip()
-    welcome_text = values["welcome_text_ru"].strip()
+    welcome_text = values[_welcome_text_key(message)].strip()
     keyboard = language_keyboard()
 
     if image_file_id:

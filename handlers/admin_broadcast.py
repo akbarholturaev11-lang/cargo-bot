@@ -15,6 +15,7 @@ from sqlalchemy import distinct, func, select
 
 from database.db import async_session
 from database.models import Parcel, User
+from keyboards.reply import ADMIN_MENU
 from states.admin_broadcast_states import AdminBroadcastStates
 from services.normalizer import normalize_track_code
 from texts.status import format_status
@@ -30,7 +31,7 @@ from utils.validators import is_admin
 
 router = Router(name="admin_broadcast")
 
-BROADCAST_LABEL = "Паёми гурӯҳӣ"
+BROADCAST_LABEL = ADMIN_MENU[4][0]
 
 
 def _kb(rows: list[list[tuple[str, str]]]) -> InlineKeyboardMarkup:
@@ -337,7 +338,7 @@ async def _preview_content(message: Message, content: dict[str, Any]) -> None:
         )
 
 
-@router.message(F.text == BROADCAST_LABEL)
+@router.message(F.text.in_({BROADCAST_LABEL, "Паёми гурӯҳӣ"}))
 async def open_broadcast_menu(message: Message, state: FSMContext) -> None:
     if message.from_user is None or not is_admin(message.from_user.id):
         return

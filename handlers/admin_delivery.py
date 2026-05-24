@@ -55,7 +55,7 @@ def _delivery_received_text(language: str) -> str:
             "✅ <b>Ваш товар получен</b>\n\n"
             "<blockquote>"
             "Статус груза изменён на «Получено».\n"
-            "Спасибо, что воспользовались услугами Akbarshoy bot!"
+            "Спасибо, что воспользовались услугами Tajway_cargo!"
             "</blockquote>"
         )
 
@@ -63,7 +63,7 @@ def _delivery_received_text(language: str) -> str:
         "✅ <b>Бори шумо супорида шуд</b>\n\n"
         "<blockquote>"
         "Статуси бор ба «Супорида шуд» иваз шуд.\n"
-        "Ташаккур, ки аз хизматрасонии Akbarshoy bot истифода бурдед!"
+        "Ташаккур, ки аз хизматрасонии Tajway_cargo истифода бурдед!"
         "</blockquote>"
     )
 
@@ -81,7 +81,7 @@ def _requests_keyboard(requests):
     return build_inline_keyboard(rows)
 
 
-@router.message(F.text == ADMIN_DELIVERY_LABEL)
+@router.message(F.text.in_({ADMIN_DELIVERY_LABEL, "Доставка"}))
 async def show_delivery_requests(message: Message) -> None:
     if not _is_admin_message(message):
         return

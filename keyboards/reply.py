@@ -20,12 +20,11 @@ USER_MENU_RU = (
 )
 
 ADMIN_MENU = (
-    ("Иловаи бор", "🔍 Ҷустуҷӯи бор"),
-    ("Иваз кардани статус", "Ивази гурӯҳӣ"),
-    ("Қабулшудаҳо", "Дар роҳ"),
-    ("Расидаҳо", "Доставка"),
-    ("Паёми гурӯҳӣ",
-        "Танзимот",),
+    ("➕ Иловаи бор", "🔍 Ҷустуҷӯи бор"),
+    ("🔄 Иваз кардани статус", "📦 Ивази гурӯҳӣ"),
+    ("🇨🇳 Қабулшудаҳо", "🚚 Дар роҳ"),
+    ("🏬 Расидаҳо", "🚚 Доставка"),
+    ("📣 Паёми гурӯҳӣ", "⚙️ Танзимот"),
 )
 
 
@@ -40,16 +39,16 @@ def admin_main_menu() -> ReplyKeyboardMarkup:
 
 
 def phone_contact_keyboard(lang: str) -> ReplyKeyboardMarkup:
-    label = "Отправить телефон" if lang == "ru" else "Фиристодани телефон"
+    label = "📞 Отправить телефон" if lang == "ru" else "📞 Фиристодани телефон"
     return build_contact_keyboard(label)
 
 
 def auth_back_keyboard(lang: str) -> ReplyKeyboardMarkup:
-    label = "Назад" if lang == "ru" else "Бозгашт"
+    label = "⬅️ Назад" if lang == "ru" else "⬅️ Бозгашт"
     return build_reply_keyboard(((label,),), one_time_keyboard=True)
 
 
 def auth_phone_keyboard(lang: str) -> ReplyKeyboardMarkup:
-    label = "Отправить телефон" if lang == "ru" else "Фиристодани телефон"
-    back_label = "Назад" if lang == "ru" else "Бозгашт"
+    label = "📞 Отправить телефон" if lang == "ru" else "📞 Фиристодани телефон"
+    back_label = "⬅️ Назад" if lang == "ru" else "⬅️ Бозгашт"
     return build_contact_keyboard(label, back_label)

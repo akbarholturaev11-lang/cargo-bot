@@ -2,12 +2,13 @@
 
 ## Project Purpose
 
-This is an async Telegram cargo bot for AK/Akbarshoy cargo workflows. It helps users register, receive a client code, track parcels from China to Tajikistan, view warehouse/pickup information, and request local delivery after a parcel arrives.
+This is an async Telegram cargo bot for Tajway_cargo workflows. It helps users register, receive a client code, track parcels from China to Tajikistan, view warehouse/pickup information, and request local delivery after a parcel arrives.
 
-Current branding defaults are mixed:
-- Runtime settings default `cargo_name` to `Akbarshoy bot`.
-- `CLIENT_CODE_PREFIX` defaults to `AK` in `config.py`.
-- `.env.example` currently shows a `WS` prefix and a `wasit_cargo` database name.
+Current branding:
+- Runtime settings default `cargo_name` to `Tajway_cargo`.
+- Startup settings seeding replaces legacy brand names in `cargo_name`, `welcome_text_tj`, and `welcome_text_ru` so old seeded DB values do not keep showing the old cargo name.
+- `CLIENT_CODE_PREFIX` still defaults to `AK` in `config.py`; do not change the client-code prefix without owner confirmation.
+- `.env.example` uses a `tajway_cargo` database placeholder and the same default price variable names that `config.py` reads.
 
 Verify branding and client-code prefix with the owner before changing user-facing names.
 
@@ -149,7 +150,35 @@ Important keys include:
 - Feature flag: `require_channel_join`.
 - Channel setting: `channel_username`.
 - Admins bypass the channel gate.
-- 2026-05-24: the channel middleware is registered as one shared instance for messages and callbacks, so it can remember the latest subscribe prompt per chat/user and remove it after subscription is confirmed.
+- 2026-05-24: the channel middleware is registered as one shared instance for messages and callbacks, so it can remember the latest subscribe prompt per chat/user and remove it after subscription is confirmed. It also starts a short-lived subscription watcher after sending the prompt, polling Telegram membership and deleting the subscribe block when membership is detected.
+
+### 2026-05-24 — Tajway_cargo rebrand and channel-gate cleanup
+
+Changed:
+- Updated default runtime branding and user-facing brand text to `Tajway_cargo`.
+- Added startup replacement for legacy brand names in DB-backed welcome/cargo settings.
+- Improved mandatory channel-join prompt cleanup after users subscribe.
+- Fixed auth flow issues where registration command handling could reference an undefined language, login success did not format the client code, back buttons had mismatched labels, and Tajik phone validation was not consistently applied.
+- Aligned `.env.example` variable names with `config.py`.
+
+Why:
+- Keeps active DB-seeded bot text consistent with the requested cargo name and makes the channel gate less sticky for subscribed users.
+
+Files touched:
+- `services/settings.py`
+- `middlewares/channel_required.py`
+- `handlers/auth.py`
+- `handlers/start.py`
+- `keyboards/`
+- `texts/`
+- `.env.example`
+
+Risk:
+- Startup brand sync intentionally changes old brand strings only in selected DB-backed brand settings.
+- Channel auto-delete depends on Telegram `get_chat_member`; if the bot cannot see channel membership, the manual "I subscribed" check still remains.
+
+Follow-up:
+- Confirm whether the client-code prefix should stay `AK` or be changed in settings.
 
 ## Business Logic Notes
 
@@ -180,10 +209,6 @@ Optional/configurable:
 
 ## Known Problems / Risks
 
-- `.env.example` uses `DEFAULT_PRICE_PER_KG_TJS` and `DEFAULT_PRICE_PER_CUBE_TJS`, but `config.py` reads `DEFAULT_KG_PRICE_TJS` and `DEFAULT_CUBE_PRICE_TJS`.
-- `services/settings.DEFAULT_SETTINGS` contains duplicate `operator_phone` and `operator_whatsapp` keys.
-- `handlers/auth.py` still has debug `print(...)` calls in registration flow.
-- `handlers/auth.py` appears to reference `lang` before assignment in `register_phone_command` for slash commands other than `/start` and `/admin` during registration.
 - There are no automated tests in the repo at the time of this memory update.
 
 ## AI Assistant Rules

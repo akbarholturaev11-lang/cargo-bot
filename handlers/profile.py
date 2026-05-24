@@ -124,7 +124,7 @@ def _profile_pickup_cities_keyboard(warehouses, lang: str):
 
     rows.append([
         InlineKeyboardButton(
-            text="Назад" if lang == LANG_RU else "Бозгашт",
+            text="⬅️ Назад" if lang == LANG_RU else "⬅️ Бозгашт",
             callback_data="profile:back",
         )
     ])

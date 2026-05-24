@@ -111,7 +111,7 @@ async def _restart_add_parcel(message: Message, state: FSMContext) -> None:
     await message.answer("Коди мизоҷро ворид кунед. Мисол: WS1007")
 
 
-@router.message(F.text == ADMIN_ADD_PARCEL_LABEL)
+@router.message(F.text.in_({ADMIN_ADD_PARCEL_LABEL, "Иловаи бор"}))
 async def start_add_parcel(message: Message, state: FSMContext) -> None:
     if not _is_admin_message(message):
         return

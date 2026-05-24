@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, Message, ReplyKeyboardRemove
@@ -16,8 +18,6 @@ from services.users import (
     create_user,
     get_user_by_id,
     get_user_by_phone,
-    normalize_contact_phone,
-    normalize_manual_phone,
 )
 from states.auth_states import AuthStates
 from texts import ru, tj
@@ -25,6 +25,7 @@ from utils.constants import CITY_NAMES, LANG_RU, LANG_TJ
 
 
 router = Router(name="auth")
+logger = logging.getLogger(__name__)
 
 
 TEXTS = {
@@ -37,7 +38,7 @@ def _texts(lang: str):
     return TEXTS.get(lang, tj)
 
 
-BACK_LABELS = {tj.BACK, ru.BACK}
+BACK_LABELS = {tj.BACK, ru.BACK, "Бозгашт", "Назад"}
 
 
 def _is_own_contact(message: Message) -> bool:
@@ -90,13 +91,13 @@ async def _show_auth_selection_from_callback(
 def _contact_phone(message: Message) -> str | None:
     if message.contact is None:
         return None
-    return normalize_contact_phone(message.contact.phone_number)
+    return _normalize_tj_phone(message.contact.phone_number)
 
 
 def _manual_phone(message: Message) -> str | None:
     if message.text is None:
         return None
-    return normalize_manual_phone(message.text)
+    return _normalize_tj_phone(message.text)
 
 
 @router.callback_query(
@@ -278,10 +279,7 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
         data = await state.get_data()
         phone = data.get("phone")
 
-        print(f"[AUTH] continue_after_phone telegram_id={message.from_user.id} phone={phone}")
-
         existing_by_phone = await get_user_by_phone(phone)
-        print(f"[AUTH] existing_by_phone={bool(existing_by_phone)}")
 
         if existing_by_phone is not None:
             await state.clear()
@@ -297,7 +295,6 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
             return
 
         warehouses = await get_active_tj_pickup_warehouses()
-        print(f"[AUTH] active_pickup_warehouses_count={len(warehouses)}")
 
         if len(warehouses) == 1:
             warehouse = warehouses[0]
@@ -339,8 +336,8 @@ async def _continue_after_phone(message: Message, state: FSMContext, *, lang: st
             reply_markup=await _operator_keyboard(lang),
         )
 
-    except Exception as error:
-        print(f"[AUTH_ERROR] continue_after_phone failed: {type(error).__name__}: {error}")
+    except Exception:
+        logger.exception("Registration continuation failed")
 
         error_text = (
             "❌ <b>Ошибка при регистрации.</b>\n\n"
@@ -371,7 +368,7 @@ async def back_from_register_phone(callback: CallbackQuery, state: FSMContext) -
     await callback.answer()
 
 
-@router.message(AuthStates.register_phone, F.text.in_(["Назад", "Бозгашт"]))
+@router.message(AuthStates.register_phone, F.text.in_(BACK_LABELS))
 async def back_from_phone_text(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     lang = data.get("language", LANG_TJ)
@@ -386,6 +383,8 @@ async def back_from_phone_text(message: Message, state: FSMContext) -> None:
 
 @router.message(AuthStates.register_phone, F.text.startswith("/"))
 async def register_phone_command(message: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+    lang = data.get("language", LANG_TJ)
     command = (message.text or "").strip().split()[0].lower()
 
     if command == "/start":
@@ -421,12 +420,12 @@ async def register_phone_contact(message: Message, state: FSMContext) -> None:
     texts = _texts(lang)
 
     if not _is_own_contact(message):
-        await message.answer(texts.INVALID_PHONE, reply_markup=auth_phone_keyboard(lang))
+        await message.answer(_invalid_phone_text(lang), reply_markup=auth_phone_keyboard(lang))
         return
 
     phone = _contact_phone(message)
     if phone is None:
-        await message.answer(texts.INVALID_PHONE, reply_markup=auth_phone_keyboard(lang))
+        await message.answer(_invalid_phone_text(lang), reply_markup=auth_phone_keyboard(lang))
         return
 
     await state.update_data(phone=phone)
@@ -441,7 +440,7 @@ async def register_phone_manual(message: Message, state: FSMContext) -> None:
     phone = _manual_phone(message)
 
     if phone is None:
-        await message.answer(texts.INVALID_PHONE, reply_markup=auth_phone_keyboard(lang))
+        await message.answer(_invalid_phone_text(lang), reply_markup=auth_phone_keyboard(lang))
         return
 
     await state.update_data(phone=phone)
@@ -452,8 +451,7 @@ async def register_phone_manual(message: Message, state: FSMContext) -> None:
 async def register_phone_invalid(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     lang = data.get("language", LANG_TJ)
-    texts = _texts(lang)
-    await message.answer(texts.INVALID_PHONE, reply_markup=auth_phone_keyboard(lang))
+    await message.answer(_invalid_phone_text(lang), reply_markup=auth_phone_keyboard(lang))
 
 
 @router.callback_query(AuthStates.register_city, F.data.startswith("city:"))
@@ -591,7 +589,7 @@ async def login_full_name(message: Message, state: FSMContext) -> None:
     )
     await state.clear()
     await message.answer(
-        texts.LOGIN_SUCCESS,
+        texts.LOGIN_SUCCESS.format(client_code=user.client_code),
         reply_markup=user_main_menu(user.language),
     )
 
