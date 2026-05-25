@@ -34,7 +34,7 @@ AIRTABLE_BASE_ID = os.getenv("AIRTABLE_BASE_ID", "")
 AIRTABLE_API_URL = os.getenv("AIRTABLE_API_URL", "https://api.airtable.com/v0").rstrip("/")
 AIRTABLE_TIMEOUT_SECONDS = float(os.getenv("AIRTABLE_TIMEOUT_SECONDS", "10"))
 AIRTABLE_SYNC_KEY_FIELD = os.getenv("AIRTABLE_SYNC_KEY_FIELD", "Source ID").strip()
-AIRTABLE_PRIMARY_FIELD = os.getenv("AIRTABLE_PRIMARY_FIELD", "Name").strip()
+AIRTABLE_PRIMARY_FIELD = os.getenv("AIRTABLE_PRIMARY_FIELD", "").strip()
 
 TABLE_USERS = os.getenv("AIRTABLE_USERS_TABLE", "Истифодабарандагон")
 TABLE_PARCELS = os.getenv("AIRTABLE_PARCELS_TABLE", "Борҳо")
@@ -205,21 +205,20 @@ async def _safe_upsert(
         return False
 
 
+
 def _user_fields(user: User) -> dict[str, Any]:
     return _compact_fields(
         {
             **_base_fields(f"user:{user.id}", f"{user.client_code} - {user.full_name}"),
-            "User ID": user.id,
+            "Коди мизоҷӣ": user.client_code,
+            "Ном ва насаб": user.full_name,
+            "Телефон": user.phone,
+            "Username Telegram": user.username,
             "Telegram ID": user.telegram_id,
-            "Username": user.username,
-            "Language": user.language,
-            "Full Name": user.full_name,
-            "Phone": user.phone,
-            "City": user.city,
-            "Client Code": user.client_code,
-            "Status": user.status,
-            "Created At": user.created_at,
-            "Last Seen": user.last_seen,
+            "Забон": user.language,
+            "Шаҳр": user.city,
+            "Ҳолат": user.status,
+            "Санаи сабти ном": user.created_at,
         },
     )
 
@@ -229,23 +228,17 @@ def _parcel_fields(parcel: Parcel) -> dict[str, Any]:
     return _compact_fields(
         {
             **_base_fields(f"parcel:{parcel.id}", parcel.track_code),
-            "Parcel ID": parcel.id,
-            "Track Code": parcel.track_code,
-            "Normalized Track Code": parcel.normalized_track_code,
-            "Client Code": parcel.client_code,
-            "User ID": parcel.user_id,
-            "User Full Name": getattr(user, "full_name", None),
-            "User Phone": getattr(user, "phone", None),
-            "Destination City": parcel.destination_city,
-            "Destination Warehouse ID": parcel.destination_warehouse_id,
-            "Status": parcel.status_code,
-            "Received China At": parcel.received_china_at,
-            "Batch Date": parcel.batch_date,
-            "China Received Notified At": parcel.china_received_notified_at,
-            "Arrival Notified At": parcel.arrival_notified_at,
-            "Created By Admin ID": parcel.created_by_admin_id,
-            "Created At": parcel.created_at,
-            "Updated At": parcel.updated_at,
+            "Трек-код": parcel.track_code,
+            "Коди мизоҷӣ": parcel.client_code,
+            "Мизоҷ": getattr(user, "full_name", None),
+            "Телефон": getattr(user, "phone", None),
+            "Склад / Шаҳр": parcel.destination_city,
+            "Статус": parcel.status_code,
+            "Санаи қабул дар Чин": parcel.received_china_at,
+            "Санаи расидан": parcel.updated_at,
+            "Вазн": getattr(parcel, "weight", None),
+            "Нарх": getattr(parcel, "price", None),
+            "Эзоҳ": getattr(parcel, "note", None) or getattr(parcel, "comment", None),
         },
     )
 
@@ -257,23 +250,13 @@ def _warehouse_fields(warehouse: Warehouse) -> dict[str, Any]:
                 f"warehouse:{warehouse.id}",
                 f"{warehouse.city_name_tj} / {warehouse.city_name_ru}",
             ),
-            "Warehouse ID": warehouse.id,
-            "City Key": warehouse.city_key,
-            "City Name TJ": warehouse.city_name_tj,
-            "City Name RU": warehouse.city_name_ru,
-            "Address Caption": warehouse.address_caption,
-            "Image File ID": warehouse.image_file_id,
-            "Media Type": warehouse.media_type,
-            "Media File ID": warehouse.media_file_id,
-            "TJ Address Text": warehouse.tj_address_text,
-            "TJ Work Time": warehouse.tj_work_time,
-            "TJ Phone": warehouse.tj_phone,
-            "TJ Pickup Caption": warehouse.tj_pickup_caption,
-            "TJ Pickup Media Type": warehouse.tj_pickup_media_type,
-            "TJ Pickup Media File ID": warehouse.tj_pickup_media_file_id,
-            "Active": warehouse.is_active,
-            "Created At": warehouse.created_at,
-            "Updated At": warehouse.updated_at,
+            "Ҳолат": "active" if warehouse.is_active else "inactive",
+            "Матни адрес": warehouse.address_caption,
+            "Телефон": warehouse.tj_phone,
+            "Адреси Тоҷикистон": warehouse.tj_address_text,
+            "Вақти корӣ": warehouse.tj_work_time,
+            "Охирин тағйирот": warehouse.updated_at,
+            "Шаҳр": warehouse.city_name_tj,
         },
     )
 
@@ -283,22 +266,17 @@ def _delivery_request_fields(request: DeliveryRequest) -> dict[str, Any]:
     return _compact_fields(
         {
             **_base_fields(f"delivery:{request.id}", f"{request.track_code} delivery"),
-            "Delivery Request ID": request.id,
-            "Parcel ID": request.parcel_id,
-            "User ID": request.user_id,
-            "User Full Name": getattr(user, "full_name", None),
-            "Client Code": getattr(user, "client_code", None),
-            "Track Code": request.track_code,
-            "Destination City": request.destination_city,
-            "Delivery Address": request.delivery_address,
-            "Delivery Phone": request.delivery_phone,
-            "Status": request.status,
-            "Handled By Admin ID": request.handled_by_admin_id,
-            "Created At": request.created_at,
-            "Updated At": request.updated_at,
+            "Трек-код": request.track_code,
+            "Коди мизоҷӣ": getattr(user, "client_code", None),
+            "Мизоҷ": getattr(user, "full_name", None),
+            "Телефон": request.delivery_phone,
+            "Склад / Шаҳр": request.destination_city,
+            "Адреси доставка": request.delivery_address,
+            "Ҳолати доставка": request.status,
+            "Санаи дархост": request.created_at,
+            "Эзоҳ": getattr(request, "note", None) or getattr(request, "comment", None),
         },
     )
-
 
 async def sync_user_to_airtable(user_id: int) -> bool:
     if not _is_configured():
